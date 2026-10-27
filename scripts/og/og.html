@@ -1,0 +1,140 @@
+<!doctype html>
+<!--
+  Source for site/assets/img/og.png, the 1200×630 link-preview image.
+  Re-render after editing (Windows, from the repo root):
+    "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1200,630 --screenshot="%CD%\site\assets\img\og.png" "file:///%CD:\=/%/scripts/og/og.html"
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ibu keeps receipts: link preview</title>
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background: #f4eee2;
+    color: #1f1c17;
+    font-family: "Segoe UI", system-ui, Roboto, Arial, sans-serif;
+  }
+  .frame { position: absolute; inset: 26px; border: 2px solid #d6ccb9; border-radius: 22px; }
+
+  .copy { position: absolute; left: 82px; top: 88px; width: 640px; }
+  .eyebrow {
+    margin: 0 0 26px;
+    font: 600 19px/1.4 "Cascadia Mono", Consolas, monospace;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #4f493e;
+  }
+  h1 {
+    margin: 0 0 28px;
+    font: 700 76px/1.04 "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+    letter-spacing: -.02em;
+  }
+  h1 span { color: #b3361f; }
+  .sub { margin: 0; max-width: 590px; font-size: 27px; line-height: 1.42; color: #4f493e; }
+  .foot {
+    position: absolute;
+    left: 82px;
+    bottom: 70px;
+    margin: 0;
+    font: 600 20px/1 "Cascadia Mono", Consolas, monospace;
+  }
+  .foot b { color: #1d6b40; }
+
+  .stub {
+    position: absolute;
+    right: 88px;
+    top: 64px;
+    width: 340px;
+    transform: rotate(2deg);
+    filter: drop-shadow(0 18px 22px rgba(0, 0, 0, .2));
+  }
+  .slot {
+    position: relative;
+    z-index: 1;
+    height: 16px;
+    margin: 0 -12px -8px;
+    border-radius: 8px;
+    background: #2b2721;
+    box-shadow: inset 0 -6px 0 #0b0a08;
+  }
+  .paper {
+    padding: 30px 26px 22px;
+    background: #fffdf6;
+    color: #24211b;
+    font: 16px/1.5 "Cascadia Mono", Consolas, monospace;
+    -webkit-mask: radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) bottom / 15px 100% repeat-x;
+    mask: radial-gradient(circle at 50% 100%, transparent 6px, #000 6.5px) bottom / 15px 100% repeat-x;
+  }
+  .brand { margin: 0; font-weight: 800; letter-spacing: .22em; text-align: center; }
+  .meta { margin: 2px 0 16px; color: #5b5549; font-size: 13px; text-align: center; }
+  .title { margin: 0 0 12px; font-size: 18px; font-weight: 800; }
+  .line { display: flex; align-items: baseline; gap: 8px; }
+  .line + .line { margin-top: 3px; }
+  .dots { flex: 1; border-bottom: 2px dotted #b4ab99; transform: translateY(-5px); }
+  .line b { font-weight: 800; }
+  .rule { margin: 14px 0; border-top: 2px dashed #b4ab99; }
+  .label { margin: 0 0 4px; color: #b42318; font-size: 13px; font-weight: 800; letter-spacing: .14em; }
+  .catch { margin: 0; font-size: 15px; }
+  .stamp {
+    display: inline-block;
+    margin: 16px 0 4px 74px;
+    padding: 6px 14px;
+    border: 4px double #1d6b40;
+    border-radius: 9px;
+    color: #1d6b40;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    transform: rotate(-8deg);
+  }
+  .barcode { display: block; width: 250px; height: 40px; margin: 10px auto 0; fill: #24211b; }
+</style>
+</head>
+<body>
+  <div class="frame"></div>
+
+  <div class="copy">
+    <p class="eyebrow">Mohamed Ibrahim A. “Ibu” · AI &amp; software engineer</p>
+    <h1>I build AI systems.<br><span>I keep the receipts.</span></h1>
+    <p class="sub">Every claim on my portfolio prints a receipt: the evidence, how it was measured, and the catch.</p>
+  </div>
+  <p class="foot">14 claims · <b>0 invented facts</b> · AWS Amplify</p>
+
+  <div class="stub">
+    <div class="slot"></div>
+    <div class="paper">
+      <p class="brand">IBU'S RECEIPTS</p>
+      <p class="meta">Receipt 01 of 14</p>
+      <p class="title">R² 0.94 on Bitcoin close price</p>
+      <div class="line"><span>R² · test set</span><span class="dots"></span><b>0.9402</b></div>
+      <div class="line"><span>Direction · close</span><span class="dots"></span><b>47.93%</b></div>
+      <div class="line"><span>A fair coin</span><span class="dots"></span><b>50.00%</b></div>
+      <div class="rule"></div>
+      <p class="label">THE CATCH</p>
+      <p class="catch">Worse than a coin at calling direction.</p>
+      <span class="stamp">VERIFIED</span>
+      <svg class="barcode" viewBox="0 0 160 30" preserveAspectRatio="none" aria-hidden="true"></svg>
+    </div>
+  </div>
+
+  <script>
+    // Same deterministic bars as the site's receipts.
+    const svg = document.querySelector(".barcode");
+    let h = 2166136261;
+    for (const ch of "cryptopulse") h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+    for (let x = 4; x < 156;) {
+      h = (Math.imul(h, 1103515245) + 12345) >>> 0;
+      const w = 1 + (h >>> 30);
+      if (x + w > 156) break;
+      const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      bar.setAttribute("x", x);
+      bar.setAttribute("width", w);
+      bar.setAttribute("height", 30);
+      svg.append(bar);
+      x += w + 1 + ((h >>> 27) & 1);
+    }
+  </script>
+</body>
+</html>

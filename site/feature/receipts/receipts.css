@@ -1,0 +1,490 @@
+/* Receipts: the creative layer. Claims, the receipt printer, and the paper it prints on.
+   Thermal paper stays light in both colour schemes, like the real thing on a dark desk. */
+
+:root {
+  --rc-paper: #fffdf6;
+  --rc-ink: #24211b;
+  --rc-ink-2: #5b5549;
+  --rc-rule: #b4ab99;
+  --rc-verified: #1d6b40;
+  --rc-partial: #8f5200;
+  --rc-self: #3c4c78;
+  --rc-local: #646464;
+  --rc-fix: #b42318;
+  --rc-printer: #2b2721;
+  --rc-printer-ink: #f7f1e4;
+  --rc-mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --rc-icon-receipt: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 1.5h10v13l-1.7-1.1-1.6 1.1-1.7-1.1-1.6 1.1-1.7-1.1L3 14.5z' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M5.5 5.2h5M5.5 8.2h5' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  --rc-icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8.5l3.5 3.5 7.5-8' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* ---------- claims in the page ---------- */
+
+.claim {
+  margin: 0;
+  padding: 0 .12em;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  text-decoration: underline dotted var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .24em;
+  cursor: pointer;
+}
+.claim::after {
+  content: "";
+  display: inline-block;
+  width: .78em;
+  height: .78em;
+  margin-left: .22em;
+  vertical-align: -.04em;
+  background: currentColor;
+  opacity: .72;
+  -webkit-mask: var(--rc-icon-receipt) center / contain no-repeat;
+  mask: var(--rc-icon-receipt) center / contain no-repeat;
+}
+.claim:hover { background: color-mix(in srgb, var(--highlighter) 55%, transparent); color: inherit; }
+.claim[data-checked] { text-decoration-style: solid; text-decoration-color: var(--ok); }
+.claim[data-checked]::after {
+  background: var(--ok);
+  opacity: 1;
+  -webkit-mask-image: var(--rc-icon-check);
+  mask-image: var(--rc-icon-check);
+}
+.claim[aria-expanded="true"] { background: var(--highlighter); }
+
+.rc-highlight .claim {
+  background: var(--highlighter);
+  box-shadow: 0 0 0 2px var(--highlighter);
+}
+
+.hint__sample {
+  text-decoration: underline dotted var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .24em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .claim--nudge:not([data-checked]) { animation: rc-nudge 2.4s ease-in-out 1.2s 3; }
+}
+@keyframes rc-nudge {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--highlighter) 85%, transparent); background: color-mix(in srgb, var(--highlighter) 60%, transparent); }
+}
+
+/* ---------- paper, shared by the hero stub and the printer ---------- */
+
+.stub__paper,
+.rc-paper {
+  background: var(--rc-paper);
+  color: var(--rc-ink);
+  font-family: var(--rc-mono);
+}
+
+/* Torn edge: a row of half-circle notches along the top (and bottom, for the stub). */
+.rc-paper {
+  -webkit-mask: radial-gradient(circle at 50% 0, transparent 5px, #000 5.5px) top / 13px 100% repeat-x;
+  mask: radial-gradient(circle at 50% 0, transparent 5px, #000 5.5px) top / 13px 100% repeat-x;
+}
+.stub__paper {
+  -webkit-mask:
+    radial-gradient(circle at 50% 0, transparent 5px, #000 5.5px) top / 13px 51% repeat-x,
+    radial-gradient(circle at 50% 100%, transparent 5px, #000 5.5px) bottom / 13px 51% repeat-x;
+  mask:
+    radial-gradient(circle at 50% 0, transparent 5px, #000 5.5px) top / 13px 51% repeat-x,
+    radial-gradient(circle at 50% 100%, transparent 5px, #000 5.5px) bottom / 13px 51% repeat-x;
+}
+
+/* ---------- hero stub ---------- */
+
+.stub {
+  justify-self: center;
+  width: min(100%, 21rem);
+  filter: drop-shadow(0 14px 18px rgb(0 0 0 / .18));
+  transform: rotate(1.6deg);
+}
+/* the printer mouth the stub hangs from */
+.stub__slot {
+  position: relative;
+  z-index: 1;
+  height: 14px;
+  margin: 0 -10px -7px;
+  border-radius: 7px;
+  background: var(--rc-printer);
+  box-shadow: inset 0 -5px 0 #0b0a08;
+}
+.stub__paper {
+  padding: 1.6rem 1.25rem 1.5rem;
+  font-size: .86rem;
+  line-height: 1.5;
+}
+.stub__time {
+  margin: -.75rem 0 .9rem;
+  color: var(--rc-ink-2);
+  font-size: .72rem;
+  text-align: center;
+}
+
+/* First view: the stub feeds out of the slot once, in printer-like steps. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  .stub.is-waiting .stub__paper { clip-path: inset(0 0 100% 0); }
+  .stub.is-printing .stub__paper { animation: rc-stub-feed 1.2s steps(20, end) both; }
+}
+@keyframes rc-stub-feed {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.stub__head {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.stub__sub {
+  margin: .15rem 0 1rem;
+  color: var(--rc-ink-2);
+  font-size: .78rem;
+  text-align: center;
+}
+.stub__rows { margin: 0; padding: .8rem 0; border-block: 1.5px dashed var(--rc-rule); }
+.stub__rows div { display: flex; align-items: baseline; }
+.stub__rows dt { display: flex; flex: 1; align-items: baseline; }
+.stub__rows dt::after {
+  content: "";
+  flex: 1;
+  min-width: .75rem;
+  margin: 0 .45rem;
+  border-bottom: 1.5px dotted var(--rc-rule);
+}
+.stub__rows dd { margin: 0; font-weight: 800; }
+.stub__audit { margin: .8rem 0 0; color: var(--rc-ink-2); font-size: .8rem; text-align: center; }
+.stub__btn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: .8rem;
+  padding: .6rem;
+  border: 1.5px dashed var(--rc-ink);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--rc-ink);
+  font: 700 .8rem/1.2 var(--rc-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.stub__btn:hover { background: #f1ead9; }
+
+@media (max-width: 60em) {
+  .stub { justify-self: start; transform: rotate(-1deg); }
+}
+
+/* ---------- the printer dock ---------- */
+
+.rc-dock {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.rc-dock > * { pointer-events: auto; }
+.rc-dock.is-open { width: min(23.5rem, calc(100vw - 2rem)); }
+
+.rc-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 48px;
+  padding: .7rem 1rem .6rem;
+  border: 0;
+  border-radius: 14px;
+  background: var(--rc-printer);
+  color: var(--rc-printer-ink);
+  font: 700 .86rem/1 var(--rc-mono);
+  box-shadow: 0 8px 22px rgb(0 0 0 / .28);
+  cursor: pointer;
+}
+/* the paper slot */
+.rc-tab::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 14px;
+  right: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: #0b0a08;
+}
+.rc-tab:hover { background: #3a342c; }
+.rc-tab__icon {
+  width: 1.05rem;
+  height: 1.05rem;
+  background: currentColor;
+  -webkit-mask: var(--rc-icon-receipt) center / contain no-repeat;
+  mask: var(--rc-icon-receipt) center / contain no-repeat;
+}
+.rc-tab__count {
+  padding: .2rem .45rem;
+  border-radius: 6px;
+  background: #fffdf6;
+  color: var(--rc-ink);
+}
+.rc-tab.is-done .rc-tab__count { background: #c9f2d8; }
+.rc-dock.is-open .rc-tab {
+  width: 100%;
+  justify-content: space-between;
+  border-radius: 6px 6px 14px 14px;
+}
+
+.rc-panel {
+  position: relative;
+  width: 100%;
+  padding-inline: .7rem;
+  filter: drop-shadow(0 6px 14px rgb(0 0 0 / .25));
+}
+.rc-slot {
+  max-height: min(66vh, 38rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.rc-topbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 .15rem .45rem;
+  pointer-events: none;
+}
+.rc-close {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--rc-ink);
+  border-radius: 50%;
+  background: var(--rc-paper);
+  color: var(--rc-ink);
+  font: 700 1.25rem/1 var(--rc-mono);
+  cursor: pointer;
+}
+.rc-close:hover { background: #f1ead9; }
+
+/* Printing: the paper feeds out of the slot in steps, header first. */
+@media (prefers-reduced-motion: no-preference) {
+  .rc-panel.is-printing .rc-slot { animation: rc-feed .95s steps(15, end) both; }
+  .rc-panel.is-printing .rc-stamp { animation: rc-stamp .4s cubic-bezier(.3, 1.6, .5, 1) .9s both; }
+}
+@keyframes rc-feed { from { max-height: 0; } }
+@keyframes rc-stamp { from { opacity: 0; transform: rotate(-8deg) scale(1.9); } }
+
+/* ---------- what's printed ---------- */
+
+.rc-paper {
+  padding: 1.5rem 1.05rem 1.25rem;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+.rc-paper :focus-visible { outline-color: #1a5fd0; }
+.rc-paper a { color: var(--rc-ink); text-decoration-color: var(--rc-ink-2); }
+.rc-paper a:hover { color: var(--rc-fix); }
+
+.rc-head { text-align: center; }
+.rc-brand {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.rc-meta { margin: .1rem 0 0; color: var(--rc-ink-2); font-size: .72rem; }
+.rc-back {
+  display: inline-block;
+  margin-top: .5rem;
+  padding: .3rem .1rem;
+  border: 0;
+  background: none;
+  color: var(--rc-ink);
+  font: 700 .72rem/1.2 var(--rc-mono);
+  letter-spacing: .06em;
+  text-decoration: underline;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.rc-title {
+  margin: 1rem 0 .15rem;
+  font: 800 1.02rem/1.3 var(--rc-mono);
+}
+.rc-title:focus { outline: none; }
+.rc-title:focus-visible { outline: 2px solid #1a5fd0; }
+.rc-context { margin: 0; color: var(--rc-ink-2); font-size: .74rem; }
+
+.rc-rule {
+  height: 0;
+  margin: .85rem 0;
+  border: 0;
+  border-top: 1.5px dashed var(--rc-rule);
+}
+
+.rc-label {
+  margin: 0 0 .35rem;
+  font: 800 .7rem/1.3 var(--rc-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.rc-block p { margin: 0; }
+.rc-measured { margin: .6rem 0 0; color: var(--rc-ink-2); }
+
+.rc-lines { margin: .7rem 0 0; padding: 0; list-style: none; }
+.rc-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: .4rem;
+}
+.rc-line + .rc-line { margin-top: .2rem; }
+.rc-line__k { flex: 0 1 auto; }
+.rc-line__dots {
+  flex: 1 1 1.5rem;
+  min-width: 1rem;
+  border-bottom: 1.5px dotted var(--rc-rule);
+  transform: translateY(-.28em);
+}
+.rc-line__v { margin-left: auto; font-weight: 800; text-align: right; }
+.rc-line[data-ok="false"] .rc-line__v { color: var(--rc-partial); }
+
+.rc-evidence { margin: 0; padding: 0; list-style: none; }
+.rc-evidence li { padding-left: 1.1em; text-indent: -1.1em; }
+.rc-evidence li + li { margin-top: .3rem; }
+.rc-evidence li::before { content: "→ "; }
+.rc-evidence a { display: inline; padding: .1rem 0; }
+
+.rc-catch .rc-label { color: var(--rc-fix); }
+.rc-correction {
+  padding: .6rem .7rem;
+  border: 1.5px solid var(--rc-fix);
+  border-radius: 6px;
+}
+.rc-correction .rc-label { color: var(--rc-fix); }
+
+.rc-foot { display: grid; justify-items: center; gap: .6rem; text-align: center; }
+.rc-stamp {
+  display: inline-block;
+  margin: .4rem 0 .2rem;
+  padding: .35rem .75rem;
+  border: 3px double currentColor;
+  border-radius: 8px;
+  color: var(--rc-verified);
+  font: 800 1rem/1 var(--rc-mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  transform: rotate(-8deg);
+  opacity: .92;
+}
+.rc-stamp[data-status="partial"] { color: var(--rc-partial); }
+.rc-stamp[data-status="self"] { color: var(--rc-self); }
+.rc-stamp[data-status="local"],
+.rc-stamp[data-status="itemized"] { color: var(--rc-local); }
+.rc-stamp[data-status="audited"] { color: var(--rc-verified); }
+
+.rc-barcode { width: 100%; max-width: 15rem; height: 2.2rem; fill: var(--rc-ink); }
+.rc-thanks { margin: 0; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .72rem; }
+.rc-permalink { font-size: .72rem; color: var(--rc-ink-2); }
+
+/* buttons printed on paper */
+.rc-btn {
+  min-height: 40px;
+  padding: .45rem .8rem;
+  border: 1.5px solid var(--rc-ink);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--rc-ink);
+  font: 700 .74rem/1.2 var(--rc-mono);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.rc-btn:hover { background: #f1ead9; }
+.rc-btn:disabled { opacity: .55; cursor: progress; }
+.rc-btn[aria-pressed="true"] { background: #ffe27a; }
+
+.rc-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
+
+/* coin vs model */
+.rc-coin { margin-top: .75rem; display: grid; gap: .5rem; }
+.rc-coin__how { color: var(--rc-ink-2); font-size: .74rem; }
+.rc-bars { display: grid; gap: .3rem; margin: .2rem 0 0; }
+.rc-bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.2rem 1fr 3.6rem;
+  align-items: center;
+  gap: .4rem;
+  font-size: .72rem;
+}
+.rc-bar__track {
+  position: relative;
+  height: .7rem;
+  border: 1px solid var(--rc-rule);
+  background: #f4efe2;
+}
+.rc-bar__fill { position: absolute; inset: 0 auto 0 0; background: var(--rc-ink); }
+.rc-bar__fill--coin { background: #8f5200; }
+.rc-bar__mark {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 50%;
+  border-left: 1.5px dashed var(--rc-fix);
+}
+.rc-bar__v { text-align: right; font-weight: 800; }
+.rc-coin__out { min-height: 1.5em; font-weight: 700; }
+
+/* bill */
+.rc-progress {
+  width: 100%;
+  height: .8rem;
+  accent-color: var(--rc-verified);
+}
+.rc-items { margin: 0; padding: 0; list-style: none; }
+.rc-item {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  gap: .4rem;
+  min-height: 36px;
+  padding: .3rem 0;
+  border: 0;
+  background: none;
+  color: var(--rc-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.rc-item:hover .rc-item__k { text-decoration: underline; }
+.rc-item__n { color: var(--rc-ink-2); }
+.rc-item__k { flex: 0 1 auto; }
+.rc-item__v { font-weight: 800; }
+.rc-item__v[data-done] { color: var(--rc-verified); }
+
+/* ---------- small screens: a bottom sheet that leaves the header alone ---------- */
+
+@media (max-width: 40em) {
+  .rc-dock { right: .6rem; bottom: .6rem; }
+  .rc-dock.is-open { left: .6rem; width: auto; }
+  .rc-slot { max-height: 60vh; }
+  .rc-tab { min-height: 46px; padding-inline: .85rem; }
+}
+
+@media print {
+  .rc-dock { display: none; }
+  .claim::after { display: none; }
+}

@@ -1,0 +1,13 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        # Stamp this deploy's app, branch, build number and commit into the
+        # site's own receipt (site/feature/receipts/build-info.js).
+        - bash scripts/stamp-build.sh
+  artifacts:
+    # Only the site folder is published; docs and scripts stay in the repo.
+    baseDirectory: site
+    files:
+      - '**/*'

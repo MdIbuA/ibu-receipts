@@ -1,0 +1,11 @@
+# The Amplify build runs these on Linux; Windows line endings would break bash.
+*.sh        text eol=lf
+amplify.yml text eol=lf
+*.html      text eol=lf
+*.css       text eol=lf
+*.js        text eol=lf
+*.md        text eol=lf
+*.svg       text eol=lf
+*.webp      binary
+*.jpg       binary
+*.png       binary

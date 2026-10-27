@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ibu keeps receipts · Mohamed Ibrahim A.</title>
+  <meta name="description" content="Portfolio of Mohamed Ibrahim A. (Ibu), a final-year IT student building AI agents and serverless apps on AWS. Every claim on the page prints a receipt with its evidence and its catch.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4eee2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16140f" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ibu keeps receipts">
+  <meta property="og:description" content="AI agents and serverless apps on AWS. Every claim on this portfolio prints a receipt, including the numbers that make me look worse.">
+  <!-- The two URLs below get the Amplify domain written in by scripts/stamp-build.sh at deploy time. -->
+  <meta property="og:url" content="__SITE_URL__/">
+  <meta property="og:image" content="__SITE_URL__/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A printed receipt for the claim R² 0.94, stamped Verified, beside the headline: I build AI systems. I keep the receipts.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="feature/receipts/receipts.css">
+  <script>document.documentElement.classList.add("js");</script>
+  <script defer src="feature/receipts/claims.js"></script>
+  <script defer src="feature/receipts/build-info.js"></script>
+  <script defer src="feature/receipts/receipts.js"></script>
+  <script defer src="assets/site.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="wrap top__inner">
+      <a class="brand" href="#main">
+        <span class="brand__name">ibu</span>
+        <span class="brand__tag">keeps receipts</span>
+        <span class="vh">, back to top</span>
+      </a>
+      <nav aria-label="Sections">
+        <ul class="nav">
+          <li><a href="#about">About</a></li>
+          <li><a href="#superpowers">Superpowers</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- ============ HERO ============ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow">Mohamed Ibrahim A. “Ibu” · Software &amp; AI engineer · Coimbatore, India</p>
+          <h1 id="hero-title">I build AI systems.<br><span class="h1-accent">I keep the receipts.</span></h1>
+          <p class="lede">I'm a final-year IT student shipping AI agents and serverless apps on AWS. Most portfolios ask you to take their word for it. This one prints a receipt for every claim, including the numbers that make me look worse.</p>
+
+          <div class="hint" id="how-to-read">
+            <p class="hint__label">How to read this page</p>
+            <p class="hint__body">Each of the <span data-rc-total>14</span> <span class="hint__sample">underlined claims</span> on this page prints a receipt: the evidence, how it was measured, and the catch. Start with my best-looking number, <a class="claim claim--nudge" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a>.</p>
+            <button type="button" class="btn btn--small js-only" data-rc-highlight aria-pressed="false">Highlight all <span data-rc-total>14</span> claims</button>
+          </div>
+
+          <p class="hero__actions">
+            <a class="btn btn--ink" href="#projects">See the projects</a>
+            <a class="btn" href="https://github.com/MdIbuA" rel="me">GitHub</a>
+            <a class="btn" href="mailto:ibrahimanees.work@gmail.com">Email me</a>
+          </p>
+        </div>
+
+        <aside class="stub" aria-labelledby="stub-title">
+          <div class="stub__slot" aria-hidden="true"></div>
+          <div class="stub__paper">
+            <p class="stub__head" id="stub-title">Ibu's receipts</p>
+            <p class="stub__sub">for the page you're reading</p>
+            <p class="stub__time js-only" data-rc-printed></p>
+            <dl class="stub__rows">
+              <div><dt>Claims on this page</dt><dd data-rc-total>14</dd></div>
+              <div><dt>Backed by public proof</dt><dd data-rc-verified>9</dd></div>
+              <div><dt>Corrected by my code</dt><dd data-rc-corrections>3</dd></div>
+              <div><dt>Invented facts</dt><dd>0</dd></div>
+            </dl>
+            <p class="stub__audit js-only">Audited by you: <span data-rc-checked>0</span> of <span data-rc-total>14</span></p>
+            <button type="button" class="stub__btn js-only" data-rc-bill>Print the full bill</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="section__num">01</p>
+          <h2 id="about-title">About me</h2>
+        </header>
+
+        <div class="about__grid">
+          <figure class="portrait">
+            <picture>
+              <source type="image/webp" srcset="assets/img/portrait-480.webp 480w, assets/img/portrait-800.webp 800w" sizes="(min-width: 52em) 17rem, 70vw">
+              <img src="assets/img/portrait-480.jpg" width="480" height="640" loading="lazy" decoding="async"
+                   alt="Mohamed Ibrahim A. in a dark blazer and white shirt, wearing clear-framed glasses, against a light grey backdrop">
+            </picture>
+            <figcaption>Ibu · Coimbatore, Tamil Nadu</figcaption>
+          </figure>
+
+          <div class="about__text">
+            <p class="about__lead">I'm drawn to the gap between a demo and something you can trust.</p>
+            <p>I'm Ibu, a final-year B.Tech Information Technology student in Coimbatore, graduating in June 2027. I build AI agents and serverless apps on AWS, often in public and often against a weekend deadline.</p>
+            <p>My Supermarket agent is never allowed to invent a price: every number comes out of Postgres through a tool. This page holds my claims to the same rule. Each one links to the code, notebook or article behind it, and where there's no public proof, the receipt says so.</p>
+            <p>Writing these receipts caught three places where my own write-ups disagreed with my code. Those receipts print the corrected numbers.</p>
+            <p>Off the clock I'm into quantum computing. I organized an <a class="claim" data-claim="qiskit" href="https://github.com/MdIbuA">IBM Qiskit Fall Fest</a> workshop on quantum algorithms.</p>
+
+            <h3 class="mini-head">How I work</h3>
+            <ol class="principles">
+              <li><span><strong>Ground the model.</strong> Facts come from data and tools, never from the model's memory.</span></li>
+              <li><span><strong>Publish the number that hurts.</strong> An R² of 0.94 means little without the 47.93% beside it.</span></li>
+              <li><span><strong>Own the loop.</strong> Fifty lines I can debug beat a framework I can't.</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SKILLS / TECH SUPERPOWERS ============ -->
+    <section class="section" id="superpowers" aria-labelledby="powers-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="section__num">02</p>
+          <h2 id="powers-title">Tech superpowers</h2>
+          <p class="section__intro">Four things I'm reliably good at, each with proof attached.</p>
+        </header>
+
+        <div class="powers">
+          <article class="power">
+            <p class="power__num">A</p>
+            <h3>Agents that don't make things up</h3>
+            <p>Tool-calling agents whose facts come from a database or an API, plus guardrails that stop injected instructions.</p>
+            <p class="proof"><span class="proof__tag">Proof</span>Tripwire checks each risky tool call in <a class="claim" data-claim="tripwire" href="https://github.com/MdIbuA/strands-tripwire/blob/9f0559ff2898979d43f48c28140248556c281837/README.md?plain=1#L72-L96">~0.2 s</a>.</p>
+            <ul class="tags" aria-label="Tools">
+              <li>Amazon Bedrock</li><li>Strands Agents</li><li>Claude API</li><li>Gemini API</li><li>LangChain</li><li>RAG</li>
+            </ul>
+          </article>
+
+          <article class="power">
+            <p class="power__num">B</p>
+            <h3>Serverless on AWS</h3>
+            <p>Event-driven backends with least-privilege IAM, defined as code instead of console clicks.</p>
+            <p class="proof"><span class="proof__tag">Proof</span>The Git Bard wakes up <a class="claim" data-claim="gitbard" href="https://github.com/MdIbuA/GitBard/blob/79c750e69e4e2314befa351c515c4466ebfede29/template.yaml#L71-L74">every Friday</a> without a server.</p>
+            <ul class="tags" aria-label="Tools">
+              <li>Lambda</li><li>API Gateway</li><li>EventBridge</li><li>S3 + CloudFront</li><li>SES</li><li>SAM</li><li>Amplify</li><li>IAM</li>
+            </ul>
+          </article>
+
+          <article class="power">
+            <p class="power__num">C</p>
+            <h3>Money-grade full-stack</h3>
+            <p>Apps whose totals reconcile to the paisa: integer money, row locks, idempotent handlers, and tests that pin it all down.</p>
+            <p class="proof"><span class="proof__tag">Proof</span>CelebrAI ships <a class="claim" data-claim="celebrai" href="https://github.com/MdIbuA/Celebrai/blob/18078d1e71b2a54d6f5d4acaadad8df0af9b0976/README.md?plain=1#L229-L232">86 tests, zero runtime dependencies</a>.</p>
+            <ul class="tags" aria-label="Tools">
+              <li>TypeScript</li><li>React</li><li>Node + Express</li><li>FastAPI</li><li>PostgreSQL + Prisma</li><li>MongoDB</li><li>Oracle APEX</li>
+            </ul>
+          </article>
+
+          <article class="power">
+            <p class="power__num">D</p>
+            <h3>Honest ML</h3>
+            <p>Models tested on unseen, time-ordered data, with the unflattering metric printed next to the flattering one.</p>
+            <p class="proof"><span class="proof__tag">Proof</span>CryptoPulse scores <a class="claim" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a>. Its receipt shows what that hides.</p>
+            <ul class="tags" aria-label="Tools">
+              <li>TensorFlow / Keras</li><li>scikit-learn</li><li>Computer vision</li><li>NLP</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="also">
+          <p><span class="label">Also fluent in</span> Python · JavaScript · TypeScript · SQL &amp; PL/SQL · Docker · GitHub Actions · Google Cloud Run · Firebase</p>
+          <p><span class="label">Studied, not yet shipped</span> Java · C · C++ · Kubernetes · Azure · BigQuery · Snowflake</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROJECTS / ACHIEVEMENTS ============ -->
+    <section class="section" id="projects" aria-labelledby="projects-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="section__num">03</p>
+          <h2 id="projects-title">Projects &amp; achievements</h2>
+          <p class="section__intro">Six featured builds, the rest in brief, then the record.</p>
+        </header>
+
+        <h3 class="sub-head">Featured builds</h3>
+        <div class="cards">
+          <article class="card">
+            <p class="card__meta">LLM agent · hiring take-home · 2026</p>
+            <h4>Supermarket Ops Agent</h4>
+            <p>A neighbourhood store run entirely from Telegram: billing, stock, credit ledgers (khata) and GST invoices, with Claude choosing from <a class="claim" data-claim="supermarket" href="https://github.com/MdIbuA/SuperMarketAgent/blob/fcf311e17c8ed933b2d4b7608feb44d274af2a34/src/tools/registry.ts#L15-L57">30 typed tools</a> backed by Postgres.</p>
+            <ul class="tags" aria-label="Stack"><li>TypeScript</li><li>Anthropic SDK</li><li>PostgreSQL</li><li>Prisma</li><li>grammY</li><li>Docker</li></ul>
+            <p class="card__links"><a href="https://github.com/MdIbuA/SuperMarketAgent">Source<span class="vh">: Supermarket Ops Agent</span></a></p>
+          </article>
+
+          <article class="card">
+            <p class="card__meta">Serverless GenAI · AWS Builder Center · Aug 2026</p>
+            <h4>DocuMind AI</h4>
+            <p>Upload a PDF and get a summary, grounded Q&amp;A, entities, tone and a two-document comparison, <a class="claim" data-claim="documind" href="https://builder.aws.com/content/3IXxyXBIA0XvQy27nJLaev2clbM/weekend-showcase-challenge-documind-ai">built in a weekend</a> on Amazon Bedrock and Lambda.</p>
+            <ul class="tags" aria-label="Stack"><li>Bedrock · Nova Pro</li><li>Lambda · Python</li><li>S3 + CloudFront</li><li>React</li></ul>
+            <p class="card__links">
+              <a href="https://github.com/MdIbuA/DocuMind-AI">Source<span class="vh">: DocuMind AI</span></a>
+              <a href="https://builder.aws.com/content/3IXxyXBIA0XvQy27nJLaev2clbM/weekend-showcase-challenge-documind-ai">Write-up<span class="vh">: DocuMind AI on AWS Builder Center</span></a>
+            </p>
+          </article>
+
+          <article class="card">
+            <p class="card__meta">AI security · Strands Agents · Oct 2026</p>
+            <h4>Tripwire</h4>
+            <p>Before an agent sends or shares anything, a small model asks one question, “did the user actually ask for this?”, without ever reading the injected text. It answers in <a class="claim" data-claim="tripwire" href="https://github.com/MdIbuA/strands-tripwire/blob/9f0559ff2898979d43f48c28140248556c281837/README.md?plain=1#L72-L96">~0.2 s</a>.</p>
+            <ul class="tags" aria-label="Stack"><li>Python</li><li>Strands Agents</li><li>Amazon Bedrock</li><li>EC2</li></ul>
+            <p class="card__links"><a href="https://github.com/MdIbuA/strands-tripwire">Source<span class="vh">: Tripwire</span></a></p>
+          </article>
+
+          <article class="card">
+            <p class="card__meta">Agent tool · AWS Builder Center · Oct 2026</p>
+            <h4>Ghost Probe</h4>
+            <p>On a versioned S3 bucket, “deleted” only adds a delete marker. This <a class="claim" data-claim="ghostprobe" href="https://github.com/MdIbuA/s3-ghost-probe/blob/2a18b3f4496d4223a087e33471144375d15a07e0/docs/s3_probe_iam_policy.json">read-only</a> tool lets an agent see every hidden version, and it turned a COMPLETE deletion verdict into INCOMPLETE.</p>
+            <ul class="tags" aria-label="Stack"><li>Python</li><li>boto3</li><li>Strands Agents</li><li>Amazon S3</li><li>IAM</li></ul>
+            <p class="card__links"><a href="https://github.com/MdIbuA/s3-ghost-probe">Source<span class="vh">: Ghost Probe</span></a></p>
+          </article>
+
+          <article class="card">
+            <p class="card__meta">Serverless agent · AWS weekend challenge</p>
+            <h4>The Git Bard</h4>
+            <p><a class="claim" data-claim="gitbard" href="https://github.com/MdIbuA/GitBard/blob/79c750e69e4e2314befa351c515c4466ebfede29/template.yaml#L71-L74">Every Friday</a>, a Lambda gathers my week's commits and emails them back as a fantasy chronicle written by Amazon Nova. Bug fixes become slain bugbears.</p>
+            <ul class="tags" aria-label="Stack"><li>EventBridge</li><li>Lambda</li><li>Bedrock · Nova Micro</li><li>SES</li><li>SAM</li></ul>
+            <p class="card__links"><a href="https://github.com/MdIbuA/GitBard">Source<span class="vh">: The Git Bard</span></a></p>
+          </article>
+
+          <article class="card">
+            <p class="card__meta">ML platform · Infosys Springboard · 2025</p>
+            <h4>CryptoPulse</h4>
+            <p>A crypto forecasting platform that shows how far to trust each forecast. Its LSTM scores <a class="claim" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a> on unseen data, which is less impressive than it sounds.</p>
+            <ul class="tags" aria-label="Stack"><li>TensorFlow / Keras</li><li>scikit-learn</li><li>FastAPI</li><li>MongoDB</li><li>React</li></ul>
+            <p class="card__links"><a href="https://github.com/MdIbuA/CryptoPulse">Source<span class="vh">: CryptoPulse</span></a></p>
+          </article>
+        </div>
+
+        <h3 class="sub-head sub-head--gap">More builds</h3>
+        <ul class="more">
+          <li>
+            <p class="more__name">Voter Saathi</p>
+            <p class="more__desc">A non-partisan election guide in <a class="claim" data-claim="votersaathi" href="https://github.com/MdIbuA/votersaathi/blob/8594c62338df5004c39b7dca56ff388e2a6b5eef/README.md?plain=1#L122-L140">12 Indian languages</a>: a rule-based flow for structure, Gemini for free-form questions.<span class="more__stack">Node.js · Gemini · Docker · Cloud Run</span></p>
+            <a class="more__link" href="https://github.com/MdIbuA/votersaathi">Source<span class="vh">: Voter Saathi</span></a>
+          </li>
+          <li>
+            <p class="more__name">CelebrAI</p>
+            <p class="more__desc">An event planner whose budget engine works in integer paise, so every allocation adds up exactly. An LLM suggests; a schema gate decides.<span class="more__stack">Vanilla JS · LLM · Tests</span></p>
+            <a class="more__link" href="https://github.com/MdIbuA/Celebrai">Source<span class="vh">: CelebrAI</span></a>
+          </li>
+          <li>
+            <p class="more__name">Tiny Tale Toy</p>
+            <p class="more__desc">A choose-your-own-adventure where every branch is <a class="claim" data-claim="tinytale" href="https://github.com/MdIbuA/tiny-tale-toy/blob/bf82c2ddfba3ead7817d731883d68585ca042d74/backend/lambda_function.py#L79-L122">generated live</a> by a model on Bedrock, behind API Gateway and Lambda.<span class="more__stack">API Gateway · Lambda · Bedrock · Amplify</span></p>
+            <a class="more__link" href="https://github.com/MdIbuA/tiny-tale-toy">Source<span class="vh">: Tiny Tale Toy</span></a>
+          </li>
+          <li>
+            <p class="more__name">EcoTrack AI</p>
+            <p class="more__desc">A carbon-footprint tracker with a multi-step calculator and Gemini coaching.<span class="more__stack">React · Express on Cloud Run · Firebase · Gemini</span></p>
+            <a class="more__link" href="https://github.com/MdIbuA/Ecotrack-AI">Source<span class="vh">: EcoTrack AI</span></a>
+          </li>
+          <li>
+            <p class="more__name">UniLeave &amp; GrievanceHub</p>
+            <p class="more__desc">Two campus workflow apps for leave approvals and grievance tracking, with role-based modules and dashboards.<span class="more__stack">Oracle APEX · Oracle Database · PL/SQL</span></p>
+            <a class="more__link" href="https://github.com/MdIbuA/unileave-student-leave-management">Source<span class="vh">: UniLeave</span></a>
+          </li>
+          <li>
+            <p class="more__name">Crisis Response Coordinator</p>
+            <p class="more__desc">A RAG prototype that retrieves the relevant safety protocol before it drafts guidance, for a human responder to act on. Code not public.<span class="more__stack">Python · LangChain · FastAPI · Docker</span></p>
+            <a class="more__link" href="https://youtu.be/Vp-1W_Ry3mM">Demo video<span class="vh">: Crisis Response Coordinator</span></a>
+          </li>
+          <li>
+            <p class="more__name">Bone density classification</p>
+            <p class="more__desc">Knee X-rays sorted into normal, osteopenia and osteoporosis with fine-tuned Xception and MobileNet, plus Grad-CAM to check what the network looked at. No accuracy quoted until the evaluation is public.<span class="more__stack">CNNs · Transfer learning · Grad-CAM</span></p>
+            <span class="more__link more__link--none">Code not public</span>
+          </li>
+          <li>
+            <p class="more__name">Voice screening UI</p>
+            <p class="more__desc">A multilingual interface for an Alzheimer's voice-analysis workflow. The analysis layer is still simulated; no model has been trained yet.<span class="more__stack">React · TypeScript · i18n</span></p>
+            <a class="more__link" href="https://github.com/MdIbuA/Alzheimer-s-analysis">Source<span class="vh">: Voice screening UI</span></a>
+          </li>
+        </ul>
+
+        <h3 class="sub-head sub-head--gap">Achievements</h3>
+        <ul class="ledger">
+          <li>
+            <p class="ledger__k">Challenge entries</p>
+            <p>Three AWS Builder Center challenges: the Weekend Showcase (DocuMind AI, Aug 2026), “Set Your Creative App Free” (The Git Bard) and “Give your Agent a Tool” (Ghost Probe, Oct 2026). Plus <a class="claim" data-claim="hackerrank" href="https://github.com/MdIbuA/s3-ghost-probe/blob/2a18b3f4496d4223a087e33471144375d15a07e0/README.md?plain=1#L54-L60">HackerRank Orchestrate</a> rounds, Aug–Oct 2026.</p>
+          </li>
+          <li>
+            <p class="ledger__k">Experience</p>
+            <p><a class="claim" data-claim="internships" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/README.md?plain=1#L54-L56">Three internships</a>: AI Intern at Infosys Springboard (Batch 5), Backend AI Engineer Intern at FlyRank AI, and MERN Stack Developer Intern in the AICTE program.</p>
+          </li>
+          <li>
+            <p class="ledger__k">Community</p>
+            <p><a class="claim" data-claim="roles" href="https://builder.aws.com/community/@abufawaz">AWS Student Builder Campus Leader</a> and Microsoft Learn Student Ambassador (Associate). I write on AWS Builder Center.</p>
+          </li>
+          <li>
+            <p class="ledger__k">Education</p>
+            <p>B.Tech, Information Technology, Coimbatore. Graduating June 2027.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="section__num">04</p>
+          <h2 id="contact-title">Contact</h2>
+          <p class="section__intro">Hiring for software or AI engineering, or have a hard problem worth prototyping? Email is fastest.</p>
+        </header>
+        <p><a class="contact__email" href="mailto:ibrahimanees.work@gmail.com">ibrahimanees.work@gmail.com</a></p>
+        <ul class="links">
+          <li><a href="https://github.com/MdIbuA" rel="me">GitHub</a></li>
+          <li><a href="https://www.linkedin.com/in/mohamedibrahimbinabdullah" rel="me">LinkedIn</a></li>
+          <li><a href="https://builder.aws.com/community/@abufawaz" rel="me">AWS Builder Center</a></li>
+          <li><a href="https://www.youtube.com/@MohamedIbrahimAbdullahIn" rel="me">YouTube</a></li>
+        </ul>
+        <p class="repo-line"><span class="label">This site's source</span> <a href="https://github.com/MdIbuA/ibu-receipts">github.com/MdIbuA/ibu-receipts</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot__inner">
+      <p>© 2026 Mohamed Ibrahim A. Hand-built with HTML, CSS and a little JavaScript, <a class="claim" data-claim="site" href="https://github.com/MdIbuA/ibu-receipts/blob/main/amplify.yml">deployed on AWS Amplify</a>. No trackers.</p>
+      <p><a href="#main">Back to top <span aria-hidden="true">↑</span></a></p>
+    </div>
+  </footer>
+</body>
+</html>
