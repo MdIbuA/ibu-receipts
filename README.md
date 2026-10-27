@@ -2,7 +2,7 @@
 
 The portfolio of **Mohamed Ibrahim A. ("Ibu")**, a final-year IT student who builds AI agents and serverless apps on AWS.
 
-**Live site:** `<LIVE_URL>` (AWS Amplify Hosting)
+**Live site:** https://main.d1nj3qfdmf673t.amplifyapp.com (AWS Amplify Hosting)
 **Built for:** AWS Student Builder Challenge, “Build Your Tech Superpower”
 
 ![The hero, with the “How to read this page” hint and the receipt stub](docs/screenshots/08-live-desktop-hero.png)

@@ -1,6 +1,33 @@
 # Rubric audit
 
-Self-scored on Oct 28, 2026, **before deploying**. Scores are 1–5 per criterion. Each criterion is worth `weight × score / 5` points out of 100.
+Scores are 1–5 per criterion. Each criterion is worth `weight × score / 5` points out of 100.
+
+## Re-scored Oct 28, after deploying
+
+| Criterion | Weight | Before deploy | Now (live) | Once AWS shots #1–7 are in |
+|---|---|---|---|---|
+| Creativity & memorability | 30% | 4 → 24 | 4.5 → 27 | 4.5 → 27 |
+| Working AWS implementation | 25% | 2 → 10 | 4.5 → 22.5 | 5 → 25 |
+| Communication quality | 25% | 3 → 15 | 4 → 20 | 5 → 25 |
+| Portfolio completeness & usability | 20% | 4 → 16 | 4.5 → 18 | 4.5 → 18 |
+| **Total** | | **65** | **87.5** | **95** |
+
+**What moved the scores**
+- The site is live on Amplify Hosting.
+- Every link resolves except LinkedIn, which blocks automated checks.
+- The site's own receipt is stamped by the real build, and that receipt caught a real bug (the commit printed as `HEAD`), now fixed.
+- The hero stub prints on first view, and shared links show a preview card.
+- Website screenshots #8–14 are in the repo.
+
+**What's left (yours)**
+- AWS console screenshots #1–7.
+- Confirm the budget alarm exists.
+- Click through every receipt.
+- One read-through of the write-up in your own voice.
+
+The detailed analysis below is the pre-deploy baseline.
+
+## Baseline (before deploying)
 
 | Criterion | Weight | Score now | Points now | After top 3 fixes |
 |---|---|---|---|---|
@@ -80,8 +107,8 @@ Also worth doing, below the top three:
 | Date | Fix | What changed |
 |---|---|---|
 | Oct 28 | **2: first-impression polish** (done) | The hero stub hangs from a printer slot and prints itself the first time it scrolls into view: once per visitor, skipped with reduced motion, with an 8-second safety net. It's stamped "Printed for you at <local time>". The hint names the claim count. New 1200×630 link-preview image (`og.png`, rendered from `scripts/og/og.html`) with Open Graph and Twitter tags; the Amplify build writes their absolute URLs, and the site's own receipt gains a Domain line. |
-| | **1: deploy** | Next: move to a permanent folder → commit → push → Amplify |
-| | **3: screenshots and voice** | After deploy |
+| Oct 28 | **1: deploy** (done) | Created the public repo `MdIbuA/ibu-receipts` with the GitHub CLI and connected Amplify Hosting. Build #1 went live at https://main.d1nj3qfdmf673t.amplifyapp.com. Preview tags, domain, build number and size were all stamped correctly, but the commit printed as `HEAD`. The stamp script now resolves the real hash from the build's clone, and build #2 deploys that fix. |
+| Oct 28 | **3: screenshots and voice** (in progress) | Website shots #8–14 captured from the live site with headless Chrome. The write-up now has the live URL, the real build story and GitHub-hosted images. Left for you: AWS shots #1–7, the budget check, clicking through every receipt, and a pass in your own voice. |
 
 ## Risks to watch through judging (until the week of Nov 23)
 

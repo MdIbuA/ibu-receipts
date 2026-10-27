@@ -14,6 +14,11 @@ app="$(clean "${AWS_APP_ID:-}")"
 branch="$(clean "${AWS_BRANCH:-}")"
 job="$(clean "${AWS_JOB_ID:-}")"
 commit="$(clean "${AWS_COMMIT_ID:-}")"
+# Amplify's first build (started from the console) reported AWS_COMMIT_ID=HEAD.
+# Resolve anything that isn't a full hash from the build's own clone.
+if ! printf '%s' "$commit" | grep -Eq '^[0-9a-f]{40}$'; then
+  commit="$(git rev-parse HEAD 2>/dev/null | tr -cd '0-9a-f' || true)"
+fi
 region="$(clean "${AWS_REGION:-${AWS_DEFAULT_REGION:-}}")"
 built_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
