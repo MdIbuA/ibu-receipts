@@ -4,6 +4,14 @@ Save each one as a PNG in `docs/screenshots/` with exactly this filename. README
 
 **Status (Oct 28):** website shots **#8–14 are captured** from the live site (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). **AWS shots #1–7 are still to do**, because only you can sign in to the console.
 
+**Keep the build numbers consistent.** Screenshot-only pushes don't change the site, so end their commit message with `[skip-cd]`. Amplify then skips the build, and the live receipt keeps showing the same build as your console screenshots:
+
+```bash
+git add docs/screenshots
+git commit -m "Add AWS setup screenshots [skip-cd]"
+git push
+```
+
 **How to capture**
 - Windows: **Win + Shift + S** → rectangle, then paste into Paint and save as PNG. For a whole page in Chrome: DevTools (**F12**) → **Ctrl + Shift + P** → type `screenshot` → **Capture full size screenshot**.
 - Phone sizes: Chrome DevTools → **Toggle device toolbar** (**Ctrl + Shift + M**) → width **360** or **390**.
@@ -20,7 +28,7 @@ Save each one as a PNG in `docs/screenshots/` with exactly this filename. README
 | 4 | `04-amplify-build-settings.png` | Amplify → Hosting → **Build settings** | The `amplify.yml` content: `bash scripts/stamp-build.sh`, `baseDirectory: site` |
 | 5 | `05-amplify-domain.png` | Amplify → Hosting → **Custom domains** (or Domain management) | The default `main.<id>.amplifyapp.com` domain with HTTPS / *Available* status |
 | 6 | `06-budget.png` | Billing and Cost Management → **Budgets** | `ibu-receipts-guard`, $5 budget, actual spend near $0 |
-| 7 | `07-site-receipt-vs-console.png` | Two windows side by side: the live site with the footer receipt open (`https://main.d1nj3qfdmf673t.amplifyapp.com/#r-site`), and the page for the **latest** build in Amplify | The **same build number and commit** in both. This is the strongest single image in the submission. Take it last, after your final push has deployed. |
+| 7 | `07-site-receipt-vs-console.png` | Two windows side by side: the live site with the footer receipt open (`https://main.d1nj3qfdmf673t.amplifyapp.com/#r-site`), and the page for the **latest** build in Amplify | The **same build number and commit** in both. This is the strongest single image in the submission. |
 
 ## The live portfolio (proves completeness and usability)
 
