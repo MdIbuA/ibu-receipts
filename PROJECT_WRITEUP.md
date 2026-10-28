@@ -27,13 +27,13 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 
 - **Every claim is a button.** Click `30 typed tools` and a receipt feeds out of a small printer docked bottom-right. It lists line items (`Tools in ALL_TOOLS ..... 30`), the evidence links (the exact file and line on GitHub), how it was measured, the catch, and a stamp: **Verified**, **Partial** or **Self-reported**.
 - **Corrections are printed, not hidden.** My README said the agent has 32 tools; the registry has 30. An old write-up said CryptoPulse used an 80/20 split; the notebook's LSTM cell splits 70/30. Tiny Tale Toy's README names a different model from the code. Those receipts carry a red **Corrected** box.
-- **Coin vs. model.** The CryptoPulse receipt has a button that flips a coin 100 times and races it against my model's 47.93%. The coin often wins, and the receipt says so.
+- **Coin vs. model.** The first screen has a **Flip a coin against my model** button. It prints the CryptoPulse receipt and races a coin, flipped 100 times, against my model's 47.93%. The coin often wins, and the receipt says so.
 - **The itemized bill.** The printer tab opens a summary: 14 claims, how many are backed by public proof, partial or self-reported, write-ups the code corrected, invented facts (0), and how many receipts *you* have audited.
-- **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #3 · commit …"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
+- **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #4 · commit 1d61ba0"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
 
 ![The page's own receipt next to the matching build in the Amplify console](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
 
-**How you find it in ten seconds.** The first screen has a dashed **"How to read this page"** box that names the first claim to try (`R² 0.94`, which pulses a few times to catch your eye), a receipt-shaped **stub** that prints itself out of a little printer slot the first time you see it ("Printed for you at 10:42"), stamped with the live Amplify build, and a printer **tab** in the corner reading `0/14`. A **Highlight all 14 claims** button marks every claim on the page.
+**How you find it in ten seconds.** The first screen has a dashed **"How to read this page"** box that names the first claim to try (`R² 0.94`, which pulses a few times to catch your eye), a receipt-shaped **stub** that prints itself out of a little printer slot the first time you see it ("Printed for you at 10:42"), stamped with the live Amplify build, and a printer **tab** in the corner reading `0/14`. Two buttons sit in the hint: **Flip a coin against my model** and **Highlight all 14 claims**.
 
 ![Highlight mode: every claim in the Tech superpowers section marked like a highlighter pen](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/13-feature-highlight.png)
 
@@ -87,6 +87,8 @@ There's no Lambda, API Gateway or database, on purpose. Everything the feature n
 | A section highlight in the nav stuck after scrolling back to the top | Clear the current section when it leaves the viewport band, not only when another enters |
 | The print animation is fun once and annoying for some people | `prefers-reduced-motion` disables printing, stamping and pulsing in both CSS and JS |
 | Amplify's first build reported its commit as `HEAD`, so the site's receipt printed "HEAD" instead of a hash | The stamp script now resolves anything that isn't a full hash with `git rev-parse HEAD` in the build's clone |
+| On a 360px phone, the floating receipts tab sat on top of the hint's buttons on the first screen | The tab tucks away while the hint is on screen and comes back once you scroll past it |
+| An accessibility scan (axe) flagged the hero receipt as an `<aside>` nested inside another landmark | Made it a labelled group; axe now reports zero issues at phone and desktop sizes |
 | Windows line endings would break the bash stamp script on Amplify's Linux builder | `.gitattributes` forces LF for `*.sh` and `amplify.yml` |
 | A `display: grid` rule once beat the `hidden` attribute in an earlier project of mine and covered the whole app | `[hidden] { display: none !important; }` from the first line |
 
