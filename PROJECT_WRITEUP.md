@@ -29,11 +29,11 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 - **Corrections are printed, not hidden.** My README said the agent has 32 tools; the registry has 30. An old write-up said CryptoPulse used an 80/20 split; the notebook's LSTM cell splits 70/30. Tiny Tale Toy's README names a different model from the code. Those receipts carry a red **Corrected** box.
 - **Coin vs. model.** The CryptoPulse receipt has a button that flips a coin 100 times and races it against my model's 47.93%. The coin often wins, and the receipt says so.
 - **The itemized bill.** The printer tab opens a summary: 14 claims, how many are backed by public proof, partial or self-reported, write-ups the code corrected, invented facts (0), and how many receipts *you* have audited.
-- **The page's own receipt.** The footer says "deployed on AWS Amplify". Its receipt shows the Amplify build number, branch and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
+- **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #3 · commit …"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
 
 ![The page's own receipt next to the matching build in the Amplify console](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
 
-**How you find it in ten seconds.** The first screen has a dashed **"How to read this page"** box that names the first claim to try (`R² 0.94`, which pulses a few times to catch your eye), a receipt-shaped **stub** that prints itself out of a little printer slot the first time you see it ("Printed for you at 10:42"), and a printer **tab** in the corner reading `0/14`. A **Highlight all 14 claims** button marks every claim on the page.
+**How you find it in ten seconds.** The first screen has a dashed **"How to read this page"** box that names the first claim to try (`R² 0.94`, which pulses a few times to catch your eye), a receipt-shaped **stub** that prints itself out of a little printer slot the first time you see it ("Printed for you at 10:42"), stamped with the live Amplify build, and a printer **tab** in the corner reading `0/14`. A **Highlight all 14 claims** button marks every claim on the page.
 
 ![Highlight mode: every claim in the Tech superpowers section marked like a highlighter pen](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/13-feature-highlight.png)
 

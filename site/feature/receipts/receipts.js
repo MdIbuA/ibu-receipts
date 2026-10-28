@@ -459,7 +459,7 @@
     if (claimBtn) return openReceipt(claimBtn.dataset.claim, claimBtn);
 
     const item = target.closest("[data-rc-open]");
-    if (item) return openReceipt(item.dataset.rcOpen, tab);
+    if (item) return openReceipt(item.dataset.rcOpen, panel.contains(item) ? tab : item);
 
     if (target.closest("[data-rc-bill]")) {
       const fromPanel = panel.contains(target);
@@ -497,6 +497,23 @@
       close();
     }
   });
+
+  // ---------- the hero stub's deploy stamp ----------
+
+  const deploySlot = document.querySelector("[data-rc-deploy]");
+  if (deploySlot) {
+    const job = parseInt(build.job, 10);
+    const facts = [job ? `build #${job}` : "", build.commit ? `commit ${String(build.commit).slice(0, 7)}` : ""]
+      .filter(Boolean).join(" · ");
+    deploySlot.replaceChildren(build.deployed
+      ? el("button", { type: "button", class: "stub__deploy", "data-rc-open": "site" },
+          el("span", { class: "stub__deploy-head", text: "Live on AWS Amplify" }),
+          el("span", { class: "stub__deploy-sub", text: facts }),
+          el("span", { class: "vh", text: ", show the receipt AWS wrote for this deploy" }))
+      : el("p", { class: "stub__deploy stub__deploy--local" },
+          el("span", { class: "stub__deploy-head", text: "Local copy" }),
+          el("span", { class: "stub__deploy-sub", text: "not deployed yet" })));
+  }
 
   // ---------- first view: the hero stub prints itself, once ----------
 

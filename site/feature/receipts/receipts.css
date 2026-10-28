@@ -129,6 +129,42 @@
   text-align: center;
 }
 
+/* The deploy stamp: which Amplify build and commit the visitor is looking at. */
+.stub__deploy-line { margin: -.35rem 0 .95rem; }
+.stub__deploy {
+  display: grid;
+  width: 100%;
+  gap: .1rem;
+  padding: .45rem .5rem;
+  border: 1.5px dashed var(--rc-verified);
+  border-radius: 6px;
+  background: #eef7f1;
+  color: var(--rc-verified);
+  font: 700 .74rem/1.3 var(--rc-mono);
+  text-align: center;
+  cursor: pointer;
+}
+button.stub__deploy:hover { background: #dff0e6; }
+.stub__deploy-head {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.stub__deploy-head::before {
+  content: "";
+  width: .85em;
+  height: .85em;
+  background: currentColor;
+  -webkit-mask: var(--rc-icon-check) center / contain no-repeat;
+  mask: var(--rc-icon-check) center / contain no-repeat;
+}
+.stub__deploy-sub { font-weight: 500; color: var(--rc-ink); }
+.stub__deploy--local { border-color: var(--rc-local); background: transparent; color: var(--rc-local); cursor: default; }
+.stub__deploy--local .stub__deploy-head::before { display: none; }
+
 /* First view: the stub feeds out of the slot once, in printer-like steps. */
 @media screen and (prefers-reduced-motion: no-preference) {
   .stub.is-waiting .stub__paper { clip-path: inset(0 0 100% 0); }

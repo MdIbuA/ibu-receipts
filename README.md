@@ -3,7 +3,9 @@
 The portfolio of **Mohamed Ibrahim A. ("Ibu")**, a final-year IT student who builds AI agents and serverless apps on AWS.
 
 **Live site:** https://main.d1nj3qfdmf673t.amplifyapp.com (AWS Amplify Hosting)
-**Built for:** AWS Student Builder Challenge, “Build Your Tech Superpower”
+**Built for:** AWS Student Builder Challenge, “Build Your Tech Superpower” (individual entry)
+
+*One person, two GitHub accounts: this repo lives on my main account, **MdIbuA**, but the commits show as **Ibrahimalabdullah-dev**, my second account, because that's the email my laptop's git uses. Claude Code, my coding agent, is credited as co-author on the commits it helped write.*
 
 ![The hero, with the “How to read this page” hint and the receipt stub](docs/screenshots/08-live-desktop-hero.png)
 
@@ -25,7 +27,7 @@ Three extras:
 
 - **Coin vs. model.** The CryptoPulse receipt lets you flip a coin 100 times against my LSTM's 47.93% direction accuracy. The coin often wins, and the receipt says so.
 - **The itemized bill.** A summary receipt with claims verified, partial and self-reported, write-ups corrected, invented facts (0), and how many receipts *you* have audited.
-- **The page's own receipt.** The footer claim "deployed on AWS Amplify" prints a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
+- **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #3 · commit 1a2b3c4"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
 
 ### Why this is me
 
@@ -71,8 +73,7 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 ├── DEPLOY.md                     exact console clicks for Amplify Hosting
 ├── AWS.md                        AWS services used and what to look for in the console
 ├── PROJECT_WRITEUP.md            the submission write-up
-├── SCREENSHOTS.md                the screenshot checklist
-└── RUBRIC_AUDIT.md               self-scored against the judging rubric
+└── SCREENSHOTS.md                the screenshot checklist
 ```
 
 No framework, no build step, no dependencies, no trackers. Everything the site ships totals about 300 KB, mostly images (my portrait and the link-preview card). A visitor's first load is about 42 KB over the wire.
