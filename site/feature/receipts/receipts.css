@@ -249,6 +249,16 @@ button.stub__deploy:hover { background: #dff0e6; }
   font: 700 .86rem/1 var(--rc-mono);
   box-shadow: 0 8px 22px rgb(0 0 0 / .28);
   cursor: pointer;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+/* Tucked away on phones while the hero hint is on screen, so they never overlap. */
+.rc-dock.is-tucked .rc-tab {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rc-tab { transition: none; }
 }
 /* the paper slot */
 .rc-tab::before {

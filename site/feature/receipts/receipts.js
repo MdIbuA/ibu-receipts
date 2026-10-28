@@ -154,6 +154,24 @@
   let current = null;      // id of the receipt on screen, "bill", or null
   let returnFocus = null;  // where focus goes when the panel closes
 
+  // On phones the hero hint and the floating tab would fight for the same pixels,
+  // so the tab tucks away while the hint is on screen and nothing is open.
+  const hint = document.querySelector(".hint");
+  let hintOnScreen = false;
+  function syncTuck() {
+    dock.classList.toggle("is-tucked", hintOnScreen && narrow.matches && panel.hidden);
+  }
+  if (hint && "IntersectionObserver" in window) {
+    const box = hint.getBoundingClientRect(); // start tucked, so the tab never flashes on load
+    hintOnScreen = box.top < window.innerHeight && box.bottom > 0;
+    syncTuck();
+    new IntersectionObserver((entries) => {
+      hintOnScreen = entries.some((entry) => entry.isIntersecting);
+      syncTuck();
+    }).observe(hint);
+    narrow.addEventListener("change", syncTuck);
+  }
+
   function show(paper, trigger, moveFocus) {
     slot.replaceChildren(paper);
     slot.scrollTop = 0;
@@ -169,6 +187,7 @@
 
     if (trigger) returnFocus = trigger;
     if (moveFocus) paper.querySelector("#rc-title").focus({ preventScroll: true });
+    syncTuck();
   }
 
   function close(restoreFocus = true) {
@@ -178,6 +197,7 @@
     tab.setAttribute("aria-expanded", "false");
     current = null;
     syncExpanded();
+    syncTuck();
     const target = returnFocus && returnFocus.isConnected ? returnFocus : tab;
     returnFocus = null;
     if (restoreFocus) target.focus();
@@ -194,6 +214,19 @@
     }
     syncExpanded();
     syncCounts();
+  }
+
+  // The first-screen shortcut: print the CryptoPulse receipt and race a coin against the model.
+  function betAgainstModel(trigger) {
+    openReceipt("cryptopulse", trigger);
+    const race = slot.querySelector(".rc-coin");
+    if (!race) return;
+    const start = () => {
+      slot.scrollTop += race.getBoundingClientRect().top - slot.getBoundingClientRect().top - 12;
+      race.querySelector(".rc-btn").click();
+    };
+    if (reduceMotion.matches) start();
+    else setTimeout(start, 1000); // let the paper finish feeding out first
   }
 
   function openBill(trigger, moveFocus = true) {
@@ -465,6 +498,9 @@
       const fromPanel = panel.contains(target);
       return openBill(fromPanel ? tab : target.closest("[data-rc-bill]"));
     }
+
+    const bet = target.closest("[data-rc-bet]");
+    if (bet) return betAgainstModel(bet);
 
     const hl = target.closest("[data-rc-highlight]");
     if (hl) return setHighlight(hl.getAttribute("aria-pressed") !== "true");

@@ -60,7 +60,10 @@
           <div class="hint" id="how-to-read">
             <p class="hint__label">How to read this page</p>
             <p class="hint__body">Each of the <span data-rc-total>14</span> <span class="hint__sample">underlined claims</span> on this page prints a receipt: the evidence, how it was measured, and the catch. Start with my best-looking number, <a class="claim claim--nudge" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a>.</p>
-            <button type="button" class="btn btn--small js-only" data-rc-highlight aria-pressed="false">Highlight all <span data-rc-total>14</span> claims</button>
+            <p class="hint__actions js-only">
+              <button type="button" class="btn btn--small btn--accent" data-rc-bet>Flip a coin against my model</button>
+              <button type="button" class="btn btn--small" data-rc-highlight aria-pressed="false">Highlight all <span data-rc-total>14</span> claims</button>
+            </p>
           </div>
 
           <p class="hero__actions">
@@ -70,7 +73,7 @@
           </p>
         </div>
 
-        <aside class="stub" aria-labelledby="stub-title">
+        <div class="stub" role="group" aria-labelledby="stub-title">
           <div class="stub__slot" aria-hidden="true"></div>
           <div class="stub__paper">
             <p class="stub__head" id="stub-title">Ibu's receipts</p>
@@ -86,7 +89,7 @@
             <p class="stub__audit js-only">Audited by you: <span data-rc-checked>0</span> of <span data-rc-total>14</span></p>
             <button type="button" class="stub__btn js-only" data-rc-bill>Print the full bill</button>
           </div>
-        </aside>
+        </div>
       </div>
     </section>
 
