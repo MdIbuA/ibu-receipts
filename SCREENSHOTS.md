@@ -2,7 +2,7 @@
 
 Save each one as a PNG in `docs/screenshots/` with exactly this filename. README.md and PROJECT_WRITEUP.md already point at these names.
 
-**Status (Oct 28):** website shots **#8–14 are captured** from the live site (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). **AWS shots #1–7 are still to do**, because only you can sign in to the console.
+**Status (Oct 28):** website shots **#8–15 are captured** from the live site (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). **AWS shots #1–7 are still to do**, because only you can sign in to the console.
 
 **Keep the build numbers consistent.** Screenshot-only pushes don't change the site, so end their commit message with `[skip-cd]`. Amplify then skips the build, and the live receipt keeps showing the same build as your console screenshots:
 
@@ -41,6 +41,7 @@ git push
 | 12 | `12-feature-bill.png` | `https://main.d1nj3qfdmf673t.amplifyapp.com/#receipts`, after opening 3–4 receipts | The itemized bill: totals, "Audited by you: N of 14" progress bar, ticked items |
 | 13 | `13-feature-highlight.png` | Hero → click **Highlight all 14 claims** → scroll to Tech superpowers | Claims highlighted like a marker pen across the section |
 | 14 | `14-github-repo.png` | `https://github.com/MdIbuA/ibu-receipts` | Repo root: `amplify.yml`, `site/`, `scripts/`, the README rendering |
+| 15 | `15-live-site-receipt.png` | `https://main.d1nj3qfdmf673t.amplifyapp.com/#r-site` | The page's own receipt: Amplify build number, commit, domain and region. It's the website half of #7; the README uses it until #7 exists. |
 
 ## Optional: makes the write-up much stronger
 

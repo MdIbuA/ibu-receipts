@@ -121,8 +121,8 @@ Link evidence with **commit permalinks** (on GitHub, open the file and press `y`
 | | |
 |---|---|
 | ![Desktop: a printed receipt](docs/screenshots/10-feature-receipt-desktop.png) | ![Mobile: the receipt as a bottom sheet](docs/screenshots/11-feature-receipt-mobile.png) |
-| ![The itemized bill](docs/screenshots/12-feature-bill.png) | ![The site's own receipt beside the Amplify build](docs/screenshots/07-site-receipt-vs-console.png) |
+| ![The itemized bill](docs/screenshots/12-feature-bill.png) | ![The page's own receipt, written by the Amplify build: build #3, commit 8b432ac](docs/screenshots/15-live-site-receipt.png) |
 
 ## Credits
 
-All code, copy and art are original: the receipt paper, stamps, barcodes and icons are CSS and inline SVG, and the fonts are system fonts. The portrait is my own photo.
+Built with Claude Code as my coding agent (see the note at the top). Nothing here comes from a template or a third-party asset: the receipt paper, stamps, barcodes and icons are CSS and inline SVG, and the fonts are system fonts. The facts come from my own repos, each linked from its receipt. The portrait is my own photo.
