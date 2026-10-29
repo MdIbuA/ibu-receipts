@@ -2,7 +2,7 @@
 
 Save each one as a PNG in `docs/screenshots/` with exactly this filename. README.md and PROJECT_WRITEUP.md already point at these names.
 
-**Status (Oct 28):** website shots **#8–15 are captured** from the live site (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). **AWS shots #1–7 are still to do**, because only you can sign in to the console.
+**Status (Oct 29):** website shots **#8–15, #20 and #21 are captured** from the live site (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). **AWS shots #1–7 are still to do**, because only you can sign in to the console.
 
 **Keep the build numbers consistent.** Screenshot-only pushes don't change the site, so end their commit message with `[skip-cd]`. Amplify then skips the build, and the live receipt keeps showing the same build as your console screenshots:
 
@@ -38,7 +38,8 @@ git push
 | 17 | `17-api-throttling.png` | API Gateway → the `ibu-receipts-recheck` HTTP API → **Throttling** | Default route: rate 5, burst 10 |
 | 18 | `18-cloudwatch-logs.png` | CloudWatch → Log groups → `/aws/lambda/ibu-receipts-recheck` | A few lines like `{"claim": "supermarket", "ok": true, "ms": 812}`, retention 1 month. Click a few re-check buttons first. |
 | 19 | `19-amplify-env-var.png` | Amplify → Hosting → **Environment variables** | `VERIFY_URL` = the `…execute-api.us-east-1.amazonaws.com/recheck` URL |
-| 20 | `20-recheck-in-action.png` | Live site → `#r-supermarket` → **Re-check with AWS Lambda** | "✓ All 4 checks passed · checked just now by AWS Lambda". Claude can capture this one from the live site once `VERIFY_URL` is set. |
+| 20 | `20-recheck-in-action.png` | Live site → `#r-supermarket` → **Re-check with AWS Lambda** | "✓ All 4 checks passed · checked … by AWS Lambda". **Captured.** |
+| 21 | `21-site-recheck-aws.png` | Live site → `#r-site` → **Re-check with AWS Lambda** | The AWS Amplify API's latest build and commit, then "This page was built by that exact build." **Captured.** |
 
 ## The live portfolio (proves completeness and usability)
 
