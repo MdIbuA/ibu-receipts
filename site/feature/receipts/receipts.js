@@ -385,7 +385,9 @@
         el("span", { class: "rc-recheck__mark", "aria-hidden": "true", text: same ? "✓" : "!" }),
         el("span", null, same
           ? "This page was built by that exact build."
-          : `This page shows build #${parseInt(build.job, 10) || "?"}; a newer deploy may still be rolling out.`)));
+          : Number(build.job) < result.live.job
+            ? `AWS has a newer build (#${result.live.job}) than this page (#${parseInt(build.job, 10)}). Reload to get it.`
+            : `This page is build #${parseInt(build.job, 10)}; AWS hasn't reported it as finished yet.`)));
     }
 
     return [

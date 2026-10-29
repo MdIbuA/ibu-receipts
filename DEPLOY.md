@@ -123,6 +123,17 @@ The last command prints the **RecheckUrl**. Don't commit `packaged.yaml`.
 
 📸 SCREENSHOTS.md #16–20.
 
+**Deployed on Oct 29, 2026:** stack `ibu-receipts-recheck` in us-east-1. The API is `https://gfulhw10hd.execute-api.us-east-1.amazonaws.com/recheck`, and the code was uploaded to the private bucket `ibu-receipts-recheck-artifacts-1374-e11d`.
+
+**After judging (December or later), to remove it:**
+
+```bash
+aws cloudformation delete-stack --stack-name ibu-receipts-recheck --region us-east-1
+aws s3 rb s3://ibu-receipts-recheck-artifacts-1374-e11d --force
+```
+
+Then delete `VERIFY_URL` in Amplify and redeploy. The receipts lose their Re-check button and keep everything else.
+
 ## 9. Security headers (nothing to do)
 
 `customHttp.yml` sets HSTS, nosniff, a frame ban, a referrer policy, a permissions policy and a strict content security policy on every file. Amplify applies it on the next build. Check it:

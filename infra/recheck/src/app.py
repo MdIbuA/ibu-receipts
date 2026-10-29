@@ -213,7 +213,9 @@ def handler(event, context):
     if claim not in CHECKS:
         return respond(404, {"error": "unknown claim", "known": sorted(CHECKS)})
 
-    hit = _cache.get(claim)
+    # Evidence at a pinned commit can't change, so it's cached. "What's live" can, so it never is.
+    live_check = CHECKS[claim] == "amplify"
+    hit = None if live_check else _cache.get(claim)
     if hit and time.time() - hit[0] < CACHE_SECONDS:
         return respond(200, {**hit[1], "cached": True})
 
@@ -226,6 +228,7 @@ def handler(event, context):
         "cached": False,
         **result,
     }
-    _cache[claim] = (time.time(), payload)
+    if not live_check:
+        _cache[claim] = (time.time(), payload)
     print(json.dumps({"claim": claim, "ok": payload["ok"], "ms": payload["ms"]}))
     return respond(200, payload)
