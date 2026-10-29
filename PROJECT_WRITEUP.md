@@ -1,7 +1,7 @@
 # I keep receipts: a portfolio where every claim proves itself
 
 > **Before you submit (delete this block):**
-> 1. Deploy the re-check stack and set `VERIFY_URL` (DEPLOY.md step 8). Then capture AWS screenshots #1–7 and #16–20 from SCREENSHOTS.md into `docs/screenshots/` and push with `[skip-cd]`. The website shots are already there.
+> 1. Capture AWS screenshots #1–7 and #16–19 from SCREENSHOTS.md into `docs/screenshots/` and push with `[skip-cd]`. The website shots, including #20, are already there. The re-check stack is deployed and `VERIFY_URL` is set.
 > 2. Make sure the $5 budget alarm from DEPLOY.md step 1 exists. "How I built it" says you set it up first.
 > 3. Open every receipt and click its evidence links yourself. "How I built it" says you reviewed them, so make that true.
 > 4. Read the whole post aloud once and change anything that doesn't sound like you.

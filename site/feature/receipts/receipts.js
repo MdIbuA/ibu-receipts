@@ -379,7 +379,8 @@
 
     // The page's own receipt: compare what AWS says is live with what this page was built from.
     if (c.build && result.live) {
-      const same = Number(build.job) === result.live.job && String(build.commit || "").startsWith(String(result.live.commit).slice(0, 7));
+      const liveCommit = String(result.live.commit || "");
+      const same = Number(build.job) === result.live.job && (!liveCommit || String(build.commit || "").startsWith(liveCommit.slice(0, 7)));
       rows.push(el("li", { "data-ok": String(same) },
         el("span", { class: "rc-recheck__mark", "aria-hidden": "true", text: same ? "✓" : "!" }),
         el("span", null, same

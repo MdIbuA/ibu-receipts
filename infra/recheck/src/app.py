@@ -186,12 +186,15 @@ def check_site():
         if not done:
             return {"ok": False, "checks": [{"label": label, "ok": False, "detail": "no successful build found", "url": None}]}
         latest = done[0]
+        commit = latest.get("commitId") or ""
+        # Builds started from the console can record "HEAD" instead of a hash.
+        is_hash = bool(re.fullmatch(r"[0-9a-f]{7,40}", commit))
         live = {
             "job": int(latest["jobId"]),
-            "commit": latest.get("commitId", ""),
+            "commit": commit if is_hash else "",
             "endedAt": latest["endTime"].isoformat() if latest.get("endTime") else None,
         }
-        detail = f"build #{live['job']} · commit {live['commit'][:7]}"
+        detail = f"build #{live['job']} · " + (f"commit {commit[:7]}" if is_hash else "commit not recorded by Amplify")
         return {"ok": True, "live": live, "checks": [{"label": label, "ok": True, "detail": detail, "url": None}]}
     except Exception as exc:
         return {"ok": None, "checks": [{"label": label, "ok": None, "detail": f"couldn't ask Amplify ({type(exc).__name__})", "url": None}]}
