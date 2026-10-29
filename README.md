@@ -106,7 +106,7 @@ AWS Amplify Hosting is connected to this repo's `main` branch. Every push trigge
 1. runs `scripts/stamp-build.sh`, which writes the deploy's `AWS_APP_ID`, `AWS_BRANCH`, `AWS_JOB_ID` and `AWS_COMMIT_ID` into `site/feature/receipts/build-info.js`, and fills the page's link-preview tags with the app's `amplifyapp.com` domain
 2. publishes the `site/` folder to Amplify's CDN over HTTPS, with the headers from `customHttp.yml`
 
-The re-check API is a separate SAM stack in `infra/recheck/`: an API Gateway HTTP API, one Lambda, a one-permission IAM role and a CloudWatch log group. Its URL reaches the site through the Amplify environment variable `VERIFY_URL`. The site never depends on it: without it, receipts just have no re-check button.
+The re-check API is a separate SAM stack in `infra/recheck/`: an API Gateway HTTP API, one Lambda, an IAM role with one permission beyond writing its own logs, and a CloudWatch log group. Its URL reaches the site through the Amplify environment variable `VERIFY_URL`. The site never depends on it: without it, receipts just have no re-check button.
 
 The link-preview card (`site/assets/img/og.png`) is rendered from `scripts/og/og.html` with headless Chrome. The exact command is in that file's header comment.
 

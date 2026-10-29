@@ -364,11 +364,12 @@
   function recheckResult(c, result) {
     const checks = Array.isArray(result.checks) ? result.checks : [];
     const passed = checks.filter((x) => x.ok === true).length;
+    const one = checks.length === 1;
     const summary = result.ok === true
-      ? `✓ All ${checks.length} checks passed`
+      ? (one ? "✓ The check passed" : `✓ All ${checks.length} checks passed`)
       : result.ok === false
-        ? `✗ ${checks.length - passed} of ${checks.length} checks failed`
-        : "? Some checks couldn't run right now";
+        ? (one ? "✗ The check failed" : `✗ ${checks.length - passed} of ${checks.length} checks failed`)
+        : (one ? "? The check couldn't run right now" : "? Some checks couldn't run right now");
     const rows = checks.map((x) =>
       el("li", { "data-ok": String(x.ok) },
         el("span", { class: "rc-recheck__mark", "aria-hidden": "true", text: x.ok === true ? "✓" : x.ok === false ? "✗" : "?" }),

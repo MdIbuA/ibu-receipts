@@ -72,7 +72,7 @@ A receipt that only links to evidence still asks you to click and trust. So I ad
 | **AWS Amplify Hosting** | CI/CD from GitHub (push → build → deploy) and HTTPS hosting on Amplify's CDN. Build variables (`AWS_APP_ID`, `AWS_BRANCH`, `AWS_JOB_ID`, `AWS_COMMIT_ID`) write the site's own receipt; the `VERIFY_URL` environment variable wires in the re-check API; `customHttp.yml` adds the security headers. |
 | **Amazon API Gateway** (HTTP API) | `GET /recheck`, throttled to 5 requests a second, CORS limited to the portfolio |
 | **AWS Lambda** | Re-checks a receipt's evidence live (Python 3.12, arm64) |
-| **AWS IAM** | The Lambda may do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
+| **AWS IAM** | Besides writing its own logs, the Lambda may do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
 | **Amazon CloudWatch Logs** | One line per re-check, kept 30 days: an audit trail of the audits |
 | **AWS Budgets** | A $5/month cost alarm, set up first |
 

@@ -5,7 +5,7 @@
 | **AWS Amplify Hosting** | Builds the site from GitHub on every push, writes the deploy into the page, sends strict security headers, and serves it over HTTPS from Amplify's CDN |
 | **Amazon API Gateway** (HTTP API) | One route, `GET /recheck`, throttled to 5 requests a second (burst 10), CORS limited to the portfolio's origin |
 | **AWS Lambda** (Python 3.12, arm64) | "Re-check with AWS Lambda": fetches a receipt's evidence from GitHub at the pinned commit and checks it again, live. For the page's own receipt it asks the Amplify API which build is live. |
-| **AWS IAM** | The Lambda's role can do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
+| **AWS IAM** | Besides writing its own logs (`AWSLambdaBasicExecutionRole`), the Lambda's role can do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
 | **Amazon CloudWatch Logs** | Every re-check logs `{"claim", "ok", "ms"}`: an audit trail of the audits, kept 30 days |
 | **AWS Budgets** | A $5/month cost alarm, set up before anything else |
 
@@ -47,7 +47,7 @@ Every receipt ends with a button that runs its checks again, right now, on AWS:
 - Lambda and HTTP API usage at portfolio scale costs fractions of a cent.
 
 **What to look for in the console**
-1. **Lambda → `ibu-receipts-recheck`:** runtime Python 3.12 on arm64, the API Gateway trigger, and a role with one `amplify:ListJobs` statement.
+1. **Lambda → `ibu-receipts-recheck`:** runtime Python 3.12 on arm64, the API Gateway trigger, and a role with one inline `amplify:ListJobs` statement plus the standard logging policy.
 2. **API Gateway → the HTTP API → Throttling:** 5 requests a second, burst 10; CORS shows the one allowed origin.
 3. **CloudWatch → Log groups → `/aws/lambda/ibu-receipts-recheck`:** lines like `{"claim": "supermarket", "ok": true, "ms": 812}`, retention 30 days.
 4. **CloudFormation → `ibu-receipts-recheck`:** the stack, created from the SAM template in the repo.
