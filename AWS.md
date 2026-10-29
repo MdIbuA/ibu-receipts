@@ -36,7 +36,7 @@ Every receipt ends with a button that runs its checks again, right now, on AWS:
   - the CryptoPulse notebook still prints `R²: 0.9402 | Direction Accuracy: 47.93%`
   - the Ghost Probe IAM policy is still all `s3:Get*`/`s3:List*`
 
-  There are 31 checks across 13 claims.
+  There are 29 checks across 13 claims, plus one Amplify check for the page's own receipt.
 - **The corrections are checked too.** "The README still says 32" passes, which proves the correction is still needed.
 - **The page's own receipt** calls `amplify:ListJobs`. It reports the latest successful build and commit, and the page confirms it was built by that exact build.
 
