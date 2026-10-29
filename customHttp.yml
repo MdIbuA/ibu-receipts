@@ -1,0 +1,23 @@
+# Response headers for every file AWS Amplify Hosting serves.
+#
+# The script hash in the Content-Security-Policy is the SHA-256 of the one inline script
+# in site/index.html (document.documentElement.classList.add("js");). Change that script
+# and you must update the hash, or the page loses its JavaScript styling.
+# connect-src allows the re-check API (infra/recheck), deployed in us-east-1.
+customHeaders:
+  - pattern: '**'
+    headers:
+      - key: 'Strict-Transport-Security'
+        value: 'max-age=31536000; includeSubDomains'
+      - key: 'X-Content-Type-Options'
+        value: 'nosniff'
+      - key: 'X-Frame-Options'
+        value: 'DENY'
+      - key: 'Referrer-Policy'
+        value: 'strict-origin-when-cross-origin'
+      - key: 'Permissions-Policy'
+        value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'
+      - key: 'Cross-Origin-Opener-Policy'
+        value: 'same-origin'
+      - key: 'Content-Security-Policy'
+        value: "default-src 'self'; script-src 'self' 'sha256-WZRJfWvsnNCPcxzZwvyhovnZGqhZaC+8gPGPRbx6wTk='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.execute-api.us-east-1.amazonaws.com; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"

@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  ibu-receipts re-check: one HTTP API route and one Lambda that re-verify a portfolio
+  claim against its pinned evidence on demand. Deploy in us-east-1, next to the Amplify app.
+
+Parameters:
+  AmplifyAppId:
+    Type: String
+    Default: d1nj3qfdmf673t
+    Description: The Amplify app that hosts the portfolio
+  AmplifyBranch:
+    Type: String
+    Default: main
+  SiteOrigin:
+    Type: String
+    Default: https://main.d1nj3qfdmf673t.amplifyapp.com
+    Description: The only origin allowed to call the API from a browser
+
+Resources:
+  RecheckApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - !Ref SiteOrigin
+        AllowMethods:
+          - GET
+        MaxAge: 3600
+      # Abuse guard: a static portfolio never needs more than this.
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 10
+        ThrottlingRateLimit: 5
+
+  RecheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ibu-receipts-recheck
+      CodeUri: src/
+      Handler: app.handler
+      Runtime: python3.12
+      Architectures:
+        - arm64
+      MemorySize: 256
+      Timeout: 15
+      Environment:
+        Variables:
+          AMPLIFY_APP_ID: !Ref AmplifyAppId
+          AMPLIFY_BRANCH: !Ref AmplifyBranch
+      # Least privilege: list the jobs of this one branch, nothing else.
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: amplify:ListJobs
+              Resource:
+                - !Sub arn:aws:amplify:${AWS::Region}:${AWS::AccountId}:apps/${AmplifyAppId}/branches/${AmplifyBranch}
+                - !Sub arn:aws:amplify:${AWS::Region}:${AWS::AccountId}:apps/${AmplifyAppId}/branches/${AmplifyBranch}/jobs/*
+      Events:
+        Recheck:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref RecheckApi
+            Path: /recheck
+            Method: GET
+
+  # Created up front so the logs (the audit trail) don't live forever.
+  RecheckLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/ibu-receipts-recheck
+      RetentionInDays: 30
+
+Outputs:
+  RecheckUrl:
+    Description: Set this as the VERIFY_URL environment variable in Amplify, then redeploy.
+    Value: !Sub https://${RecheckApi}.execute-api.${AWS::Region}.amazonaws.com/recheck

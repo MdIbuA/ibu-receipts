@@ -20,6 +20,9 @@ if ! printf '%s' "$commit" | grep -Eq '^[0-9a-f]{40}$'; then
   commit="$(git rev-parse HEAD 2>/dev/null | tr -cd '0-9a-f' || true)"
 fi
 region="$(clean "${AWS_REGION:-${AWS_DEFAULT_REGION:-}}")"
+# The re-check API (infra/recheck), set as an Amplify environment variable. Optional:
+# without it the receipts simply have no "Re-check" button.
+verify_url="$(clean "${VERIFY_URL:-}")"
 built_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 deployed=false
@@ -47,9 +50,10 @@ window.BUILD_INFO = {
   commit: "$commit",
   region: "$region",
   siteUrl: "$site_url",
+  verifyUrl: "$verify_url",
   builtAt: "$built_at",
   siteBytes: $site_bytes
 };
 EOF
 
-echo "build-info: deployed=$deployed app=$app branch=$branch job=$job commit=${commit:0:7} bytes=$site_bytes"
+echo "build-info: deployed=$deployed app=$app branch=$branch job=$job commit=${commit:0:7} bytes=$site_bytes verify=${verify_url:-none}"

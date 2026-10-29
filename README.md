@@ -28,6 +28,7 @@ Three extras:
 - **Coin vs. model.** A **Flip a coin against my model** button on the first screen prints the CryptoPulse receipt and flips a coin 100 times against my LSTM's 47.93% direction accuracy. The coin often wins, and the receipt says so.
 - **The itemized bill.** A summary receipt with claims verified, partial and self-reported, write-ups corrected, invented facts (0), and how many receipts *you* have audited.
 - **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #4 · commit 1d61ba0"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
+- **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda behind API Gateway fetches the evidence from GitHub at the pinned commit and runs that claim's checks again, live. There are 31 checks across 13 claims. On the page's own receipt, it asks the Amplify API which build is live.
 
 ### Why this is me
 
@@ -68,7 +69,9 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 ├── scripts/
 │   ├── stamp-build.sh            runs in the Amplify build; writes build-info.js and the preview URLs
 │   └── og/og.html                source of the 1200×630 link-preview image
+├── infra/recheck/                the re-check API: SAM template + Lambda (src/app.py)
 ├── amplify.yml                   Amplify build spec
+├── customHttp.yml                security headers, incl. a strict content security policy
 ├── docs/screenshots/             submission screenshots (see SCREENSHOTS.md)
 ├── DEPLOY.md                     exact console clicks for Amplify Hosting
 ├── AWS.md                        AWS services used and what to look for in the console
@@ -101,7 +104,9 @@ Run `git checkout site/feature/receipts/build-info.js` afterwards, so the local 
 AWS Amplify Hosting is connected to this repo's `main` branch. Every push triggers a build that:
 
 1. runs `scripts/stamp-build.sh`, which writes the deploy's `AWS_APP_ID`, `AWS_BRANCH`, `AWS_JOB_ID` and `AWS_COMMIT_ID` into `site/feature/receipts/build-info.js`, and fills the page's link-preview tags with the app's `amplifyapp.com` domain
-2. publishes the `site/` folder to Amplify's CDN over HTTPS
+2. publishes the `site/` folder to Amplify's CDN over HTTPS, with the headers from `customHttp.yml`
+
+The re-check API is a separate SAM stack in `infra/recheck/`: an API Gateway HTTP API, one Lambda, a one-permission IAM role and a CloudWatch log group. Its URL reaches the site through the Amplify environment variable `VERIFY_URL`. The site never depends on it: without it, receipts just have no re-check button.
 
 The link-preview card (`site/assets/img/og.png`) is rendered from `scripts/og/og.html` with headless Chrome. The exact command is in that file's header comment.
 

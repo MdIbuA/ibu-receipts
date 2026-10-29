@@ -16,6 +16,8 @@
   if (!data || !Array.isArray(data.claims) || !document.body) return;
 
   const build = window.BUILD_INFO || { deployed: false };
+  // The re-check API's address comes from the Amplify build (VERIFY_URL); without it, no button.
+  const recheckUrl = typeof build.verifyUrl === "string" && /^https?:\/\//.test(build.verifyUrl) ? build.verifyUrl : "";
   const claims = data.claims;
   const total = claims.length;
   const byId = new Map(claims.map((c, i) => [c.id, Object.assign(c, { n: i + 1 })]));
@@ -342,6 +344,7 @@
           el("h3", { class: "rc-label", text: "Corrected" }),
           el("p", { text: c.correction }))
       ],
+      recheckUrl && [rule(), recheckBlock(c)],
       rule(),
       el("footer", { class: "rc-foot" },
         stamp(status),
@@ -350,11 +353,89 @@
         el("a", { class: "rc-permalink", href: `#r-${c.id}` }, "Link to this receipt")));
   }
 
+  // ---------- re-check: an AWS Lambda checks the pinned evidence again, live ----------
+
+  function ago(iso) {
+    const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+    if (!isFinite(seconds) || seconds < 10) return "just now";
+    return seconds < 120 ? `${seconds} s ago` : `${Math.round(seconds / 60)} min ago`;
+  }
+
+  function recheckResult(c, result) {
+    const checks = Array.isArray(result.checks) ? result.checks : [];
+    const passed = checks.filter((x) => x.ok === true).length;
+    const summary = result.ok === true
+      ? `✓ All ${checks.length} checks passed`
+      : result.ok === false
+        ? `✗ ${checks.length - passed} of ${checks.length} checks failed`
+        : "? Some checks couldn't run right now";
+    const rows = checks.map((x) =>
+      el("li", { "data-ok": String(x.ok) },
+        el("span", { class: "rc-recheck__mark", "aria-hidden": "true", text: x.ok === true ? "✓" : x.ok === false ? "✗" : "?" }),
+        el("span", { class: "vh", text: x.ok === true ? "Passed: " : x.ok === false ? "Failed: " : "Not checked: " }),
+        el("span", null,
+          x.url ? el("a", { href: x.url, target: "_blank", rel: "noopener" }, x.label, el("span", { class: "vh", text: " (opens in a new tab)" })) : x.label,
+          el("span", { class: "rc-recheck__detail", text: ` — ${x.detail}` }))));
+
+    // The page's own receipt: compare what AWS says is live with what this page was built from.
+    if (c.build && result.live) {
+      const same = Number(build.job) === result.live.job && String(build.commit || "").startsWith(String(result.live.commit).slice(0, 7));
+      rows.push(el("li", { "data-ok": String(same) },
+        el("span", { class: "rc-recheck__mark", "aria-hidden": "true", text: same ? "✓" : "!" }),
+        el("span", null, same
+          ? "This page was built by that exact build."
+          : `This page shows build #${parseInt(build.job, 10) || "?"}; a newer deploy may still be rolling out.`)));
+    }
+
+    return [
+      el("p", { class: "rc-recheck__summary", "data-ok": String(result.ok) },
+        summary,
+        el("span", { class: "rc-recheck__when", text: ` · checked ${ago(result.checkedAt)} by AWS Lambda` })),
+      el("ul", { class: "rc-recheck__list" }, rows)
+    ];
+  }
+
+  function recheckBlock(c) {
+    const out = el("div", { class: "rc-recheck__out", "aria-live": "polite" });
+    const btn = el("button", { type: "button", class: "rc-btn" }, "Re-check with AWS Lambda");
+
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      out.replaceChildren(el("p", { class: "rc-recheck__how", text: "Fetching the evidence and checking it again…" }));
+      const timer = new AbortController();
+      const timeout = setTimeout(() => timer.abort(), 9000);
+      try {
+        const response = await fetch(`${recheckUrl}?id=${encodeURIComponent(c.id)}`, { signal: timer.signal, cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        out.replaceChildren(...recheckResult(c, await response.json()));
+      } catch {
+        // The receipt never depends on the checker being up.
+        out.replaceChildren(el("p", { class: "rc-recheck__how", text: "Couldn't reach the checker just now. The receipt above still stands on its own evidence." }));
+      } finally {
+        clearTimeout(timeout);
+        btn.disabled = false;
+        btn.textContent = "Re-check again";
+      }
+    });
+
+    return el("section", { class: "rc-block rc-recheck" },
+      el("h3", { class: "rc-label", text: "Re-check it yourself" }),
+      el("p", { class: "rc-recheck__how", text: c.build
+        ? "A Lambda asks the AWS Amplify API which build is live right now."
+        : "A Lambda fetches this receipt's evidence from GitHub, at the pinned commit, and checks it again." }),
+      btn,
+      out);
+  }
+
   // ---------- coin vs. model ----------
 
   function coinRace(modelPct) {
     const out = el("p", { class: "rc-coin__out", "aria-live": "polite" });
-    const coinFill = el("span", { class: "rc-bar__fill rc-bar__fill--coin", style: "width:0%" });
+    // Widths go through the CSSOM: the content security policy blocks style attributes.
+    const coinFill = el("span", { class: "rc-bar__fill rc-bar__fill--coin" });
+    coinFill.style.width = "0%";
+    const modelFill = el("span", { class: "rc-bar__fill" });
+    modelFill.style.width = modelPct + "%";
     const coinValue = el("span", { class: "rc-bar__v", text: "–" });
     const btn = el("button", { type: "button", class: "rc-btn" }, "Flip a coin 100 times");
 
@@ -365,7 +446,7 @@
         value);
 
     const bars = el("div", { class: "rc-bars", "aria-hidden": "true" },
-      bar("Model", el("span", { class: "rc-bar__fill", style: `width:${modelPct}%` }), el("span", { class: "rc-bar__v", text: modelPct + "%" })),
+      bar("Model", modelFill, el("span", { class: "rc-bar__v", text: modelPct + "%" })),
       bar("Coin", coinFill, coinValue));
 
     function finish(heads) {

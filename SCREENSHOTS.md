@@ -30,6 +30,16 @@ git push
 | 6 | `06-budget.png` | Billing and Cost Management → **Budgets** | `ibu-receipts-guard`, $5 budget, actual spend near $0 |
 | 7 | `07-site-receipt-vs-console.png` | Two windows side by side: the live site with the footer receipt open (`https://main.d1nj3qfdmf673t.amplifyapp.com/#r-site`), and the page for the **latest** build in Amplify | The **same build number and commit** in both. This is the strongest single image in the submission. |
 
+## The re-check stack (after DEPLOY.md step 8)
+
+| # | File | Where | Must be visible |
+|---|---|---|---|
+| 16 | `16-lambda-function.png` | Lambda → `ibu-receipts-recheck` | Runtime Python 3.12, arm64, the **API Gateway** trigger in the diagram |
+| 17 | `17-api-throttling.png` | API Gateway → the `ibu-receipts-recheck` HTTP API → **Throttling** | Default route: rate 5, burst 10 |
+| 18 | `18-cloudwatch-logs.png` | CloudWatch → Log groups → `/aws/lambda/ibu-receipts-recheck` | A few lines like `{"claim": "supermarket", "ok": true, "ms": 812}`, retention 1 month. Click a few re-check buttons first. |
+| 19 | `19-amplify-env-var.png` | Amplify → Hosting → **Environment variables** | `VERIFY_URL` = the `…execute-api.us-east-1.amazonaws.com/recheck` URL |
+| 20 | `20-recheck-in-action.png` | Live site → `#r-supermarket` → **Re-check with AWS Lambda** | "✓ All 4 checks passed · checked just now by AWS Lambda". Claude can capture this one from the live site once `VERIFY_URL` is set. |
+
 ## The live portfolio (proves completeness and usability)
 
 | # | File | Where | Must be visible |

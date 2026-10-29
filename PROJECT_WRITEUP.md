@@ -1,7 +1,7 @@
 # I keep receipts: a portfolio where every claim proves itself
 
 > **Before you submit (delete this block):**
-> 1. Capture AWS screenshots #1–7 from SCREENSHOTS.md into `docs/screenshots/` and push. The website shots #8–14 are already there.
+> 1. Deploy the re-check stack and set `VERIFY_URL` (DEPLOY.md step 8). Then capture AWS screenshots #1–7 and #16–20 from SCREENSHOTS.md into `docs/screenshots/` and push with `[skip-cd]`. The website shots are already there.
 > 2. Make sure the $5 budget alarm from DEPLOY.md step 1 exists. "How I built it" says you set it up first.
 > 3. Open every receipt and click its evidence links yourself. "How I built it" says you reviewed them, so make that true.
 > 4. Read the whole post aloud once and change anything that doesn't sound like you.
@@ -30,6 +30,7 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 - **Coin vs. model.** The first screen has a **Flip a coin against my model** button. It prints the CryptoPulse receipt and races a coin, flipped 100 times, against my model's 47.93%. The coin often wins, and the receipt says so.
 - **The itemized bill.** The printer tab opens a summary: 14 claims, how many are backed by public proof, partial or self-reported, write-ups the code corrected, invented facts (0), and how many receipts *you* have audited.
 - **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #4 · commit 1d61ba0"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
+- **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda fetches that receipt's evidence from GitHub, at the exact commit it cites, and checks it again while you watch. For example, it confirms the registry still holds 30 tool schemas and the notebook still prints 47.93%. On the page's own receipt, it asks the AWS Amplify API which build is live, and the page confirms it was built by that exact build.
 
 ![The page's own receipt next to the matching build in the Amplify console](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
 
@@ -59,14 +60,23 @@ I connected the repo to Amplify Hosting. `amplify.yml` runs a single command, `b
 
 ![Amplify build history with two green builds](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/02-amplify-build-history.png)
 
+### 5. Making the receipts re-check themselves
+A receipt that only links to evidence still asks you to click and trust. So I added one small serverless piece: an API Gateway HTTP API in front of one Python Lambda, defined in a SAM template (`infra/recheck/`). The Lambda holds 31 checks across the 13 evidence-backed claims, plus an Amplify API check for the page's own receipt. It only fetches the pinned URLs in its own list, caches results for five minutes, logs every run to CloudWatch, and the API throttles at 5 requests a second. The site never depends on it: if the checker is down, every receipt still stands on its stored evidence. While I was in there, I added strict security headers through Amplify's `customHttp.yml`.
+
+![Re-check with AWS Lambda: four checks passing on the Supermarket receipt](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/20-recheck-in-action.png)
+
 ## AWS services used
 
 | Service | What it does here |
 |---|---|
-| **AWS Amplify Hosting** | CI/CD from GitHub (push → build → deploy), HTTPS hosting on Amplify's CDN, and the `AWS_APP_ID` / `AWS_BRANCH` / `AWS_JOB_ID` / `AWS_COMMIT_ID` build variables that write the site's own receipt and its link-preview URLs |
+| **AWS Amplify Hosting** | CI/CD from GitHub (push → build → deploy) and HTTPS hosting on Amplify's CDN. Build variables (`AWS_APP_ID`, `AWS_BRANCH`, `AWS_JOB_ID`, `AWS_COMMIT_ID`) write the site's own receipt; the `VERIFY_URL` environment variable wires in the re-check API; `customHttp.yml` adds the security headers. |
+| **Amazon API Gateway** (HTTP API) | `GET /recheck`, throttled to 5 requests a second, CORS limited to the portfolio |
+| **AWS Lambda** | Re-checks a receipt's evidence live (Python 3.12, arm64) |
+| **AWS IAM** | The Lambda may do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
+| **Amazon CloudWatch Logs** | One line per re-check, kept 30 days: an audit trail of the audits |
 | **AWS Budgets** | A $5/month cost alarm, set up first |
 
-There's no Lambda, API Gateway or database, on purpose. Everything the feature needs is known at build time, and a static site can't fail mid-judging. My Bedrock, Lambda, EventBridge and S3 work is on the page as projects, each with its own receipt. Details and what to check in the console: [AWS.md](AWS.md).
+There's no database: nothing here needs state, and CloudWatch already keeps the audit trail. My Bedrock, EventBridge and S3 work is on the page as projects, each with its own receipt. Details and what to check in the console: [AWS.md](AWS.md).
 
 ![Amplify app overview: branch main, Deployed, amplifyapp.com domain](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/01-amplify-overview.png)
 
@@ -75,6 +85,7 @@ There's no Lambda, API Gateway or database, on purpose. Everything the feature n
 - **Writing proof is a test suite for prose.** Three of my published numbers were wrong or stale. Unit tests check code; nothing was checking my write-ups until each sentence needed a link to the line that proves it.
 - **The deploy can testify for itself.** Amplify's build variables let the page show which build and commit it came from, which is more convincing than any "hosted on AWS" badge.
 - **A playful feature still has to be a good citizen.** I made it a non-modal panel instead of a modal, returned focus on Escape, supported reduced motion, and gave visitors without JavaScript plain links. The fun layer can't cost a recruiter anything.
+- **A backend can be tiny and still earn its place.** One route and one Lambda add the one thing a static page can't do: an independent, live check that the evidence still says what the receipt claims.
 - **Small is fast.** A visitor's first load is about 42 KB over the wire, and my photo is the biggest file in it. System fonts and inline SVG did the design work.
 
 ## Challenges and how I solved them
@@ -91,6 +102,9 @@ There's no Lambda, API Gateway or database, on purpose. Everything the feature n
 | An accessibility scan (axe) flagged the hero receipt as an `<aside>` nested inside another landmark | Made it a labelled group; axe now reports zero issues at phone and desktop sizes |
 | Windows line endings would break the bash stamp script on Amplify's Linux builder | `.gitattributes` forces LF for `*.sh` and `amplify.yml` |
 | A `display: grid` rule once beat the `hidden` attribute in an earlier project of mine and covered the whole app | `[hidden] { display: none !important; }` from the first line |
+| The strict content security policy blocked the coin race, because its bars set `style="width:…"` attributes | Set widths through `element.style`, which the policy allows, and hash the one inline `<head>` script |
+| Lambda function URLs are the simplest way to expose a Lambda, but they can't be throttled | Put the Lambda behind an API Gateway HTTP API capped at 5 requests a second (burst 10) |
+| A live checker could make a receipt look broken whenever GitHub or AWS has a bad minute | Network trouble reports "couldn't check", never "failed", and the receipt itself never waits on the API |
 
 ## Links
 

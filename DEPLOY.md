@@ -91,6 +91,46 @@ git push
 - Every push to `main` redeploys. If you change something during judging, check that the build goes green.
 - The budget alert from step 1 emails you if anything unexpected starts costing money.
 
+## 8. Turn on "Re-check with AWS Lambda" (15 min)
+
+`infra/recheck/` is a small serverless stack: one HTTP API route (throttled to 5 requests a second) and one Lambda that re-checks a receipt's evidence live. Deploy it in **us-east-1**, the same region as the Amplify app, because the site's content security policy only allows that region's API Gateway.
+
+**Option A, with the SAM CLI (simplest):** install it ([AWS SAM CLI install guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)), then:
+
+```bash
+cd infra/recheck
+sam deploy --guided --region us-east-1 --stack-name ibu-receipts-recheck --capabilities CAPABILITY_IAM
+```
+
+Accept the defaults (the app ID, branch and site origin are already filled in), say **Y** to saving the config, and copy the **RecheckUrl** output.
+
+**Option B, with only the AWS CLI** (already on this laptop): it needs a bucket to upload the code to.
+
+```bash
+cd infra/recheck
+aws s3 mb s3://ibu-receipts-recheck-artifacts-<your-initials> --region us-east-1
+aws cloudformation package --template-file template.yaml --s3-bucket ibu-receipts-recheck-artifacts-<your-initials> --output-template-file packaged.yaml --region us-east-1
+aws cloudformation deploy --template-file packaged.yaml --stack-name ibu-receipts-recheck --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND --region us-east-1
+aws cloudformation describe-stacks --stack-name ibu-receipts-recheck --region us-east-1 --query "Stacks[0].Outputs[0].OutputValue" --output text
+```
+
+The last command prints the **RecheckUrl**. Don't commit `packaged.yaml`.
+
+**Connect it to the site:**
+1. Amplify → `ibu-receipts` → **Hosting → Environment variables** → **Manage variables** → **Add new**: `VERIFY_URL` = the RecheckUrl → **Save**.
+2. **Deployments** → open the latest build → **Redeploy this version**. Environment variables only reach the site on a new build.
+3. Open any receipt on the live site. It now ends with **Re-check with AWS Lambda**. Click it on the footer receipt too: it should say "This page was built by that exact build."
+
+📸 SCREENSHOTS.md #16–20.
+
+## 9. Security headers (nothing to do)
+
+`customHttp.yml` sets HSTS, nosniff, a frame ban, a referrer policy, a permissions policy and a strict content security policy on every file. Amplify applies it on the next build. Check it:
+
+```bash
+curl -sI https://main.d1nj3qfdmf673t.amplifyapp.com/ | grep -i -E "content-security|strict-transport|x-frame|x-content"
+```
+
 ## Troubleshooting
 
 | Symptom | Fix |
@@ -100,3 +140,7 @@ git push
 | Live site shows the page but receipts say "Not deployed" | `build-info.js` wasn't overwritten. Check the build log for the stamp line, then redeploy. |
 | Footer links to `ibu-receipts` 404 | The GitHub repo name differs or the repo is private. Make it public, or update the links. |
 | The repo isn't listed in step 5 | In GitHub → **Settings → Applications → AWS Amplify → Configure**, grant access to `ibu-receipts`. |
+| No "Re-check" button on receipts | `VERIFY_URL` isn't set, or you didn't redeploy after setting it. The build log's `build-info:` line should end with `verify=https://…`, not `verify=none`. |
+| "Couldn't reach the checker just now" | The stack isn't in us-east-1 (the security policy blocks other regions), or the API URL is wrong. Open the RecheckUrl with `?id=gitbard` in a browser: it should return JSON. |
+| The site receipt's re-check says "couldn't ask Amplify" | The `AmplifyAppId` parameter doesn't match your app. Redeploy the stack with the right app ID (Amplify → App settings → General → App ARN ends with it). |
+| The page looks unstyled after a change to `index.html` | You edited the inline script in `<head>`. Update its SHA-256 hash in `customHttp.yml` (the file explains how). |

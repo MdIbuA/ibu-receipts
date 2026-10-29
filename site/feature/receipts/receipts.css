@@ -494,6 +494,22 @@ button.stub__deploy:hover { background: #dff0e6; }
 .rc-bar__v { text-align: right; font-weight: 800; }
 .rc-coin__out { min-height: 1.5em; font-weight: 700; }
 
+/* re-check */
+.rc-recheck { display: grid; gap: .5rem; justify-items: start; }
+.rc-recheck__how { color: var(--rc-ink-2); font-size: .74rem; }
+.rc-recheck__out { width: 100%; }
+.rc-recheck__summary { margin: .2rem 0 .3rem; font-weight: 800; }
+.rc-recheck__summary[data-ok="true"] { color: var(--rc-verified); }
+.rc-recheck__summary[data-ok="false"] { color: var(--rc-fix); }
+.rc-recheck__summary[data-ok="null"] { color: var(--rc-local); }
+.rc-recheck__when { color: var(--rc-ink-2); font-weight: 500; }
+.rc-recheck__list { display: grid; gap: .3rem; margin: 0; padding: 0; list-style: none; }
+.rc-recheck__list li { display: grid; grid-template-columns: 1.1rem minmax(0, 1fr); }
+.rc-recheck__mark { font-weight: 800; }
+.rc-recheck__list li[data-ok="true"] .rc-recheck__mark { color: var(--rc-verified); }
+.rc-recheck__list li[data-ok="false"] .rc-recheck__mark { color: var(--rc-fix); }
+.rc-recheck__detail { color: var(--rc-ink-2); }
+
 /* bill */
 .rc-progress {
   width: 100%;
