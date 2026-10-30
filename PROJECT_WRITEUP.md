@@ -28,10 +28,12 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 - **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Each requirement prints as **Proven** (with a link to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings, and it runs entirely in the browser: nothing you paste is sent or saved.
 - **Coin vs. model.** The first screen has a **Flip a coin against my model** button. It prints the CryptoPulse receipt and races a coin, flipped 100 times, against my model's 47.93%. The coin often wins, and the receipt says so.
 - **The itemized bill.** The printer tab opens a summary: 14 claims, how many are backed by public proof, partial or self-reported, write-ups the code corrected, invented facts (0), and how many receipts *you* have audited.
-- **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #8 · commit 6dd2cda"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
+- **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #9 · commit cf4c242"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
 - **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda fetches that receipt's evidence from GitHub, at the exact commit it cites, and checks it again while you watch. For example, it confirms the registry still holds 30 tool schemas and the notebook still prints 47.93%. On the page's own receipt, it asks the AWS Amplify API which build is live, and the page confirms it was built by that exact build.
 
-![The page's own receipt (build #8, commit 6dd2cda) next to Amplify's build #8, whose log prints the same commit](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
+![A job receipt for a sample cloud intern role: TypeScript, Amazon S3 and CI/CD proven with links to the exact file and line, and DynamoDB printed as No receipt](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/22-job-receipt.png)
+
+![Captured at build #8: the page's own receipt (build #8, commit 6dd2cda) next to Amplify's build #8, whose log prints the same commit](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
 
 ![Re-check on the page's own receipt: the AWS Amplify API reports the live build, and the page confirms it was built by that exact build](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/21-site-recheck-aws.png)
 
@@ -75,6 +77,8 @@ Recruiters and judges arrive with a role in mind, so I let them ask the page abo
 
 At the same time I moved the feature to TypeScript 7 under every strict flag, so the receipts' rules are types: a verified receipt that cites nothing doesn't compile, and neither does evidence pointing at a branch instead of a commit. A type-level test file holds dishonest receipts that must fail to compile. 47 unit tests hold the page to its data, and a script re-reads all 133 pieces of evidence at their pinned commits. The Amplify build now type-checks and tests before it compiles anything, so a broken rule stops a deploy, and GitHub Actions runs the same on every push. The site still has no framework, no bundler and no runtime dependencies.
 
+![A job receipt's totals on a phone: no receipt for 5 requirements, 0 invented to fit the job, stamped 11 of 17 proven](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/23-job-receipt-mobile.png)
+
 ## AWS services used
 
 | Service | What it does here |
@@ -105,7 +109,7 @@ There's no database: nothing here needs state, and CloudWatch already keeps the 
 - **The deploy can testify for itself.** Amplify's build variables let the page show which build and commit it came from, which is more convincing than any "hosted on AWS" badge.
 - **A playful feature still has to be a good citizen.** I made it a non-modal panel instead of a modal, returned focus on Escape, supported reduced motion, and gave visitors without JavaScript plain links. The fun layer can't cost a recruiter anything.
 - **A backend can be tiny and still earn its place.** One route and one Lambda add the one thing a static page can't do: an independent, live check that the evidence still says what the receipt claims.
-- **Small is fast.** A visitor's first load is about 42 KB over the wire, and my photo is the biggest file in it. System fonts and inline SVG did the design work.
+- **Small is fast.** A visitor's first load is about 87 KB over the wire on a desktop (110 KB on a phone, which gets a sharper photo), and my photo is the biggest file in it. System fonts and inline SVG did the design work, and the TypeScript compiles to plain modules, with no framework to download.
 
 ## Challenges and how I solved them
 

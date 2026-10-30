@@ -28,7 +28,7 @@ What else it does:
 - **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Every requirement it recognises prints as **Proven** (linked to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings. It runs entirely in the browser; nothing you paste is sent or saved.
 - **Coin vs. model.** A **Flip a coin against my model** button on the first screen prints the CryptoPulse receipt and flips a coin 100 times against my LSTM's 47.93% direction accuracy. The coin often wins, and the receipt says so.
 - **The itemized bill.** A summary receipt with claims verified, partial and self-reported, write-ups corrected, invented facts (0), and how many receipts *you* have audited.
-- **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #8 · commit 6dd2cda"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
+- **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #9 · commit cf4c242"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
 - **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda behind API Gateway fetches the evidence from GitHub at the pinned commit and runs that claim's checks again, live. There are 31 checks across 13 claims. On the page's own receipt, it asks the Amplify API which build is live.
 
 ### Why this is me
@@ -100,7 +100,7 @@ The site is TypeScript 7 under every strict flag, compiled by `tsc` into plain E
 - **The evidence is re-read** (`npm run evidence`): every file the skill map points at is fetched at its pinned commit, and its line must still show the named text.
 - **Nothing ships unchecked.** The Amplify build runs the type check and the tests before it compiles anything, so a broken rule stops the deploy. GitHub Actions runs the same on every push, plus the evidence check.
 
-Everything the site ships totals about 370 KB, mostly images (my portrait and the link-preview card). The JavaScript is 28 KB gzipped, and the browser fetches every module at once through `modulepreload` hints.
+Everything the site ships totals about 370 KB, mostly images (my portrait and the link-preview card). A visitor's first load is about 87 KB over the wire on a desktop and 110 KB on a phone. The JavaScript is 28 KB gzipped, and the browser fetches every module at once through `modulepreload` hints.
 
 ## Run it locally
 
@@ -156,7 +156,8 @@ Link evidence with **commit permalinks** (on GitHub, open the file and press `y`
 | | |
 |---|---|
 | ![Desktop: a printed receipt](docs/screenshots/10-feature-receipt-desktop.png) | ![Mobile: the receipt as a bottom sheet](docs/screenshots/11-feature-receipt-mobile.png) |
-| ![The itemized bill](docs/screenshots/12-feature-bill.png) | ![The page's own receipt, written by the Amplify build: build #8, commit 6dd2cda](docs/screenshots/15-live-site-receipt.png) |
+| ![The itemized bill](docs/screenshots/12-feature-bill.png) | ![The page's own receipt, written by the Amplify build: build #9, commit cf4c242](docs/screenshots/15-live-site-receipt.png) |
+| ![A job receipt: proven skills linked to the exact file and line, and DynamoDB printed as No receipt](docs/screenshots/22-job-receipt.png) | ![A job receipt's totals on a phone, stamped 11 of 17 proven](docs/screenshots/23-job-receipt-mobile.png) |
 
 ## Credits
 

@@ -2,7 +2,7 @@
 
 Save each one as a PNG in `docs/screenshots/` with exactly this filename. README.md and PROJECT_WRITEUP.md already point at these names.
 
-**Status (Oct 30): all 21 are captured.** The website shots (#8–15, #20, #21) come from the live site (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
+**Status (Oct 30): all 23 are captured.** The website shots (#8–15, #20–23) come from the live site at build #9 (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
 
 **Keep the build numbers consistent.** Screenshot-only pushes don't change the site, so end their commit message with `[skip-cd]`. Amplify then skips the build, and the live receipt keeps showing the same build as your console screenshots:
 
@@ -40,6 +40,13 @@ git push
 | 19 | `19-amplify-env-var.png` | Amplify → Hosting → **Environment variables** | `VERIFY_URL` = the `…execute-api.us-east-1.amazonaws.com/recheck` URL. **Captured.** |
 | 20 | `20-recheck-in-action.png` | Live site → `#r-supermarket` → **Re-check with AWS Lambda** | "✓ All 4 checks passed · checked … by AWS Lambda". **Captured.** |
 | 21 | `21-site-recheck-aws.png` | Live site → `#r-site` → **Re-check with AWS Lambda** | The AWS Amplify API's latest build and commit, then "This page was built by that exact build." **Captured.** |
+
+## The job receipt
+
+| # | File | Where | Must be visible |
+|---|---|---|---|
+| 22 | `22-job-receipt.png` | Live site → `#job-cloud-intern` | A job receipt for the sample cloud intern role: proven lines with their file:line links, and at least one **No receipt** line. **Captured.** |
+| 23 | `23-job-receipt-mobile.png` | Device mode 360 → `#job-ml-engineer`, scrolled to the end | The totals (Proven, Partial, No receipt, Invented 0) and the "N of M proven" stamp. **Captured.** |
 
 ## The live portfolio (proves completeness and usability)
 
