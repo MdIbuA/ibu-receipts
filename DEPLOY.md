@@ -11,9 +11,11 @@ You need an **AWS account** and a **GitHub account**.
 A static site costs pennies, but an alarm costs nothing, and it's the first AWS setup step you can screenshot.
 
 1. AWS console → search bar → **Billing and Cost Management** → left menu **Budgets** → **Create budget**.
-2. **Use a template (simplified)** → **Monthly cost budget**.
-3. Budget name: `ibu-receipts-guard`. Budgeted amount: `5` (USD). Email recipients: your email.
+2. **Use a template (simplified)** → **Zero spend budget**.
+3. Keep the name, `My Zero-Spend Budget`, and add your email as the recipient.
 4. **Create budget**.
+
+It emails you as soon as actual spend passes $0.01. If your account already has one, skip this step.
 
 📸 `SCREENSHOTS.md` #6: the budget in the Budgets list.
 

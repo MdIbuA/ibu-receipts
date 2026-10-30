@@ -7,7 +7,7 @@
 | **AWS Lambda** (Python 3.12, arm64) | "Re-check with AWS Lambda": fetches a receipt's evidence from GitHub at the pinned commit and checks it again, live. For the page's own receipt it asks the Amplify API which build is live. |
 | **AWS IAM** | Besides writing its own logs (`AWSLambdaBasicExecutionRole`), the Lambda's role can do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
 | **Amazon CloudWatch Logs** | Every re-check logs `{"claim", "ok", "ms"}`: an audit trail of the audits, kept 30 days |
-| **AWS Budgets** | A $5/month cost alarm, set up before anything else |
+| **AWS Budgets** | A zero-spend budget: an email alert if actual spend passes $0.01 |
 
 The re-check stack is defined as code in `infra/recheck/template.yaml` (AWS SAM). The site's static, so it never depends on the API: if the checker is down, every receipt still shows its stored evidence.
 
@@ -62,7 +62,7 @@ Every receipt ends with a button that runs its checks again, right now, on AWS:
 
 ## AWS Budgets
 
-A monthly cost budget, `ibu-receipts-guard`, set at $5 with an email alert, created before the Amplify app (DEPLOY.md step 1). Look for it under Billing and Cost Management → Budgets, with actual spend near $0.
+The account's guard is AWS's zero-spend budget template, `My Zero-Spend Budget`. It emails me as soon as actual spend passes $0.01, which is stricter than a dollar limit, and it was in place before this project started. Look for it under Billing and Cost Management → Budgets, with actual spend near $0.
 
 ---
 

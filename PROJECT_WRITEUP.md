@@ -1,11 +1,9 @@
 # I keep receipts: a portfolio where every claim proves itself
 
 > **Before you submit (delete this block):**
-> 1. Capture AWS screenshots #1–7 and #16–19 from SCREENSHOTS.md into `docs/screenshots/` and push with `[skip-cd]`. The website shots, including #20, are already there. The re-check stack is deployed and `VERIFY_URL` is set.
-> 2. Make sure the $5 budget alarm from DEPLOY.md step 1 exists. "How I built it" says you set it up first.
-> 3. Open every receipt and click its evidence links yourself. "How I built it" says you reviewed them, so make that true.
-> 4. Read the whole post aloud once and change anything that doesn't sound like you.
-> 5. The images load from GitHub, so they show up anywhere Markdown images work. If the submission form wants uploads instead, upload the PNGs from `docs/screenshots/` in the same order.
+> 1. Open every receipt and click its evidence links yourself. "How I built it" says you reviewed them, so make that true.
+> 2. Read the whole post aloud once and change anything that doesn't sound like you.
+> 3. The images load from GitHub, so they show up anywhere Markdown images work. If the submission form wants uploads instead, upload the PNGs from `docs/screenshots/` in the same order.
 
 **Live site:** https://main.d1nj3qfdmf673t.amplifyapp.com · **Code:** https://github.com/MdIbuA/ibu-receipts · **Hosted on:** AWS Amplify Hosting
 
@@ -32,7 +30,7 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 - **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #8 · commit 6dd2cda"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
 - **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda fetches that receipt's evidence from GitHub, at the exact commit it cites, and checks it again while you watch. For example, it confirms the registry still holds 30 tool schemas and the notebook still prints 47.93%. On the page's own receipt, it asks the AWS Amplify API which build is live, and the page confirms it was built by that exact build.
 
-![The page's own receipt next to the matching build in the Amplify console](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
+![The page's own receipt (build #8, commit 6dd2cda) next to Amplify's build #8, whose log prints the same commit](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
 
 ![Re-check on the page's own receipt: the AWS Amplify API reports the live build, and the page confirms it was built by that exact build](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/21-site-recheck-aws.png)
 
@@ -47,7 +45,9 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 ## How I built it
 
 ### 1. Account setup
-I started with an AWS Budgets alarm: a $5 monthly cost budget with an email alert, before creating anything that could cost money. The code lives in a public GitHub repo, `ibu-receipts`, which my coding agent created and pushed with the GitHub CLI.
+My AWS account already had a zero-spend budget from AWS Budgets: it emails me the moment actual spend passes one cent, so nothing in this project could start costing money unnoticed. The code lives in a public GitHub repo, `ibu-receipts`, which my coding agent created and pushed with the GitHub CLI.
+
+![AWS Budgets: My Zero-Spend Budget, healthy, with $0.00 spent](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/06-budget.png)
 
 ### 2. The coding agent
 I used **Claude Code** as my coding agent. I gave it the challenge rules, the rubric weights and my existing portfolio, and asked for three feature ideas drawn from me rather than from a template. It proposed Receipts (my honest-metrics habit), a quantum circuit that "measures" me (my Qiskit interest) and a fantasy retelling (my Git Bard project). I picked Receipts because it's the one that only I could have.
@@ -60,7 +60,9 @@ Plain HTML, CSS and JavaScript: no framework, no build step, no dependencies. Th
 ### 4. Deploying on AWS Amplify
 I connected the repo to Amplify Hosting. `amplify.yml` runs a single command, `bash scripts/stamp-build.sh`, and publishes only the `site/` folder. Build #1 went live on the `amplifyapp.com` domain, and its own receipt immediately caught a bug: Amplify's first build reported its commit as `HEAD` instead of a hash, so the receipt printed "HEAD". I made the stamp script resolve the real hash from the build's clone. I pushed that fix with the live URL and the screenshots, build #2 deployed by itself, and the footer receipt now shows the real commit.
 
-![Amplify build history with two green builds](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/02-amplify-build-history.png)
+![Amplify deployment history: eight green builds with their commit messages](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/02-amplify-build-history.png)
+
+![Amplify's log for build #8: the stamp script prints job=0000000008 and commit=6dd2cda, the numbers the page shows](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/03-amplify-build-log.png)
 
 ### 5. Making the receipts re-check themselves
 A receipt that only links to evidence still asks you to click and trust. So I added one small serverless piece: an API Gateway HTTP API in front of one Python Lambda, defined in a SAM template (`infra/recheck/`). The Lambda holds 29 checks across the 13 evidence-backed claims, plus an Amplify API check for the page's own receipt. It only fetches the pinned URLs in its own list, caches results for five minutes, logs every run to CloudWatch, and the API throttles at 5 requests a second. The site never depends on it: if the checker is down, every receipt still stands on its stored evidence. While I was in there, I added strict security headers through Amplify's `customHttp.yml`.
@@ -76,11 +78,19 @@ A receipt that only links to evidence still asks you to click and trust. So I ad
 | **AWS Lambda** | Re-checks a receipt's evidence live (Python 3.12, arm64) |
 | **AWS IAM** | Besides writing its own logs, the Lambda may do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
 | **Amazon CloudWatch Logs** | One line per re-check, kept 30 days: an audit trail of the audits |
-| **AWS Budgets** | A $5/month cost alarm, set up first |
+| **AWS Budgets** | A zero-spend budget that emails me if actual spend passes $0.01 |
 
-There's no database: nothing here needs state, and CloudWatch already keeps the audit trail. My Bedrock, EventBridge and S3 work is on the page as projects, each with its own receipt. Details and what to check in the console: [AWS.md](AWS.md).
+There's no database: nothing here needs state, and CloudWatch already keeps the audit trail. My Bedrock, EventBridge and S3 work is on the page as projects, each with its own receipt. Details and what to check in the console: [AWS.md](AWS.md). The console screenshots hide my account ID.
 
 ![Amplify app overview: branch main, Deployed, amplifyapp.com domain](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/01-amplify-overview.png)
+
+![Amplify environment variables: VERIFY_URL points each build at the re-check API](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/19-amplify-env-var.png)
+
+![The Lambda: an API Gateway trigger, Python 3.12 on arm64](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/16-lambda-function.png)
+
+![API Gateway throttling on the $default stage: burst 10, rate 5](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/17-api-throttling.png)
+
+![CloudWatch Logs: 1-month retention and one JSON line per re-check](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/18-cloudwatch-logs.png)
 
 ## What I learned
 
