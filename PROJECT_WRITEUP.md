@@ -7,7 +7,7 @@
 
 **Live site:** https://main.d1nj3qfdmf673t.amplifyapp.com · **Code:** https://github.com/MdIbuA/ibu-receipts · **Hosted on:** AWS Amplify Hosting
 
-Most portfolios ask you to take their word for it. Mine prints receipts. Every underlined claim on the page (an R² score, a tool count, a latency, a job title) prints a till-style receipt with the evidence behind it, how it was measured, and **the catch**, the part that makes me look worse. The receipts even caught three places where my own earlier write-ups disagreed with my code. That's the creative feature, and I think it's my actual tech superpower: I keep receipts.
+Most portfolios ask you to take their word for it. Mine prints receipts. Every underlined claim on the page (an R² score, a tool count, a latency, a job title) prints a till-style receipt with the evidence behind it, how it was measured, and **the catch**, the part that makes me look worse. The receipts even caught four places where my own earlier write-ups disagreed with my code. And a recruiter can paste a job description to get a receipt for their own role: what I can prove for each requirement, and what I can't. That's the creative feature, and I think it's my actual tech superpower: I keep receipts.
 
 ![The hero: "I build AI systems. I keep the receipts." with the hint box and the receipt stub](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/08-live-desktop-hero.png)
 
@@ -24,7 +24,8 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 ![A printed receipt for "R² 0.94", with the coin-versus-model race](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/10-feature-receipt-desktop.png)
 
 - **Every claim is a button.** Click `30 typed tools` and a receipt feeds out of a small printer docked bottom-right. It lists line items (`Tools in ALL_TOOLS ..... 30`), the evidence links (the exact file and line on GitHub), how it was measured, the catch, and a stamp: **Verified**, **Partial** or **Self-reported**.
-- **Corrections are printed, not hidden.** My README said the agent has 32 tools; the registry has 30. An old write-up said CryptoPulse used an 80/20 split; the notebook's LSTM cell splits 70/30. Tiny Tale Toy's README names a different model from the code. Those receipts carry a red **Corrected** box.
+- **Corrections are printed, not hidden.** My README said the agent has 32 tools; the registry has 30. An old write-up said CryptoPulse used an 80/20 split; the notebook's LSTM cell splits 70/30. Tiny Tale Toy's README names a different model from the code. Voter Saathi's README credits Gemini, but its server tries three free OpenRouter models first. Those receipts carry a red **Corrected** box.
+- **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Each requirement prints as **Proven** (with a link to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings, and it runs entirely in the browser: nothing you paste is sent or saved.
 - **Coin vs. model.** The first screen has a **Flip a coin against my model** button. It prints the CryptoPulse receipt and races a coin, flipped 100 times, against my model's 47.93%. The coin often wins, and the receipt says so.
 - **The itemized bill.** The printer tab opens a summary: 14 claims, how many are backed by public proof, partial or self-reported, write-ups the code corrected, invented facts (0), and how many receipts *you* have audited.
 - **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #8 · commit 6dd2cda"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
@@ -34,7 +35,7 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 
 ![Re-check on the page's own receipt: the AWS Amplify API reports the live build, and the page confirms it was built by that exact build](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/21-site-recheck-aws.png)
 
-**How you find it in ten seconds.** The first screen has a dashed **"How to read this page"** box that names the first claim to try (`R² 0.94`, which pulses a few times to catch your eye), a receipt-shaped **stub** that prints itself out of a little printer slot the first time you see it ("Printed for you at 10:42"), stamped with the live Amplify build, and a printer **tab** in the corner reading `0/14`. Two buttons sit in the hint: **Flip a coin against my model** and **Highlight all 14 claims**.
+**How you find it in ten seconds.** The first screen has a dashed **"How to read this page"** box that names the first claim to try (`R² 0.94`, which pulses a few times to catch your eye), a receipt-shaped **stub** that prints itself out of a little printer slot the first time you see it ("Printed for you at 10:42"), stamped with the live Amplify build, and a printer **tab** in the corner reading `0/14`. Three buttons sit in the hint: **Print a receipt for your job**, **Flip a coin against my model** and **Highlight all 14 claims**.
 
 ![Highlight mode: every claim in the Tech superpowers section marked like a highlighter pen](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/13-feature-highlight.png)
 
@@ -52,10 +53,10 @@ My AWS account already had a zero-spend budget from AWS Budgets: it emails me th
 ### 2. The coding agent
 I used **Claude Code** as my coding agent. I gave it the challenge rules, the rubric weights and my existing portfolio, and asked for three feature ideas drawn from me rather than from a template. It proposed Receipts (my honest-metrics habit), a quantum circuit that "measures" me (my Qiskit interest) and a fantasy retelling (my Git Bard project). I picked Receipts because it's the one that only I could have.
 
-The interesting part was the evidence pass. The agent read my public repos file by file: notebook outputs, tool registries, IAM policies, test counts and SAM templates. It turned every claim into a receipt pointing at the exact file and line. That's how the three corrections surfaced. I reviewed every receipt against the source myself before shipping.
+The interesting part was the evidence pass. The agent read my public repos file by file: notebook outputs, tool registries, IAM policies, test counts and SAM templates. It turned every claim into a receipt pointing at the exact file and line. That's how the first three corrections surfaced. I reviewed every receipt against the source myself before shipping.
 
 ### 3. Local build
-Plain HTML, CSS and JavaScript: no framework, no build step, no dependencies. The base page works on its own. The feature lives in `site/feature/receipts/` and upgrades the page when JavaScript runs. I previewed it with `python -m http.server`, tested it at 360px, with the keyboard only, in light and dark mode, and with reduced motion. To check the deploy receipt before deploying, I ran the stamp script locally with fake `AWS_*` variables.
+The first version was plain HTML, CSS and JavaScript: no framework, no build step, no dependencies. The base page works on its own. The feature lives in `site/feature/receipts/` and upgrades the page when JavaScript runs. I previewed it with `python -m http.server`, tested it at 360px, with the keyboard only, in light and dark mode, and with reduced motion. To check the deploy receipt before deploying, I ran the stamp script locally with fake `AWS_*` variables.
 
 ### 4. Deploying on AWS Amplify
 I connected the repo to Amplify Hosting. `amplify.yml` runs a single command, `bash scripts/stamp-build.sh`, and publishes only the `site/` folder. Build #1 went live on the `amplifyapp.com` domain, and its own receipt immediately caught a bug: Amplify's first build reported its commit as `HEAD` instead of a hash, so the receipt printed "HEAD". I made the stamp script resolve the real hash from the build's clone. I pushed that fix with the live URL and the screenshots, build #2 deployed by itself, and the footer receipt now shows the real commit.
@@ -65,15 +66,20 @@ I connected the repo to Amplify Hosting. `amplify.yml` runs a single command, `b
 ![Amplify's log for build #8: the stamp script prints job=0000000008 and commit=6dd2cda, the numbers the page shows](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/03-amplify-build-log.png)
 
 ### 5. Making the receipts re-check themselves
-A receipt that only links to evidence still asks you to click and trust. So I added one small serverless piece: an API Gateway HTTP API in front of one Python Lambda, defined in a SAM template (`infra/recheck/`). The Lambda holds 29 checks across the 13 evidence-backed claims, plus an Amplify API check for the page's own receipt. It only fetches the pinned URLs in its own list, caches results for five minutes, logs every run to CloudWatch, and the API throttles at 5 requests a second. The site never depends on it: if the checker is down, every receipt still stands on its stored evidence. While I was in there, I added strict security headers through Amplify's `customHttp.yml`.
+A receipt that only links to evidence still asks you to click and trust. So I added one small serverless piece: an API Gateway HTTP API in front of one Python Lambda, defined in a SAM template (`infra/recheck/`). The Lambda holds 31 checks across the 13 evidence-backed claims, plus an Amplify API check for the page's own receipt. It only fetches the pinned URLs in its own list, caches results for five minutes, logs every run to CloudWatch, and the API throttles at 5 requests a second. The site never depends on it: if the checker is down, every receipt still stands on its stored evidence. While I was in there, I added strict security headers through Amplify's `customHttp.yml`.
 
 ![Re-check with AWS Lambda: four checks passing on the Supermarket receipt](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/20-recheck-in-action.png)
+
+### 6. A receipt for your job, in strict TypeScript
+Recruiters and judges arrive with a role in mind, so I let them ask the page about it. A job description is matched against a skill map of about 100 skills. Each skill is proven by a file at a pinned commit (the exact line, which a script re-reads to confirm it still says what it should), partial with a reason, or has no receipt at all. Building that map turned up a fourth correction: Voter Saathi's README credits Gemini, but its server tries three free OpenRouter models first. Its receipt now says so, and the Lambda re-checks it.
+
+At the same time I moved the feature to TypeScript 7 under every strict flag, so the receipts' rules are types: a verified receipt that cites nothing doesn't compile, and neither does evidence pointing at a branch instead of a commit. A type-level test file holds dishonest receipts that must fail to compile. 47 unit tests hold the page to its data, and a script re-reads all 133 pieces of evidence at their pinned commits. The Amplify build now type-checks and tests before it compiles anything, so a broken rule stops a deploy, and GitHub Actions runs the same on every push. The site still has no framework, no bundler and no runtime dependencies.
 
 ## AWS services used
 
 | Service | What it does here |
 |---|---|
-| **AWS Amplify Hosting** | CI/CD from GitHub (push → build → deploy) and HTTPS hosting on Amplify's CDN. Build variables (`AWS_APP_ID`, `AWS_BRANCH`, `AWS_JOB_ID`, `AWS_COMMIT_ID`) write the site's own receipt; the `VERIFY_URL` environment variable wires in the re-check API; `customHttp.yml` adds the security headers. |
+| **AWS Amplify Hosting** | CI/CD from GitHub (push → type-check → test → compile → deploy) and HTTPS hosting on Amplify's CDN. A failing test stops the deploy. Build variables (`AWS_APP_ID`, `AWS_BRANCH`, `AWS_JOB_ID`, `AWS_COMMIT_ID`) write the site's own receipt; the `VERIFY_URL` environment variable wires in the re-check API; `customHttp.yml` adds the security headers. |
 | **Amazon API Gateway** (HTTP API) | `GET /recheck`, throttled to 5 requests a second, CORS limited to the portfolio |
 | **AWS Lambda** | Re-checks a receipt's evidence live (Python 3.12, arm64) |
 | **AWS IAM** | Besides writing its own logs, the Lambda may do exactly one thing in my account: `amplify:ListJobs` on this app's `main` branch |
@@ -94,7 +100,8 @@ There's no database: nothing here needs state, and CloudWatch already keeps the 
 
 ## What I learned
 
-- **Writing proof is a test suite for prose.** Three of my published numbers were wrong or stale. Unit tests check code; nothing was checking my write-ups until each sentence needed a link to the line that proves it.
+- **Writing proof is a test suite for prose.** Four of my published claims were wrong or stale. Unit tests check code; nothing was checking my write-ups until each sentence needed a link to the line that proves it.
+- **Types can keep a promise.** "A verified receipt cites evidence" used to be a rule I had to remember. As a type, the compiler keeps it for me, and a test file of dishonest receipts proves the compiler still refuses them.
 - **The deploy can testify for itself.** Amplify's build variables let the page show which build and commit it came from, which is more convincing than any "hosted on AWS" badge.
 - **A playful feature still has to be a good citizen.** I made it a non-modal panel instead of a modal, returned focus on Escape, supported reduced motion, and gave visitors without JavaScript plain links. The fun layer can't cost a recruiter anything.
 - **A backend can be tiny and still earn its place.** One route and one Lambda add the one thing a static page can't do: an independent, live check that the evidence still says what the receipt claims.
@@ -117,10 +124,14 @@ There's no database: nothing here needs state, and CloudWatch already keeps the 
 | The strict content security policy blocked the coin race, because its bars set `style="width:…"` attributes | Set widths through `element.style`, which the policy allows, and hash the one inline `<head>` script |
 | Lambda function URLs are the simplest way to expose a Lambda, but they can't be throttled | Put the Lambda behind an API Gateway HTTP API capped at 5 requests a second (burst 10) |
 | A live checker could make a receipt look broken whenever GitHub or AWS has a bad minute | Network trouble reports "couldn't check", never "failed", and the receipt itself never waits on the API |
+| Reading skills out of free text: "Java" hides inside "JavaScript", "go" is a verb, and "AWS Lambda" also contains "AWS" | Whole-word patterns, case-sensitive where it matters ("React", "SAM"), and the longest overlapping match wins. A unit test pins each trap |
+| Some local servers send `.js` as `text/plain`, and browsers refuse to run ES modules that way | A zero-dependency `npm run serve` that sends the right type |
+| WCAG 2.2's target-size rule flagged the job receipt's small evidence links | Every link and button keeps a 24px target; axe reports zero issues with the job receipt open |
 
 ## Links
 
 - **Live portfolio:** https://main.d1nj3qfdmf673t.amplifyapp.com
 - **Jump straight to a receipt:** https://main.d1nj3qfdmf673t.amplifyapp.com/#r-supermarket · the bill: https://main.d1nj3qfdmf673t.amplifyapp.com/#receipts
+- **A sample job receipt:** https://main.d1nj3qfdmf673t.amplifyapp.com/#job-cloud-intern · paste your own: https://main.d1nj3qfdmf673t.amplifyapp.com/#job
 - **GitHub repository:** https://github.com/MdIbuA/ibu-receipts
 - **Me on AWS Builder Center:** https://builder.aws.com/community/@abufawaz

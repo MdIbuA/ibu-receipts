@@ -537,6 +537,74 @@ button.stub__deploy:hover { background: #dff0e6; }
 .rc-item__v { font-weight: 800; }
 .rc-item__v[data-done] { color: var(--rc-verified); }
 
+/* the main action on a piece of paper */
+.rc-btn--ink { background: var(--rc-ink); color: var(--rc-paper); }
+.rc-btn--ink:hover { background: #3a342c; }
+a.rc-btn { display: inline-flex; align-items: center; text-decoration: none; }
+a.rc-btn:hover { color: var(--rc-ink); }
+
+/* ---------- the job receipt ---------- */
+
+.rc-job-form { display: grid; gap: .45rem; justify-items: start; }
+.rc-textarea {
+  width: 100%;
+  min-height: 9rem;
+  max-height: 40vh;
+  padding: .55rem .6rem;
+  border: 1.5px dashed var(--rc-ink-2);
+  border-radius: 6px;
+  background: #fffef9;
+  color: var(--rc-ink);
+  font: .78rem/1.45 var(--rc-mono);
+  resize: vertical;
+}
+.rc-textarea:focus-visible { outline: 2px solid #1a5fd0; outline-offset: 1px; border-style: solid; }
+.rc-job__hint { margin: .35rem 0 0; color: var(--rc-ink-2); font-size: .72rem; }
+.rc-job__status { min-height: 1.2em; margin: .2rem 0 0; font-weight: 700; }
+.rc-job__status:empty { display: none; }
+
+.rc-job { display: grid; gap: .6rem; margin: .45rem 0 0; padding: 0; list-style: none; }
+/* mark · name (wraps in place) · leader dots · status */
+.rc-job__line {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, max-content) minmax(1rem, 1fr) auto;
+  align-items: baseline;
+  margin: 0;
+}
+.rc-job__mark { font-weight: 800; }
+.rc-job__item[data-proof="proven"] :is(.rc-job__mark, .rc-line__v) { color: var(--rc-verified); }
+.rc-job__item[data-proof="partial"] :is(.rc-job__mark, .rc-line__v) { color: var(--rc-partial); }
+.rc-job__item[data-proof="none"] :is(.rc-job__mark, .rc-line__v) { color: var(--rc-fix); }
+.rc-job__proof,
+.rc-job__note,
+.rc-job__receipts { margin: .15rem 0 0 1.4rem; font-size: .72rem; }
+.rc-job__proof { padding: 0; list-style: none; }
+/* the arrow keeps its own column, so a long path wraps beside it, never below it */
+.rc-job__proof li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: .35rem;
+  align-items: baseline;
+  overflow-wrap: anywhere;
+}
+.rc-job__proof li::before { content: "↳"; color: var(--rc-ink-2); }
+/* Small text, but every link and button keeps a 24px target (WCAG 2.2 target size). */
+.rc-job__proof a { display: inline-block; min-height: 24px; padding-block: .25rem; }
+.rc-job__note,
+.rc-job__receipts { color: var(--rc-ink-2); }
+.rc-job__receipts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .7rem; }
+.rc-job__receipts .claim { min-height: 24px; padding-block: .2rem; color: var(--rc-ink); }
+
+/* the Contact section's way in */
+.contact__job {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem 1rem;
+  margin: 0 0 1.5rem;
+}
+.contact__job span { color: var(--ink-2); }
+
 /* ---------- small screens: a bottom sheet that leaves the header alone ---------- */
 
 @media (max-width: 40em) {

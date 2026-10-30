@@ -16,7 +16,7 @@ The re-check stack is defined as code in `infra/recheck/template.yaml` (AWS SAM)
 ## AWS Amplify Hosting
 
 - **CI/CD from GitHub.** Connected to the `main` branch of `github.com/MdIbuA/ibu-receipts`. Each push runs Provision → Build → Deploy. Commits that only touch docs or screenshots end with `[skip-cd]`, so Amplify skips them and the live build number stays put.
-- **The build spec is in the repo** (`amplify.yml`). The build runs `bash scripts/stamp-build.sh` and publishes only the `site/` folder.
+- **The build spec is in the repo** (`amplify.yml`). The build installs the exact TypeScript compiler from `package-lock.json` (with `node_modules` cached between builds), type-checks the code, runs the tests, compiles `src/` into `site/`, runs `bash scripts/stamp-build.sh`, and publishes only the `site/` folder. A failing type check or test stops the deploy before anything is published.
 - **Build variables feed the creative feature.** The stamp script writes `AWS_APP_ID`, `AWS_BRANCH`, `AWS_JOB_ID` and `AWS_COMMIT_ID` into `site/feature/receipts/build-info.js`. The hero receipt and the footer's "deployed on AWS Amplify" print them as the page's own receipt, so AWS writes the proof of deployment, not me. The script also derives the app's domain for the link-preview tags.
 - **An environment variable wires in the API.** `VERIFY_URL` (set in the Amplify console) holds the re-check API's address. The build stamps it into the page; without it, receipts simply have no re-check button.
 - **Security headers** (`customHttp.yml`), on every file:
@@ -36,8 +36,8 @@ Every receipt ends with a button that runs its checks again, right now, on AWS:
   - the CryptoPulse notebook still prints `R²: 0.9402 | Direction Accuracy: 47.93%`
   - the Ghost Probe IAM policy is still all `s3:Get*`/`s3:List*`
 
-  There are 29 checks across 13 claims, plus one Amplify check for the page's own receipt.
-- **The corrections are checked too.** "The README still says 32" passes, which proves the correction is still needed.
+  There are 31 checks across 13 claims, plus one Amplify check for the page's own receipt.
+- **The corrections are checked too.** "The README still says 32" passes, which proves the correction is still needed; for Voter Saathi, the Lambda confirms both that the README credits Gemini and that the server calls OpenRouter first.
 - **The page's own receipt** calls `amplify:ListJobs`. It reports the latest successful build and commit, and the page confirms it was built by that exact build.
 
 **Safety and cost**

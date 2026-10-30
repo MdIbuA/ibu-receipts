@@ -109,7 +109,9 @@ CHECKS = {
     ],
     "votersaathi": [
         ("12 languages in the README table", src("votersaathi", "README.md"), count(r"^\| .+ \| `[a-z]{2}` \| .+ \|\s*$", 12, "languages")),
-        ("Only English is hand-written", src("votersaathi", "README.md"), contains("**All other languages** → Gemini AI generates responses")),
+        ("Only English is hard-coded", src("votersaathi", "README.md"), contains("**English** → Instant hardcoded responses")),
+        ("The server tries OpenRouter first (the correction)", src("votersaathi", "server.js"), contains("Strategy 1: OpenRouter (primary)")),
+        ("The README still credits Gemini (the correction stands)", src("votersaathi", "README.md"), contains("**All other languages** → Gemini AI generates responses")),
     ],
     "celebrai": [
         ("Zero runtime dependencies", src("Celebrai", "package.json"), no_runtime_dependencies),

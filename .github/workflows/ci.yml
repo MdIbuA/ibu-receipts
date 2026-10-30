@@ -1,0 +1,35 @@
+# Checks every push the way the Amplify build does, plus the one check that needs
+# the network: every skill's evidence, read at its pinned commit on GitHub.
+name: Receipts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # Actions are pinned to full commit SHAs, so a moved tag can't change what runs here.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install the exact compiler
+        run: npm ci --no-audit --no-fund
+      - name: Type-check (the honesty rules are types)
+        run: npm run typecheck
+      - name: Hold the page to its data
+        run: npm test
+      - name: Compile src/ into site/
+        run: npm run build
+      - name: Read every skill's evidence at its pinned commit
+        run: npm run evidence

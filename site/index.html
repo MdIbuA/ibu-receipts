@@ -22,10 +22,29 @@
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="feature/receipts/receipts.css">
   <script>document.documentElement.classList.add("js");</script>
-  <script defer src="feature/receipts/claims.js"></script>
+  <!-- Written by the Amplify build; read by the modules below. -->
   <script defer src="feature/receipts/build-info.js"></script>
-  <script defer src="feature/receipts/receipts.js"></script>
-  <script defer src="assets/site.js"></script>
+  <!-- Compiled from src/ by TypeScript. The preload hints fetch every module at once
+       instead of one import level at a time; test/page.test.ts keeps this list complete. -->
+  <script type="module" src="feature/receipts/main.js"></script>
+  <script type="module" src="assets/site.js"></script>
+  <link rel="modulepreload" href="feature/receipts/audit.js">
+  <link rel="modulepreload" href="feature/receipts/build.js">
+  <link rel="modulepreload" href="feature/receipts/catalog.js">
+  <link rel="modulepreload" href="feature/receipts/claims.js">
+  <link rel="modulepreload" href="feature/receipts/coin.js">
+  <link rel="modulepreload" href="feature/receipts/dom.js">
+  <link rel="modulepreload" href="feature/receipts/format.js">
+  <link rel="modulepreload" href="feature/receipts/job.js">
+  <link rel="modulepreload" href="feature/receipts/match.js">
+  <link rel="modulepreload" href="feature/receipts/paper.js">
+  <link rel="modulepreload" href="feature/receipts/printer.js">
+  <link rel="modulepreload" href="feature/receipts/projects.js">
+  <link rel="modulepreload" href="feature/receipts/recheck.js">
+  <link rel="modulepreload" href="feature/receipts/roles.js">
+  <link rel="modulepreload" href="feature/receipts/skills.js">
+  <link rel="modulepreload" href="feature/receipts/stub.js">
+  <link rel="modulepreload" href="feature/receipts/types.js">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -59,9 +78,10 @@
 
           <div class="hint" id="how-to-read">
             <p class="hint__label">How to read this page</p>
-            <p class="hint__body">Each of the <span data-rc-total>14</span> <span class="hint__sample">underlined claims</span> on this page prints a receipt: the evidence, how it was measured, and the catch. Start with my best-looking number, <a class="claim claim--nudge" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a>.</p>
+            <p class="hint__body">Each of the <span data-rc-total>14</span> <span class="hint__sample">underlined claims</span> on this page prints a receipt: the evidence, how it was measured, and the catch. Start with my best-looking number, <a class="claim claim--nudge" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a>.<span class="js-only"> Hiring? Paste your job description and the printer itemizes what I can prove for it, and what I can't.</span></p>
             <p class="hint__actions js-only">
-              <button type="button" class="btn btn--small btn--accent" data-rc-bet>Flip a coin against my model</button>
+              <button type="button" class="btn btn--small btn--accent" data-rc-job>Print a receipt for your job</button>
+              <button type="button" class="btn btn--small" data-rc-bet>Flip a coin against my model</button>
               <button type="button" class="btn btn--small" data-rc-highlight aria-pressed="false">Highlight all <span data-rc-total>14</span> claims</button>
             </p>
           </div>
@@ -83,7 +103,7 @@
             <dl class="stub__rows">
               <div><dt>Claims on this page</dt><dd data-rc-total>14</dd></div>
               <div><dt>Backed by public proof</dt><dd data-rc-verified>9</dd></div>
-              <div><dt>Corrected by my code</dt><dd data-rc-corrections>3</dd></div>
+              <div><dt>Corrected by my code</dt><dd data-rc-corrections>4</dd></div>
               <div><dt>Invented facts</dt><dd>0</dd></div>
             </dl>
             <p class="stub__audit js-only">Audited by you: <span data-rc-checked>0</span> of <span data-rc-total>14</span></p>
@@ -115,7 +135,7 @@
             <p class="about__lead">I'm drawn to the gap between a demo and something you can trust.</p>
             <p>I'm Ibu, a final-year B.Tech Information Technology student in Coimbatore, graduating in June 2027. I build AI agents and serverless apps on AWS, often in public and often against a weekend deadline.</p>
             <p>My Supermarket agent is never allowed to invent a price: every number comes out of Postgres through a tool. This page holds my claims to the same rule. Each one links to the code, notebook or article behind it, and where there's no public proof, the receipt says so.</p>
-            <p>Writing these receipts caught three places where my own write-ups disagreed with my code. Those receipts print the corrected numbers.</p>
+            <p>Writing these receipts caught four places where my own write-ups disagreed with my code. Those receipts print the corrected facts.</p>
             <p>Off the clock I'm into quantum computing. I organized an <a class="claim" data-claim="qiskit" href="https://github.com/MdIbuA">IBM Qiskit Fall Fest</a> workshop on quantum algorithms.</p>
 
             <h3 class="mini-head">How I work</h3>
@@ -254,7 +274,7 @@
         <ul class="more">
           <li>
             <p class="more__name">Voter Saathi</p>
-            <p class="more__desc">A non-partisan election guide in <a class="claim" data-claim="votersaathi" href="https://github.com/MdIbuA/votersaathi/blob/8594c62338df5004c39b7dca56ff388e2a6b5eef/README.md?plain=1#L122-L140">12 Indian languages</a>: a rule-based flow for structure, Gemini for free-form questions.<span class="more__stack">Node.js · Gemini · Docker · Cloud Run</span></p>
+            <p class="more__desc">A non-partisan election guide in <a class="claim" data-claim="votersaathi" href="https://github.com/MdIbuA/votersaathi/blob/8594c62338df5004c39b7dca56ff388e2a6b5eef/README.md?plain=1#L122-L140">12 Indian languages</a>: a rule-based flow for structure, an LLM for free-form questions (free OpenRouter models first, Gemini as the fallback).<span class="more__stack">Node.js · OpenRouter · Gemini · Docker · Cloud Run</span></p>
             <a class="more__link" href="https://github.com/MdIbuA/votersaathi">Source<span class="vh">: Voter Saathi</span></a>
           </li>
           <li>
@@ -324,6 +344,7 @@
           <h2 id="contact-title">Contact</h2>
           <p class="section__intro">Hiring for software or AI engineering, or have a hard problem worth prototyping? Email is fastest.</p>
         </header>
+        <p class="contact__job js-only"><button type="button" class="btn btn--accent" data-rc-job>Print a receipt for your job description</button> <span>See what I can prove for your role before you write.</span></p>
         <p><a class="contact__email" href="mailto:ibrahimanees.work@gmail.com">ibrahimanees.work@gmail.com</a></p>
         <ul class="links">
           <li><a href="https://github.com/MdIbuA" rel="me">GitHub</a></li>
@@ -338,7 +359,7 @@
 
   <footer class="foot">
     <div class="wrap foot__inner">
-      <p>© 2026 Mohamed Ibrahim A. Hand-built with HTML, CSS and a little JavaScript, <a class="claim" data-claim="site" href="https://github.com/MdIbuA/ibu-receipts/blob/main/amplify.yml">deployed on AWS Amplify</a>. No trackers.</p>
+      <p>© 2026 Mohamed Ibrahim A. Hand-built with HTML, CSS and a little TypeScript, <a class="claim" data-claim="site" href="https://github.com/MdIbuA/ibu-receipts/blob/main/amplify.yml">deployed on AWS Amplify</a>. No trackers.</p>
       <p><a href="#main">Back to top <span aria-hidden="true">↑</span></a></p>
     </div>
   </footer>

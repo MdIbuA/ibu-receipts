@@ -5,3 +5,8 @@ node_modules/
 .private/
 infra/recheck/.aws-sam/
 infra/recheck/packaged.yaml
+
+# TypeScript output: Amplify compiles src/ into site/ on every build (npm run build).
+site/feature/receipts/*.js
+!site/feature/receipts/build-info.js
+site/assets/site.js

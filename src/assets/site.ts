@@ -1,10 +1,8 @@
 // Underlines the nav link for the section currently on screen.
-(() => {
-  "use strict";
-  const links = [...document.querySelectorAll('.nav a[href^="#"]')];
-  if (!links.length || !("IntersectionObserver" in window)) return;
+const links = [...document.querySelectorAll<HTMLAnchorElement>('.nav a[href^="#"]')];
 
-  const byId = new Map(links.map((a) => [a.getAttribute("href").slice(1), a]));
+if (links.length && "IntersectionObserver" in window) {
+  const byId = new Map(links.map((a) => [(a.getAttribute("href") ?? "").slice(1), a]));
   const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       const link = byId.get(entry.target.id);
@@ -23,4 +21,6 @@
     const section = document.getElementById(id);
     if (section) observer.observe(section);
   }
-})();
+}
+
+export {};

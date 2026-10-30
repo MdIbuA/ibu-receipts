@@ -52,7 +52,7 @@ git push -u origin main
    - Leave **My app is a monorepo** unchecked → **Next**
 6. **App settings**:
    - App name: `ibu-receipts`
-   - Build settings: Amplify should say it **detected `amplify.yml`** in the repo. Expand it to check that the build command is `bash scripts/stamp-build.sh` and the output directory is `site`.
+   - Build settings: Amplify should say it **detected `amplify.yml`** in the repo. Expand it to check that the build runs `npm run typecheck`, `npm test`, `npm run build` and `bash scripts/stamp-build.sh`, and that the output directory is `site`.
    - Leave the service role and advanced settings at their defaults → **Next**
 7. **Review** → **Save and deploy**.
 

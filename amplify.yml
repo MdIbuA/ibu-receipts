@@ -1,13 +1,30 @@
 version: 1
 frontend:
   phases:
+    preBuild:
+      commands:
+        # Node 22 runs the TypeScript tests directly. npm ci installs the exact compiler
+        # and Node's types from package-lock.json; nothing from npm reaches the browser.
+        - nvm install 22 >/dev/null
+        - nvm use 22
+        - npm ci --no-audit --no-fund
     build:
       commands:
+        # A receipt that breaks the rules stops the deploy here: the type check
+        # enforces the honesty rules, the tests hold the page to its data, and
+        # only then does TypeScript compile src/ into site/.
+        - npm run typecheck
+        - npm test
+        - npm run build
         # Stamp this deploy's app, branch, build number and commit into the
         # site's own receipt (site/feature/receipts/build-info.js).
         - bash scripts/stamp-build.sh
   artifacts:
-    # Only the site folder is published; docs and scripts stay in the repo.
+    # Only the site folder is published; sources, docs and scripts stay in the repo.
+    # Its JavaScript is compiled fresh on every build and never committed.
     baseDirectory: site
     files:
       - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*

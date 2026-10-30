@@ -1,0 +1,38 @@
+{
+  // Compiles src/ into site/ with the same folder layout: no bundler, no framework,
+  // no runtime dependencies. Plain ES modules the browser loads as they are.
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "types": [],
+    "rootDir": "src",
+    "outDir": "site",
+    "newLine": "lf",
+
+    // As strict as TypeScript gets. The receipts' honesty rules are types, so these
+    // flags are what turn a dishonest receipt into a compile error.
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // Every file stays valid "TypeScript that is only JavaScript plus types": Node runs
+    // the sources directly in tests, and imports name the real .ts file.
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"]
+}
