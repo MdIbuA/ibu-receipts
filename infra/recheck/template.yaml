@@ -1,8 +1,13 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  ibu-receipts re-check: one HTTP API route and one Lambda that re-verify a portfolio
-  claim against its pinned evidence on demand. Deploy in us-east-1, next to the Amplify app.
+  ibu-receipts API: re-checks a portfolio claim against its pinned evidence, and reads a job
+  description with Amazon Nova Micro. Two small Lambdas behind one throttled HTTP API, each
+  with only the permissions its one job needs.
+
+Metadata:
+  AWSToolsMetrics:
+    AWSAgentToolkit: aws-cloudformation@3
 
 Parameters:
   AmplifyAppId:
@@ -16,6 +21,13 @@ Parameters:
     Type: String
     Default: https://main.d1nj3qfdmf673t.amplifyapp.com
     Description: The only origin allowed to call the API from a browser
+  ReaderModel:
+    Type: String
+    Default: amazon.nova-micro-v1:0
+    AllowedValues:
+      - amazon.nova-micro-v1:0
+      - amazon.nova-lite-v1:0
+    Description: The Nova model the job reader calls, through its US cross-region inference profile
 
 Resources:
   RecheckApi:
@@ -26,11 +38,19 @@ Resources:
           - !Ref SiteOrigin
         AllowMethods:
           - GET
+          - POST
+        AllowHeaders:
+          - content-type
         MaxAge: 3600
       # Abuse guard: a static portfolio never needs more than this.
       DefaultRouteSettings:
         ThrottlingBurstLimit: 10
         ThrottlingRateLimit: 5
+      # Reading calls a model, which costs money per request, so it gets a tighter cap.
+      RouteSettings:
+        "POST /read":
+          ThrottlingBurstLimit: 4
+          ThrottlingRateLimit: 1
 
   RecheckFunction:
     Type: AWS::Serverless::Function
@@ -70,7 +90,52 @@ Resources:
       LogGroupName: /aws/lambda/ibu-receipts-recheck
       RetentionInDays: 30
 
+  # The job reader: its own function and role, so the re-check never gains Bedrock
+  # access and the reader never gains Amplify access.
+  ReaderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-reader
+      CodeUri: src/
+      Handler: reader.handler
+      Runtime: python3.12
+      Architectures:
+        - arm64
+      MemorySize: 256
+      # Must stay under the HTTP API's 30-second integration limit; Nova Micro answers in seconds.
+      Timeout: 20
+      Environment:
+        Variables:
+          MODEL_ID: !Sub us.${ReaderModel}
+      # Least privilege: invoke one model through its US inference profile. The profile may
+      # route to any US Region, so both ARNs are required, the model's with a wildcard Region.
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource:
+                - !Sub arn:${AWS::Partition}:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/us.${ReaderModel}
+                - !Sub arn:${AWS::Partition}:bedrock:*::foundation-model/${ReaderModel}
+      Events:
+        Read:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref RecheckApi
+            Path: /read
+            Method: POST
+
+  # The reader logs counts and timings only, never the description. Kept 30 days, and its
+  # name must follow the function's, or Lambda writes to a log group that never expires.
+  ReaderLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}-reader
+      RetentionInDays: 30
+
 Outputs:
   RecheckUrl:
     Description: Set this as the VERIFY_URL environment variable in Amplify, then redeploy.
     Value: !Sub https://${RecheckApi}.execute-api.${AWS::Region}.amazonaws.com/recheck
+  ReadUrl:
+    Description: Set this as the READ_URL environment variable in Amplify, then redeploy.
+    Value: !Sub https://${RecheckApi}.execute-api.${AWS::Region}.amazonaws.com/read

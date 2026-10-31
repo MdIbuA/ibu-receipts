@@ -23,6 +23,9 @@ region="$(clean "${AWS_REGION:-${AWS_DEFAULT_REGION:-}}")"
 # The re-check API (infra/recheck), set as an Amplify environment variable. Optional:
 # without it the receipts simply have no "Re-check" button.
 verify_url="$(clean "${VERIFY_URL:-}")"
+# The Bedrock job reader (infra/recheck, POST /read). Optional too: without it the
+# job receipt simply has no "read it closer" button.
+read_url="$(clean "${READ_URL:-}")"
 built_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 deployed=false
@@ -51,9 +54,10 @@ window.BUILD_INFO = {
   region: "$region",
   siteUrl: "$site_url",
   verifyUrl: "$verify_url",
+  readUrl: "$read_url",
   builtAt: "$built_at",
   siteBytes: $site_bytes
 };
 EOF
 
-echo "build-info: deployed=$deployed app=$app branch=$branch job=$job commit=${commit:0:7} bytes=$site_bytes verify=${verify_url:-none}"
+echo "build-info: deployed=$deployed app=$app branch=$branch job=$job commit=${commit:0:7} bytes=$site_bytes verify=${verify_url:-none} read=${read_url:-none}"

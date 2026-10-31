@@ -2,7 +2,7 @@
 // counts as nice-to-have, and the three samples a judge will try first.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { MAX_CHARS, readJob, receiptText } from "../src/feature/receipts/match.ts";
+import { applyReading, MAX_CHARS, readJob, receiptText } from "../src/feature/receipts/match.ts";
 import { ROLES } from "../src/feature/receipts/roles.ts";
 
 const ids = (text: string): string[] => readJob(text).lines.map((line) => line.skill.id);
@@ -136,5 +136,61 @@ describe("the samples a judge tries first", () => {
     assert.equal(status["terraform"], "nice:none");
     assert.equal(status["bedrock"], "nice:proven");
     assert.equal(status["kubernetes"], "nice:none");
+  });
+});
+
+describe("a closer reading by a model on Bedrock", () => {
+  const text = "Cloud Intern\nRequirements\n- Python and AWS Lambda\n- Experience with Kubernetes would be valued\n- Advanced Excel skills";
+  const base = readJob(text);
+  const reading = (requirements: unknown[]) => ({ model: "Amazon Nova Micro", ms: 1200, requirements });
+  const ids = (receipt: ReturnType<typeof readJob> | null) => receipt?.lines.map((l) => `${l.skill.id}:${l.priority}`) ?? [];
+
+  it("only accepts quotes the description really says, for skills on the map", () => {
+    const merged = applyReading(text, base, reading([
+      { quote: "Python and AWS Lambda", priority: "must", skill: "python" },
+      { quote: "10 years of Go", priority: "must", skill: "go" },
+      { quote: "AWS Lambda", priority: "must", skill: "cobol" },
+      { quote: "Python", priority: "must", skill: "not-a-skill" }
+    ]));
+    assert.ok(!ids(merged).some((id) => id.startsWith("go:")), "an invented quote got through");
+    assert.ok(!ids(merged).some((id) => id.startsWith("cobol")), "an unknown skill got through");
+  });
+
+  it("lets the model's sense of nice-to-have win over the patterns' default", () => {
+    assert.equal(line(text, "kubernetes")?.priority, "must");
+    const merged = applyReading(text, base, reading([{ quote: "Experience with Kubernetes would be valued", priority: "nice", skill: "kubernetes" }]));
+    assert.ok(ids(merged).includes("kubernetes:nice"));
+  });
+
+  it("keeps what the patterns found even when the model missed it", () => {
+    const merged = applyReading(text, base, reading([]));
+    assert.deepEqual(ids(merged), ids(base));
+  });
+
+  it("lists requirements outside the map in the description's own words", () => {
+    const merged = applyReading(text, base, reading([
+      { quote: "Advanced Excel skills", priority: "must", skill: "none" },
+      { quote: "advanced  excel skills", priority: "must", skill: null }
+    ]));
+    assert.deepEqual(merged?.unmapped.map((u) => u.quote), ["Advanced Excel skills"]);
+  });
+
+  it("says who read it, and keeps the receipt's title", () => {
+    const merged = applyReading(text, base, reading([]));
+    assert.deepEqual(merged?.readBy, { kind: "model", model: "Amazon Nova Micro", ms: 1200 });
+    assert.equal(merged?.title, "Cloud Intern");
+  });
+
+  it("refuses anything that isn't a reading", () => {
+    for (const answer of [null, "text", { requirements: "nope" }, { error: "model-unavailable" }]) {
+      assert.equal(applyReading(text, base, answer), null);
+    }
+  });
+
+  it("as text, names the reader and lists what's outside the map", () => {
+    const merged = applyReading(text, base, reading([{ quote: "Advanced Excel skills", priority: "must", skill: "none" }]));
+    const out = merged ? receiptText(merged, "https://example.test/#job") : "";
+    assert.match(out, /NOT ON MY SKILL MAP\n\[\?\] "Advanced Excel skills": ask me/);
+    assert.match(out, /Read by Amazon Nova Micro on Amazon Bedrock/);
   });
 });
