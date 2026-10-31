@@ -8,15 +8,14 @@
   docked bottom-right, so the page and its navigation stay usable underneath.
 */
 import { loadAudit, saveAudit } from "./audit.ts";
-import { build, readUrl } from "./build.ts";
+import { build } from "./build.ts";
 import { CATALOG, claimById, isClaimId, tally, TOTAL } from "./catalog.ts";
 import type { ClaimId } from "./claims.ts";
 import { closest, el, vh } from "./dom.ts";
 import { renderJobForm, renderJobReceipt } from "./job.ts";
-import { applyReading, READ_MAX_CHARS, readJob, type JobReceipt } from "./match.ts";
+import { readJob, type JobReceipt } from "./match.ts";
 import { renderBill, renderReceipt, type Back } from "./paper.ts";
 import { createPrinter } from "./printer.ts";
-import { requestReading } from "./read.ts";
 import { ROLES, type RoleId } from "./roles.ts";
 import { printStubOnce, stampDeploy } from "./stub.ts";
 
@@ -29,12 +28,8 @@ let current: Current = null;
 
 const checked = loadAudit();
 
-/**
- * The job description being worked on, the browser's own reading of it, and the receipt
- * on screen (the browser's, or a model's closer reading merged into it). Memory only.
- */
+/** The job description being worked on, and its last printed receipt, kept in memory only. */
 let draft = "";
-let browserJob: JobReceipt | null = null;
 let lastJob: JobReceipt | null = null;
 
 const printer = createPrinter({
@@ -89,27 +84,15 @@ function openJobForm(trigger: HTMLElement | null, moveFocus = true): void {
 
 function printJob(description: string, trigger: HTMLElement | null, moveFocus = true): void {
   draft = description;
-  browserJob = readJob(description);
-  lastJob = browserJob;
+  lastJob = readJob(description);
   showLastJob(trigger, moveFocus);
-}
-
-/** Has the Bedrock reader read the description closer, then prints the merged receipt. */
-async function readWithModel(): Promise<void> {
-  if (!readUrl || !browserJob) throw new Error("The reader isn't switched on");
-  const text = draft.slice(0, READ_MAX_CHARS);
-  const merged = applyReading(text, browserJob, await requestReading(readUrl, text));
-  if (!merged) throw new Error("The reader's answer wasn't a reading");
-  lastJob = merged;
-  showLastJob(printer.tab);
 }
 
 function showLastJob(trigger: HTMLElement | null, moveFocus = true): void {
   if (!lastJob) return openJobForm(trigger, moveFocus);
   current = "job";
   const pageUrl = `${build.siteUrl || location.origin + location.pathname.replace(/index\.html$/, "")}`.replace(/\/?$/, "/#job");
-  const canRead = readUrl !== "" && lastJob.readBy.kind === "browser";
-  printer.show(renderJobReceipt(lastJob, pageUrl, { readWithModel: canRead ? readWithModel : null }), trigger, moveFocus);
+  printer.show(renderJobReceipt(lastJob, pageUrl), trigger, moveFocus);
   syncExpanded();
 }
 

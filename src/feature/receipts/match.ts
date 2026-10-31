@@ -19,18 +19,6 @@ export interface JobLine {
   readonly at: readonly [number, number];
 }
 
-/** A requirement the description makes that isn't on my skill map, in its own words. */
-export interface Unmapped {
-  readonly quote: string;
-  readonly priority: Priority;
-  readonly at: readonly [number, number];
-}
-
-/** Who read the description: this browser's patterns, or a model on Bedrock (re-checked here). */
-export type ReadBy =
-  | { readonly kind: "browser" }
-  | { readonly kind: "model"; readonly model: string; readonly ms: number };
-
 export interface JobReceipt {
   /** The role's title, if the description starts with one; otherwise "". */
   readonly title: string;
@@ -39,14 +27,9 @@ export interface JobReceipt {
   readonly tally: Readonly<Record<ProofKind, number>>;
   /** True when the description was longer than MAX_CHARS and only the start was read. */
   readonly truncated: boolean;
-  /** Requirements outside the skill map. Only a model reading finds these. */
-  readonly unmapped: readonly Unmapped[];
-  readonly readBy: ReadBy;
 }
 
 export const MAX_CHARS = 20_000;
-/** The most the Bedrock reader accepts; longer descriptions are sent from the start. */
-export const READ_MAX_CHARS = 8_000;
 
 const NICE_HEADING = /\b(?:nice[\s-]to[\s-]haves?|good[\s-]to[\s-]haves?|preferred|bonus(?:\s+points)?|pluses|desirable|desired|optional|extra\s+credit)\b/i;
 const MUST_HEADING = /\b(?:requirements?|required|must[\s-]haves?|qualifications|what\s+you(?:'ll|\s+will)?\s+(?:need|bring|do)|you\s+(?:have|bring|will\s+need)|minimum|basic|responsibilities|about\s+the\s+role|the\s+role)\b/i;
@@ -127,78 +110,13 @@ export function readJob(description: string): JobReceipt {
     }
   });
 
-  const lines = inReadingOrder([...found.values()]);
-  return { title: titleOf(rows), lines, tally: tallyOf(lines), truncated, unmapped: [], readBy: { kind: "browser" } };
-}
+  const order = (line: JobLine): number => (line.priority === "must" ? 0 : 1);
+  const lines = [...found.values()].sort((a, b) => order(a) - order(b) || a.at[0] - b.at[0] || a.at[1] - b.at[1]);
 
-/** Must-haves first, then nice-to-haves, each in the order the description says them. */
-function inReadingOrder<T extends { readonly priority: Priority; readonly at: readonly [number, number] }>(items: readonly T[]): T[] {
-  const order = (item: T): number => (item.priority === "must" ? 0 : 1);
-  return [...items].sort((a, b) => order(a) - order(b) || a.at[0] - b.at[0] || a.at[1] - b.at[1]);
-}
-
-function tallyOf(lines: readonly JobLine[]): Record<ProofKind, number> {
   const tally: Record<ProofKind, number> = { proven: 0, partial: 0, none: 0 };
   for (const line of lines) tally[line.skill.proof.kind] += 1;
-  return tally;
-}
 
-// ---------- a closer reading by a model on Bedrock ----------
-
-const SKILL_BY_ID: ReadonlyMap<string, Skill> = new Map(SKILLS.map((skill) => [skill.id, skill]));
-const squash = (text: string): string => text.replace(/\s+/g, " ").trim().toLowerCase();
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
-
-/** Where a quote first appears: [row, column], or after the last row if it spans lines. */
-function locate(rows: readonly string[], quote: string): readonly [number, number] {
-  const needle = squash(quote);
-  for (const [r, row] of rows.entries()) {
-    const column = squash(row).indexOf(needle);
-    if (column >= 0) return [r, column];
-  }
-  return [rows.length, 0];
-}
-
-/**
- * Merges a model's reading (the reader Lambda's JSON) into this browser's receipt.
- * The model can only add what the description says and the skill map holds: every
- * quote must appear in the description and every skill id must exist, or the item
- * is ignored, here as well as in the Lambda. Its sense of must-have vs nice-to-have
- * wins, since it reads phrases like "would be valued" that patterns miss; skills it
- * missed but the patterns found are kept. Returns null if the answer isn't a reading.
- */
-export function applyReading(description: string, base: JobReceipt, reading: unknown): JobReceipt | null {
-  if (!isRecord(reading) || !Array.isArray(reading["requirements"])) return null;
-  const rows = description.split(/\r?\n/);
-  const whole = squash(description);
-  const found = new Map<string, JobLine>(base.lines.map((line) => [line.skill.id, line]));
-  const fromModel = new Set<string>();
-  const unmapped: Unmapped[] = [];
-
-  for (const item of reading["requirements"]) {
-    if (!isRecord(item)) continue;
-    const quote = typeof item["quote"] === "string" ? item["quote"].trim() : "";
-    if (!quote || quote.length > 160 || !whole.includes(squash(quote))) continue;
-    const priority: Priority = item["priority"] === "nice" ? "nice" : "must";
-    const skillId = item["skill"];
-
-    if (skillId === null || skillId === "none") {
-      if (!unmapped.some((u) => squash(u.quote) === squash(quote))) unmapped.push({ quote, priority, at: locate(rows, quote) });
-      continue;
-    }
-    const skill = typeof skillId === "string" ? SKILL_BY_ID.get(skillId) : undefined;
-    if (!skill) continue;
-
-    const earlier = found.get(skill.id);
-    const merged = fromModel.has(skill.id) && earlier?.priority === "must" ? "must" : priority;
-    found.set(skill.id, { skill, priority: merged, said: quote, at: earlier?.at ?? locate(rows, quote) });
-    fromModel.add(skill.id);
-  }
-
-  const lines = inReadingOrder([...found.values()]);
-  const model = typeof reading["model"] === "string" && reading["model"].trim() ? reading["model"].trim() : "A model on Amazon Bedrock";
-  const ms = typeof reading["ms"] === "number" && Number.isFinite(reading["ms"]) ? reading["ms"] : 0;
-  return { ...base, lines, tally: tallyOf(lines), unmapped: inReadingOrder(unmapped), readBy: { kind: "model", model, ms } };
+  return { title: titleOf(rows), lines, tally, truncated };
 }
 
 /** Where a piece of evidence lives, as a link and a short label. */
@@ -234,14 +152,8 @@ export function receiptText(receipt: JobReceipt, pageUrl: string, deployCommit =
     }
     out.push("");
   }
-  if (receipt.unmapped.length) {
-    out.push("NOT ON MY SKILL MAP");
-    for (const { quote } of receipt.unmapped) out.push(`[?] "${quote}": ask me`);
-    out.push("");
-  }
   const { proven, partial, none } = receipt.tally;
-  out.push(`Proven ${proven} · Partial ${partial} · No receipt ${none} (of ${receipt.lines.length} requirements on my skill map)`);
-  if (receipt.readBy.kind === "model") out.push(`Read by ${receipt.readBy.model} on Amazon Bedrock; every line quotes the description.`);
+  out.push(`Proven ${proven} · Partial ${partial} · No receipt ${none} (of ${receipt.lines.length} requirements I recognised)`);
   out.push("Every ✓ links to public code. Every ✗ is a gap I won't paper over.");
   out.push(pageUrl);
   return out.join("\n");

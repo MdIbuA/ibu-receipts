@@ -81,8 +81,6 @@ export interface BuildInfo {
   readonly region?: string;
   readonly siteUrl?: string;
   readonly verifyUrl?: string;
-  /** The Bedrock job reader's address (READ_URL in Amplify); empty until it's switched on. */
-  readonly readUrl?: string;
   readonly builtAt?: string;
   readonly siteBytes?: number;
 }

@@ -594,10 +594,6 @@ a.rc-btn:hover { color: var(--rc-ink); }
 .rc-job__receipts { color: var(--rc-ink-2); }
 .rc-job__receipts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 .7rem; }
 .rc-job__receipts .claim { min-height: 24px; padding-block: .2rem; color: var(--rc-ink); }
-/* Outside the skill map: neither proof nor a gap, just a question to ask me. */
-.rc-job__item[data-proof="unmapped"] :is(.rc-job__mark, .rc-line__v) { color: var(--rc-self); }
-.rc-job__quote { margin: .1rem 0 0 1.4rem; color: var(--rc-ink-2); font-size: .72rem; font-style: italic; overflow-wrap: anywhere; }
-.rc-model { display: grid; gap: .45rem; justify-items: start; }
 
 /* the Contact section's way in */
 .contact__job {

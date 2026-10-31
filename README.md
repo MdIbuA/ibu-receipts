@@ -25,7 +25,7 @@ Click a number like `R² 0.94` or `30 typed tools` and a till-style receipt feed
 
 What else it does:
 
-- **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Every requirement it recognises prints as **Proven** (linked to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings. It runs entirely in the browser; nothing you paste is sent or saved.
+- **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Every requirement it recognises prints as **Proven** (linked to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings. It runs entirely in the browser; nothing you paste is sent or saved. A closer reading by Amazon Nova Micro on Bedrock is built and tested on the [`bedrock-reader`](https://github.com/MdIbuA/ibu-receipts/tree/bedrock-reader) branch, waiting on Bedrock access for my account.
 - **Coin vs. model.** A **Flip a coin against my model** button on the first screen prints the CryptoPulse receipt and flips a coin 100 times against my LSTM's 47.93% direction accuracy. The coin often wins, and the receipt says so.
 - **The itemized bill.** A summary receipt with claims verified, partial and self-reported, write-ups corrected, invented facts (0), and how many receipts *you* have audited.
 - **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #9 · commit cf4c242"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
@@ -63,7 +63,7 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 │       ├── types.ts              the receipts' honesty rules, as types
 │       ├── claims.ts             every claim: evidence, measurement, catch, correction
 │       ├── projects.ts           the repos evidence points into, each pinned to a commit
-│       ├── skills.ts             ~100 skills a job can ask for, and the proof for each
+│       ├── skills.ts             114 skills a job can ask for, and the proof for each
 │       ├── roles.ts              three sample job descriptions (written for the demo)
 │       ├── match.ts              reads a job description; pure, so Node tests it directly
 │       ├── job.ts                the job receipt's form and printout

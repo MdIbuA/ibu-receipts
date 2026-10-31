@@ -1,15 +1,14 @@
 /*
   The job receipt: paste a job description (or pick a sample) and the printer
-  itemizes it against what I can prove. The first reading happens in the browser
-  and sends nothing anywhere. A visitor can then ask a model on Bedrock to read
-  it closer; that sends the text to AWS once, and nothing is stored or logged.
+  itemizes it against what I can prove. Reading happens in the browser; the text
+  is never sent anywhere or saved.
 */
 import { deployCommit } from "./build.ts";
 import { claimById } from "./catalog.ts";
 import type { ClaimId } from "./claims.ts";
 import { el, vh, type Kid } from "./dom.ts";
 import { plural } from "./format.ts";
-import { evidenceLink, MAX_CHARS, READ_MAX_CHARS, receiptText, type JobLine, type JobReceipt, type Priority } from "./match.ts";
+import { evidenceLink, MAX_CHARS, receiptText, type JobLine, type JobReceipt, type Priority } from "./match.ts";
 import { barcode, header, lineItems, rule, stamp } from "./paper.ts";
 import { PROJECTS } from "./projects.ts";
 import { ROLES } from "./roles.ts";
@@ -25,11 +24,6 @@ const SECTION: Readonly<Record<Priority, string>> = { must: "Must have", nice: "
 export interface JobHandlers {
   /** Print a receipt for this description. */
   readonly print: (description: string) => void;
-}
-
-export interface ReceiptHandlers {
-  /** Ask the model on Bedrock to read the description closer; rejects if it can't. Null hides the offer. */
-  readonly readWithModel: (() => Promise<void>) | null;
 }
 
 // ---------- the form ----------
@@ -132,10 +126,7 @@ function receiptsFor(ids: readonly ClaimId[]): HTMLElement {
     ids.map((id) => el("button", { type: "button", class: "claim", "data-rc-open": id }, claimById(id).label, vh(", show receipt"))));
 }
 
-/** The description's own words for a line, shown when a model did the reading. */
-const quoted = (said: string): HTMLParagraphElement => el("p", { class: "rc-job__quote", text: `“${said}”` });
-
-function jobLine(line: JobLine, byModel: boolean): HTMLLIElement {
+function jobLine(line: JobLine): HTMLLIElement {
   const kind = line.skill.proof.kind;
   return el("li", { class: "rc-job__item", "data-proof": kind },
     el("p", { class: "rc-line rc-job__line" },
@@ -143,46 +134,18 @@ function jobLine(line: JobLine, byModel: boolean): HTMLLIElement {
       el("span", { class: "rc-line__k", text: line.skill.label }),
       el("span", { class: "rc-line__dots", "aria-hidden": "true" }),
       el("span", { class: "rc-line__v", text: STATUS[kind] })),
-    byModel && quoted(line.said),
     proofOf(line));
 }
 
-/** The offer to have a model on Bedrock read the description closer. */
-function readCloser(readWithModel: () => Promise<void>, truncated: boolean): HTMLElement {
-  const status = el("p", { class: "rc-job__status", "aria-live": "polite" });
-  const button = el("button", { type: "button", class: "rc-btn rc-btn--ink" }, "Read it with Amazon Bedrock");
-  button.addEventListener("click", async () => {
-    button.disabled = true;
-    status.textContent = "Amazon Nova Micro is reading the description…";
-    try {
-      await readWithModel(); // prints the closer reading in place of this receipt
-    } catch {
-      status.textContent = "Bedrock couldn't read it just now. The receipt above is my browser's own reading.";
-      button.disabled = false;
-    }
-  });
-  return el("section", { class: "rc-block rc-model" },
-    el("h3", { class: "rc-label", text: "Read it closer" }),
-    el("p", { class: "rc-job__hint", text: `My browser only knows the words on my skill map. Amazon Nova Micro on Bedrock reads the whole description, including requirements outside the map, but it can only quote your text and point at skills I can show you. This sends the description${truncated ? ` (its first ${READ_MAX_CHARS.toLocaleString("en")} characters)` : ""} to AWS once; nothing is stored or logged.` }),
-    button,
-    status);
-}
-
-export function renderJobReceipt(receipt: JobReceipt, pageUrl: string, handlers: ReceiptHandlers): HTMLElement {
-  const { lines, tally, unmapped, readBy } = receipt;
+export function renderJobReceipt(receipt: JobReceipt, pageUrl: string): HTMLElement {
+  const { lines, tally } = receipt;
   const role = receipt.title || "your role";
-  const byModel = readBy.kind === "model";
-  const kind = byModel ? `Job receipt, read by ${readBy.model}` : "Job receipt";
-  const offer = handlers.readWithModel && !byModel ? [rule(), readCloser(handlers.readWithModel, receipt.truncated)] : null;
 
-  if (!lines.length && !unmapped.length) {
+  if (!lines.length) {
     return el("article", { class: "rc-paper", "data-status": "itemized" },
-      header(kind, "bill"),
+      header("Job receipt", "bill"),
       el("h2", { id: "rc-title", class: "rc-title", tabindex: "-1", text: "Nothing I recognise yet" }),
-      el("p", { class: "rc-context", text: byModel
-        ? "The model found no requirements in that text. Paste the requirements section of a job description, or try a sample."
-        : "I couldn't find any skills I know in that text. Paste the requirements section of a job description, or try a sample." }),
-      offer,
+      el("p", { class: "rc-context", text: "I couldn't find any skills I know in that text. Paste the requirements section of a job description, or try a sample." }),
       rule(),
       el("div", { class: "rc-actions" },
         el("button", { type: "button", class: "rc-btn rc-btn--ink", "data-rc-job": true }, "Try again")),
@@ -207,37 +170,18 @@ export function renderJobReceipt(receipt: JobReceipt, pageUrl: string, handlers:
       rule(),
       el("section", { class: "rc-block", "aria-labelledby": `rc-job-${priority}` },
         el("h3", { class: "rc-label", id: `rc-job-${priority}`, text: `${SECTION[priority]} · ${group.length}` }),
-        el("ol", { class: "rc-job" }, group.map((line) => jobLine(line, byModel))))
+        el("ol", { class: "rc-job" }, group.map(jobLine)))
     ];
   });
 
-  const outside = unmapped.length > 0 && [
-    rule(),
-    el("section", { class: "rc-block", "aria-labelledby": "rc-job-unmapped" },
-      el("h3", { class: "rc-label", id: "rc-job-unmapped", text: `Not on my skill map · ${unmapped.length}` }),
-      el("ol", { class: "rc-job" }, unmapped.map((item) =>
-        el("li", { class: "rc-job__item", "data-proof": "unmapped" },
-          el("p", { class: "rc-line rc-job__line" },
-            el("span", { class: "rc-job__mark", "aria-hidden": "true", text: "?" }),
-            el("span", { class: "rc-line__k", text: item.quote }),
-            el("span", { class: "rc-line__dots", "aria-hidden": "true" }),
-            el("span", { class: "rc-line__v", text: "Ask me" })),
-          el("p", { class: "rc-job__note", text: item.priority === "nice" ? "A nice-to-have I can't map to proof yet." : "Not something I can point you to proof for here." })))))
-  ];
-
-  const share = lines.length ? tally.proven / lines.length : 0;
+  const share = tally.proven / lines.length;
   const subject = encodeURIComponent(`Your job receipt: ${role}`);
-  const context = byModel
-    ? `${readBy.model} read it${readBy.ms > 0 ? ` in ${(readBy.ms / 1000).toFixed(1)} s` : ""}: ${plural(lines.length, "requirement")} on my skill map${unmapped.length ? `, ${unmapped.length} outside it` : ""}. Every line quotes your description.`
-    : `I recognised ${plural(lines.length, "requirement")}${receipt.truncated ? `, reading the first ${MAX_CHARS.toLocaleString("en")} characters` : ""}.`;
 
   return el("article", { class: "rc-paper", "data-status": "itemized" },
-    header(kind, "bill"),
+    header("Job receipt", "bill"),
     el("h2", { id: "rc-title", class: "rc-title", tabindex: "-1", text: `Receipt for: ${role}` }),
-    el("p", { class: "rc-context", text: context }),
+    el("p", { class: "rc-context", text: `I recognised ${plural(lines.length, "requirement")}${receipt.truncated ? `, reading the first ${MAX_CHARS.toLocaleString("en")} characters` : ""}.` }),
     sections,
-    outside,
-    offer,
     rule(),
     lineItems([
       { k: "Proven, with public code", v: String(tally.proven) },
@@ -246,9 +190,7 @@ export function renderJobReceipt(receipt: JobReceipt, pageUrl: string, handlers:
       { k: "Invented to fit your job", v: "0" }
     ]),
     rule(),
-    el("p", { class: "rc-job__hint", text: byModel
-      ? "Every ✓ links to public code. Every ✗ is a gap I won't paper over. The model only picked lines; every proof on this receipt was already on my page."
-      : "Every ✓ links to public code. Every ✗ is a gap I won't paper over. I only itemize skills I recognise; for anything else in your description, ask me." }),
+    el("p", { class: "rc-job__hint", text: "Every ✓ links to public code. Every ✗ is a gap I won't paper over. I only itemize skills I recognise; for anything else in your description, ask me." }),
     el("div", { class: "rc-actions" },
       copy,
       el("a", { class: "rc-btn", href: `mailto:${EMAIL}?subject=${subject}` }, "Email me about this role"),

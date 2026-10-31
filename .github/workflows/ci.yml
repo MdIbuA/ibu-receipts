@@ -31,7 +31,5 @@ jobs:
         run: npm test
       - name: Compile src/ into site/
         run: npm run build
-      - name: Test the Lambdas (Python)
-        run: python3 -m unittest discover -s infra/recheck/tests -v
       - name: Read every skill's evidence at its pinned commit
         run: npm run evidence

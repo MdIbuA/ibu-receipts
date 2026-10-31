@@ -14,8 +14,7 @@
     "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test \"test/**/*.test.ts\"",
     "check": "npm run typecheck && npm test && npm run build",
     "evidence": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/check-evidence.ts",
-    "serve": "npm run build && node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/serve.ts",
-    "catalog": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/export-catalog.ts"
+    "serve": "npm run build && node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/serve.ts"
   },
   "devDependencies": {
     "@types/node": "22.20.5",
