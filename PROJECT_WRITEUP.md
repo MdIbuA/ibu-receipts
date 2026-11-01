@@ -1,11 +1,5 @@
 # I keep receipts: a portfolio where every claim proves itself
 
-> **Before you submit (delete this block):**
-> 1. Open every receipt and click its evidence links yourself. "How I built it" says you reviewed them, so make that true.
-> 2. Read the whole post aloud once and change anything that doesn't sound like you.
-> 3. Add the challenge's tag when you post it on AWS Builder Center; the challenge page names it.
-> 4. The images load from GitHub, so they show up anywhere Markdown images work. If the editor wants uploads instead, upload `docs/architecture.png` and the PNGs from `docs/screenshots/` in the same order.
-
 **Live site:** https://main.d1nj3qfdmf673t.amplifyapp.com · **Code:** https://github.com/MdIbuA/ibu-receipts (MIT) · **Hosted on:** AWS Amplify Hosting
 
 Most portfolios ask you to take their word for it. Mine prints receipts.
@@ -142,7 +136,7 @@ The console, with my account ID hidden:
 6. **The rules, as types.** I moved the code to TypeScript 7 under every strict flag. A verified receipt that cites nothing doesn't compile, and neither does evidence that points at a branch instead of a commit; a file of deliberately dishonest receipts proves the compiler still refuses them. 179 tests hold the page, the job reader, the résumé and Chit to the data, and in CI a script re-reads all 133 pieces of evidence at their pinned commits.
 7. **The job receipt, the résumé, the motion and Chit.** With the rules in types, each new feature came cheap: the job receipt reuses the skill map, the résumé is printed from the claims, the scroll animations are CSS that reduced-motion visitors never see, and Chit answers from the claims, the skill map and the page's own lines.
 
-I tested at 360px and on desktop, with the keyboard alone, in light and dark mode, with reduced motion, and under the production security headers, with axe reporting zero violations. The scroll motion has its own test across six screen sizes: every animation must finish before mid-screen, nothing may scroll a phone sideways, and a browser without scroll-driven animations must get the finished page. Chit has its own too, 57 checks in headless Chrome: its hello, typing and suggestions, the printer beside it on a wide screen and taking turns on a phone, the way back, Escape, a pasted job description, a jailbreak attempt, reduced motion and dark mode.
+I tested at 360px and on desktop, with the keyboard alone, in light and dark mode, with reduced motion, and under the production security headers, with axe reporting zero violations. The scroll motion has its own test across six screen sizes: every animation must finish before mid-screen, nothing may scroll a phone sideways, and a browser without scroll-driven animations must get the finished page. Chit has its own too, 58 checks in headless Chrome: its hello, typing and suggestions, the printer beside it on a wide screen and taking turns on a phone, the way back, Escape, a pasted job description, a jailbreak attempt, reduced motion and dark mode.
 
 ## Challenges and how I solved them
 
