@@ -2,7 +2,7 @@
 
 Save each one as a PNG in `docs/screenshots/` with exactly this filename. README.md and PROJECT_WRITEUP.md already point at these names.
 
-**Status (Nov 1): all 26 are captured.** The website shots (#8–15, #20–26) come from the live site at build #10 (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
+**Status (Nov 1): all 28 are captured.** The website shots (#8–15, #20–28) come from the live site at build #11 (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
 
 **Keep the build numbers consistent.** Screenshot-only pushes don't change the site, so end their commit message with `[skip-cd]`. Amplify then skips the build, and the live receipt keeps showing the same build as your console screenshots:
 
@@ -57,6 +57,13 @@ The animations run on the scroll position, so each shot is a frame taken at an e
 | 24 | `24-scroll-motion.png` | Desktop, scrolled until the Superpowers section's top edge is 230px above the bottom | The scissors near the end of their cut along the dashed perforation, `02` stamped, and the title half printed. **Captured.** |
 | 25 | `25-visit-tape.png` | Desktop at 1440px: stay on each section for two seconds, then scroll to the end | The visit receipt in the left margin: `01 About` to `04 Contact`, each ticked, stamped **Read in full**. **Captured.** |
 | 26 | `26-scroll-motion-mobile.png` | Device mode 360, About's top edge three quarters of the way down the screen | The scissors mid-cut on a phone, `01` stamped and "About me" printing, with no sideways scrolling. **Captured.** |
+
+## The résumé
+
+| # | File | Where | Must be visible |
+|---|---|---|---|
+| 27 | `27-resume.png` | Live site → `/resume/` at 1440×900 | The receipt-style résumé: name, contact, the Verified / Partial / Self-reported legend, the profile, and **Download the PDF**. **Captured.** |
+| 28 | `28-resume-pdf.png` | `/resume/` laid out as `npm run resume:pdf` prints it (print media), at Selected work | Projects with their receipt numbers and stamps, headline lines (CryptoPulse's 0.9402 beside its 47.93%), catches, corrections and evidence links. **Captured.** |
 
 ## The live portfolio (proves completeness and usability)
 
