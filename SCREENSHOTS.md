@@ -2,7 +2,7 @@
 
 Save each one as a PNG in `docs/screenshots/` with exactly this filename. README.md and PROJECT_WRITEUP.md already point at these names.
 
-**Status (Oct 30): all 23 are captured.** The website shots (#8–15, #20–23) come from the live site at build #9 (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
+**Status (Nov 1): all 26 are captured.** The website shots (#8–15, #20–26) come from the live site at build #10 (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
 
 **Keep the build numbers consistent.** Screenshot-only pushes don't change the site, so end their commit message with `[skip-cd]`. Amplify then skips the build, and the live receipt keeps showing the same build as your console screenshots:
 
@@ -47,6 +47,16 @@ git push
 |---|---|---|---|
 | 22 | `22-job-receipt.png` | Live site → `#job-cloud-intern` | A job receipt for the sample cloud intern role: proven lines with their file:line links, and at least one **No receipt** line. **Captured.** |
 | 23 | `23-job-receipt-mobile.png` | Device mode 360 → `#job-ml-engineer`, scrolled to the end | The totals (Proven, Partial, No receipt, Invented 0) and the "N of M proven" stamp. **Captured.** |
+
+## The scroll motion
+
+The animations run on the scroll position, so each shot is a frame taken at an exact scroll offset.
+
+| # | File | Where | Must be visible |
+|---|---|---|---|
+| 24 | `24-scroll-motion.png` | Desktop, scrolled until the Superpowers section's top edge is 230px above the bottom | The scissors near the end of their cut along the dashed perforation, `02` stamped, and the title half printed. **Captured.** |
+| 25 | `25-visit-tape.png` | Desktop at 1440px: stay on each section for two seconds, then scroll to the end | The visit receipt in the left margin: `01 About` to `04 Contact`, each ticked, stamped **Read in full**. **Captured.** |
+| 26 | `26-scroll-motion-mobile.png` | Device mode 360, About's top edge three quarters of the way down the screen | The scissors mid-cut on a phone, `01` stamped and "About me" printing, with no sideways scrolling. **Captured.** |
 
 ## The live portfolio (proves completeness and usability)
 

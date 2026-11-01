@@ -28,14 +28,17 @@ So for this challenge I asked: what if my portfolio followed the same rule? The 
 - **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Each requirement prints as **Proven** (with a link to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings, and it runs entirely in the browser: nothing you paste is sent or saved.
 - **Coin vs. model.** The first screen has a **Flip a coin against my model** button. It prints the CryptoPulse receipt and races a coin, flipped 100 times, against my model's 47.93%. The coin often wins, and the receipt says so.
 - **The itemized bill.** The printer tab opens a summary: 14 claims, how many are backed by public proof, partial or self-reported, write-ups the code corrected, invented facts (0), and how many receipts *you* have audited.
-- **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #9 · commit cf4c242"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
+- **The page's own receipt.** On the first screen, the hero receipt shows which Amplify build and commit you're looking at ("Live on AWS Amplify · build #10 · commit 13c01dc"). Click that, or the footer's "deployed on AWS Amplify", and you get the full receipt: app, branch, build number and commit, written into the page by the Amplify build at deploy time. I didn't type them. AWS did.
 - **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda fetches that receipt's evidence from GitHub, at the exact commit it cites, and checks it again while you watch. For example, it confirms the registry still holds 30 tool schemas and the notebook still prints 47.93%. On the page's own receipt, it asks the AWS Amplify API which build is live, and the page confirms it was built by that exact build.
+- **The page prints itself as you scroll.** Scissors cut each section's top edge into a perforation, section numbers are stamped, titles print line by line, cards feed up a beat apart, and my email address types itself. It's all CSS scroll-driven animation, so the scroll position is the clock and nothing waits on a script. On wide screens, a little receipt in the margin prints a line for each section you stay to read, and stamps "Read in full" at the end.
 
 ![A job receipt for a sample cloud intern role: TypeScript, Amazon S3 and CI/CD proven with links to the exact file and line, and DynamoDB printed as No receipt](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/22-job-receipt.png)
 
 ![Captured at build #8: the page's own receipt (build #8, commit 6dd2cda) next to Amplify's build #8, whose log prints the same commit](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
 
 ![Re-check on the page's own receipt: the AWS Amplify API reports the live build, and the page confirms it was built by that exact build](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/21-site-recheck-aws.png)
+
+![Mid-scroll: scissors finish cutting the Superpowers section's top edge while its number is stamped and its title prints](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/24-scroll-motion.png)
 
 **How you find it in ten seconds.** The first screen has a dashed **"How to read this page"** box that names the first claim to try (`R² 0.94`, which pulses a few times to catch your eye), a receipt-shaped **stub** that prints itself out of a little printer slot the first time you see it ("Printed for you at 10:42"), stamped with the live Amplify build, and a printer **tab** in the corner reading `0/14`. Three buttons sit in the hint: **Print a receipt for your job**, **Flip a coin against my model** and **Highlight all 14 claims**.
 
@@ -108,8 +111,9 @@ There's no database: nothing here needs state, and CloudWatch already keeps the 
 - **Types can keep a promise.** "A verified receipt cites evidence" used to be a rule I had to remember. As a type, the compiler keeps it for me, and a test file of dishonest receipts proves the compiler still refuses them.
 - **The deploy can testify for itself.** Amplify's build variables let the page show which build and commit it came from, which is more convincing than any "hosted on AWS" badge.
 - **A playful feature still has to be a good citizen.** I made it a non-modal panel instead of a modal, returned focus on Escape, supported reduced motion, and gave visitors without JavaScript plain links. The fun layer can't cost a recruiter anything.
+- **Motion should follow the reader, not a timer.** Tying every animation to the scroll position means nothing plays while you aren't looking and nothing waits on a script, and a visitor who prefers reduced motion, or whose browser can't do it, simply gets the finished page.
 - **A backend can be tiny and still earn its place.** One route and one Lambda add the one thing a static page can't do: an independent, live check that the evidence still says what the receipt claims.
-- **Small is fast.** A visitor's first load is about 87 KB over the wire on a desktop (110 KB on a phone, which gets a sharper photo), and my photo is the biggest file in it. System fonts and inline SVG did the design work, and the TypeScript compiles to plain modules, with no framework to download.
+- **Small is fast.** A visitor's first load is about 91 KB over the wire on a desktop (110 KB on a phone, which gets a sharper photo), and my photo is the biggest file in it. System fonts and inline SVG did the design work, and the TypeScript compiles to plain modules, with no framework to download.
 
 ## Challenges and how I solved them
 
@@ -119,7 +123,8 @@ There's no database: nothing here needs state, and CloudWatch already keeps the 
 | On phones the receipt sheet covers most of the screen | It never covers the header nav, and it closes as soon as you tap a section link |
 | GitHub can't deep-link a notebook cell | The receipt links the notebook and names the cell ("Evaluating Model") |
 | A section highlight in the nav stuck after scrolling back to the top | Clear the current section when it leaves the viewport band, not only when another enters |
-| The print animation is fun once and annoying for some people | `prefers-reduced-motion` disables printing, stamping and pulsing in both CSS and JS |
+| The print animation is fun once and annoying for some people | `prefers-reduced-motion` disables printing, stamping, pulsing and every scroll animation, in both CSS and JS |
+| Scroll animations that end partway through an element's journey never finish for the last lines on a tall screen, because the page can't scroll that far | Every animation ends a fixed distance after its element enters. A test scrolls the page at six screen sizes and fails if anything is unfinished at the bottom, or makes a phone scroll sideways |
 | Amplify's first build reported its commit as `HEAD`, so the site's receipt printed "HEAD" instead of a hash | The stamp script now resolves anything that isn't a full hash with `git rev-parse HEAD` in the build's clone |
 | On a 360px phone, the floating receipts tab sat on top of the hint's buttons on the first screen | The tab tucks away while the hint is on screen and comes back once you scroll past it |
 | An accessibility scan (axe) flagged the hero receipt as an `<aside>` nested inside another landmark | Made it a labelled group; axe now reports zero issues at phone and desktop sizes |
@@ -132,6 +137,7 @@ There's no database: nothing here needs state, and CloudWatch already keeps the 
 | I wanted Amazon Nova Micro on Bedrock to read job descriptions more closely than patterns can, but Bedrock answers "Operation not allowed" for every model on my new account | Shipped the browser reader, which needs no backend. The Bedrock reader (its own least-privilege Lambda, with every quote checked against the description) is built and tested on the [`bedrock-reader`](https://github.com/MdIbuA/ibu-receipts/tree/bedrock-reader) branch, ready for when my account can use Bedrock |
 | Some local servers send `.js` as `text/plain`, and browsers refuse to run ES modules that way | A zero-dependency `npm run serve` that sends the right type |
 | WCAG 2.2's target-size rule flagged the job receipt's small evidence links | Every link and button keeps a 24px target; axe reports zero issues with the job receipt open |
+| CI went red once because YouTube rate-limited the evidence check on GitHub's runner (HTTP 429), though no link was broken | The check now retries rate limits the way it retries server errors, honouring `Retry-After`, and asks for each link once |
 
 ## Links
 

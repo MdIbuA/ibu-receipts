@@ -28,8 +28,9 @@ What else it does:
 - **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Every requirement it recognises prints as **Proven** (linked to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings. It runs entirely in the browser; nothing you paste is sent or saved. A closer reading by Amazon Nova Micro on Bedrock is built and tested on the [`bedrock-reader`](https://github.com/MdIbuA/ibu-receipts/tree/bedrock-reader) branch, waiting on Bedrock access for my account.
 - **Coin vs. model.** A **Flip a coin against my model** button on the first screen prints the CryptoPulse receipt and flips a coin 100 times against my LSTM's 47.93% direction accuracy. The coin often wins, and the receipt says so.
 - **The itemized bill.** A summary receipt with claims verified, partial and self-reported, write-ups corrected, invented facts (0), and how many receipts *you* have audited.
-- **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #9 · commit cf4c242"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
+- **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #10 · commit 13c01dc"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
 - **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda behind API Gateway fetches the evidence from GitHub at the pinned commit and runs that claim's checks again, live. There are 31 checks across 13 claims. On the page's own receipt, it asks the Amplify API which build is live.
+- **The page prints itself as you scroll.** Scissors cut each section's top edge into a perforation, section numbers are stamped and titles print line by line, cards feed up a beat apart, proof lines get a highlighter pass and the email address types itself. It's all CSS scroll-driven animation (`site/assets/motion.css`): the scroll position is the clock, so no script decides what shows, and reduced-motion visitors and older browsers get the finished page. On screens 1440px and wider, a small receipt in the margin prints a line for each section you stay to read.
 
 ### Why this is me
 
@@ -47,18 +48,18 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 
 - Claims become real `<button>`s with accessible names ("R² 0.94, show receipt"). Enter or Space opens a receipt, focus moves to the receipt's title, and Escape closes it and returns focus to the claim.
 - The receipt panel is a labelled, non-modal `role="dialog"`; evidence links announce that they open a new tab.
-- `prefers-reduced-motion` turns off the printing, stamping and nudge animations (in CSS and JS).
+- `prefers-reduced-motion` turns off the printing, stamping and nudge animations and every scroll animation (in CSS and JS). Keyboard focus never lands on a half-drawn card: anything holding focus skips straight to its finished state.
 - Text contrast meets WCAG AA in both light and dark themes. Receipt paper stays light in both, so receipt text keeps its contrast.
 - The job receipt is a labelled form (Ctrl+Enter prints). Each result line says its status in words (Proven, Partial, No receipt), never by colour or ✓/✗ alone, and every link and button keeps a 24px target (WCAG 2.2).
 - The portrait has alt text; decorative icons and barcodes are `aria-hidden`.
-- Tested at 360px wide, with no horizontal scrolling, and with axe: no violations of WCAG 2.2 AA or best practice, with a receipt, the job form or a job receipt open.
+- Tested at 360px wide, with no horizontal scrolling at any scroll position, and with axe: no violations of WCAG 2.2 AA or best practice, with a receipt, the job form or a job receipt open, and at the top and bottom of the page.
 
 ## Project structure
 
 ```
 .
 ├── src/                          ← TypeScript, compiled into site/ with the same layout
-│   ├── assets/site.ts            highlights the nav link for the section on screen
+│   ├── assets/site.ts            highlights the nav link on screen; prints the visit receipt
 │   └── feature/receipts/         ← the creative feature
 │       ├── types.ts              the receipts' honesty rules, as types
 │       ├── claims.ts             every claim: evidence, measurement, catch, correction
@@ -71,7 +72,7 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 │       └── main.ts …             wiring, re-check, coin race, the hero stub
 ├── site/                         ← everything Amplify publishes (baseDirectory)
 │   ├── index.html                About · Superpowers · Projects & achievements · Contact
-│   ├── assets/                   site.css, images (the .js is compiled, never committed)
+│   ├── assets/                   site.css, motion.css (scroll animations), images (the .js is compiled, never committed)
 │   └── feature/receipts/         receipts.css; build-info.js (written by the Amplify build)
 ├── test/                         unit tests (node:test) and type-level tests (types.check.ts)
 ├── scripts/
@@ -100,7 +101,7 @@ The site is TypeScript 7 under every strict flag, compiled by `tsc` into plain E
 - **The evidence is re-read** (`npm run evidence`): every file the skill map points at is fetched at its pinned commit, and its line must still show the named text.
 - **Nothing ships unchecked.** The Amplify build runs the type check and the tests before it compiles anything, so a broken rule stops the deploy. GitHub Actions runs the same on every push, plus the evidence check.
 
-Everything the site ships totals about 370 KB, mostly images (my portrait and the link-preview card). A visitor's first load is about 87 KB over the wire on a desktop and 110 KB on a phone. The JavaScript is 28 KB gzipped, and the browser fetches every module at once through `modulepreload` hints.
+Everything the site ships totals 376 KB, mostly images (my portrait and the link-preview card). A visitor's first load is about 91 KB over the wire on a desktop and 110 KB on a phone. The JavaScript is 33 KB compressed, and the browser fetches every module at once through `modulepreload` hints. The scroll animations are one 3 KB stylesheet, with no script.
 
 ## Run it locally
 
@@ -156,7 +157,8 @@ Link evidence with **commit permalinks** (on GitHub, open the file and press `y`
 | | |
 |---|---|
 | ![Desktop: a printed receipt](docs/screenshots/10-feature-receipt-desktop.png) | ![Mobile: the receipt as a bottom sheet](docs/screenshots/11-feature-receipt-mobile.png) |
-| ![The itemized bill](docs/screenshots/12-feature-bill.png) | ![The page's own receipt, written by the Amplify build: build #9, commit cf4c242](docs/screenshots/15-live-site-receipt.png) |
+| ![The itemized bill](docs/screenshots/12-feature-bill.png) | ![The page's own receipt, written by the Amplify build: build #10, commit 13c01dc](docs/screenshots/15-live-site-receipt.png) |
+| ![Mid-scroll: scissors finish cutting the Superpowers section's top edge while its number is stamped and its title prints](docs/screenshots/24-scroll-motion.png) | ![The visit receipt in the margin after reading every section: Read in full](docs/screenshots/25-visit-tape.png) |
 | ![A job receipt: proven skills linked to the exact file and line, and DynamoDB printed as No receipt](docs/screenshots/22-job-receipt.png) | ![A job receipt's totals on a phone, stamped 11 of 17 proven](docs/screenshots/23-job-receipt-mobile.png) |
 
 ## Credits
