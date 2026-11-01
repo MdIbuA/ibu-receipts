@@ -2,7 +2,7 @@
 
 Save each one as a PNG in `docs/screenshots/` with exactly this filename. README.md and PROJECT_WRITEUP.md already point at these names.
 
-**Status (Nov 1): all 28 are captured.** The website shots (#8–15, #20–28) come from the live site at build #11 (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
+**Status (Nov 1): all 31 are captured.** The website shots (#8–15, #20–31) come from the live site at build #12 (headless Chrome, light mode; desktop 1440×900, phone 360×740 at 2×). The AWS console shots (#1–7, #16–19) were taken on Oct 30 in a signed-in console window, with the account ID masked in the page before each capture.
 
 **Keep the build numbers consistent.** Screenshot-only pushes don't change the site, so end their commit message with `[skip-cd]`. Amplify then skips the build, and the live receipt keeps showing the same build as your console screenshots:
 
@@ -67,12 +67,13 @@ The animations run on the scroll position, so each shot is a frame taken at an e
 
 ## Chit, the printer you can ask
 
-Capture these from the live site after the deploy that ships Chit, so the hero stub behind it shows a real build.
+Every website shot waits out Chit's six-second hello first, except #31, which is the hello.
 
 | # | File | Where | Must be visible |
 |---|---|---|---|
-| 29 | `29-chit.png` | Desktop 1440×900 → click Chit in the bottom-left corner → ask "What's Ibu's best project?" | The question as a yellow note, the chit stamped **Verified** quoting "Start with my best-looking number" and the catch, the suggestion coupons, and Chit's face on the printer. **Not captured yet.** |
-| 30 | `30-chit-mobile.png` | Device mode 360 → hint box → **Ask the printer about me** → ask "Does Ibu know Kubernetes?" | The bottom sheet with **No receipt** stamped and Chit's worried face, with no sideways scrolling. **Not captured yet.** |
+| 29 | `29-chit.png` | Desktop 1440×900 → click Chit in the bottom-left corner → ask "What's Ibu's best project?" | The question as a yellow note, the chit stamped **Verified** quoting "Start with my best-looking number" and the catch, the suggestion coupons, and Chit's face on the printer. **Captured** (Chit winking). |
+| 30 | `30-chit-mobile.png` | Device mode 360 → hint box → **Ask the printer about me** → ask "Does Ibu know Kubernetes?" | The bottom sheet with **No receipt** stamped and Chit's worried face, with no sideways scrolling. **Captured.** |
+| 31 | `31-chit-hello.png` | Desktop at 2×, 2.6 seconds after the page opens, the bottom-left corner | Chit's hello above its head ("Good evening! I'm Chit.", by the clock) with Chit smiling and its "Ask me about Ibu" bubble. **Captured.** |
 
 ## The live portfolio (proves completeness and usability)
 

@@ -77,7 +77,7 @@ The hero's **Résumé, with receipts** button opens my résumé printed as one l
 
 ![Captured at build #8: the page's own receipt (build #8, commit 6dd2cda) next to Amplify's build #8, whose log prints the same commit](https://raw.githubusercontent.com/MdIbuA/ibu-receipts/main/docs/screenshots/07-site-receipt-vs-console.png)
 
-The hero's receipt names the Amplify build and commit you're looking at, for example "build #11 · commit 344399e". I don't type those numbers. The Amplify build stamps them into the page at deploy time, so the build in the Amplify console and the build on the page are the same one.
+The hero's receipt names the Amplify build and commit you're looking at, for example "build #12 · commit 3d38dbb". I don't type those numbers. The Amplify build stamps them into the page at deploy time, so the build in the Amplify console and the build on the page are the same one.
 
 ### Re-check it yourself, live on AWS Lambda
 
@@ -166,7 +166,7 @@ I tested at 360px and on desktop, with the keyboard alone, in light and dark mod
 - **A backend earns its place by doing what a static page can't.** One route and one Lambda add an independent, live check of the evidence.
 - **A chatbot can be honest by construction.** Chit can't make anything up because it has nothing to make it up with. It can only print what's on file, and the tests check every quote.
 - **A playful feature still has to be a good citizen.** Non-modal, keyboard-friendly, quiet for reduced motion, and plain links without JavaScript. The fun layer can't cost a recruiter anything.
-- **Small is fast.** A first desktop visit is about 91 KB over the wire, with no framework and system fonts.
+- **Small is fast.** A first desktop visit is about 124 KB over the wire, Chit included, with no framework and system fonts.
 
 ## What's next
 
