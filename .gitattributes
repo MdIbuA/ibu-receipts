@@ -9,3 +9,6 @@ amplify.yml text eol=lf
 *.webp      binary
 *.jpg       binary
 *.png       binary
+*.pdf       binary
+# the résumé's hash covers the bytes of its page, so they must match on every machine
+*.sha256    text eol=lf

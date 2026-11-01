@@ -31,6 +31,7 @@ What else it does:
 - **The page's own receipt.** The hero receipt shows which Amplify build and commit you're looking at (for example "Live on AWS Amplify · build #10 · commit 13c01dc"). That line, and the footer claim "deployed on AWS Amplify", print a receipt the Amplify build writes at deploy time: app, branch, build number and commit. I don't write those numbers. AWS does.
 - **Re-check it yourself.** Every receipt ends with **Re-check with AWS Lambda**. A Lambda behind API Gateway fetches the evidence from GitHub at the pinned commit and runs that claim's checks again, live. There are 31 checks across 13 claims. On the page's own receipt, it asks the Amplify API which build is live.
 - **The page prints itself as you scroll.** Scissors cut each section's top edge into a perforation, section numbers are stamped and titles print line by line, cards feed up a beat apart, proof lines get a highlighter pass and the email address types itself. It's all CSS scroll-driven animation (`site/assets/motion.css`): the scroll position is the clock, so no script decides what shows, and reduced-motion visitors and older browsers get the finished page. On screens 1440px and wider, a small receipt in the margin prints a line for each section you stay to read.
+- **A résumé with receipts.** [`/resume/`](https://main.d1nj3qfdmf673t.amplifyapp.com/resume/) prints my résumé as one long receipt, with a PDF to download. It's generated from the same typed claims as the receipts (`scripts/resume.ts`), so it can't say anything a receipt doesn't. Every claim links to its live receipt, leads with its headline numbers and prints its catch, and the totals at the bottom are the bill's. The PDF is real text, tagged for screen readers and applicant trackers.
 
 ### Why this is me
 
@@ -53,6 +54,7 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 - The job receipt is a labelled form (Ctrl+Enter prints). Each result line says its status in words (Proven, Partial, No receipt), never by colour or ✓/✗ alone, and every link and button keeps a 24px target (WCAG 2.2).
 - The portrait has alt text; decorative icons and barcodes are `aria-hidden`.
 - Tested at 360px wide, with no horizontal scrolling at any scroll position, and with axe: no violations of WCAG 2.2 AA or best practice, with a receipt, the job form or a job receipt open, and at the top and bottom of the page.
+- The résumé is headings, lists and real links, on a page and in a tagged PDF. axe reports no violations on it at desktop and phone sizes, or in dark mode.
 
 ## Project structure
 
@@ -73,11 +75,14 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 ├── site/                         ← everything Amplify publishes (baseDirectory)
 │   ├── index.html                About · Superpowers · Projects & achievements · Contact
 │   ├── assets/                   site.css, motion.css (scroll animations), images (the .js is compiled, never committed)
+│   ├── resume/                   the résumé as one long receipt, and its PDF (both printed by scripts/)
 │   └── feature/receipts/         receipts.css; build-info.js (written by the Amplify build)
 ├── test/                         unit tests (node:test) and type-level tests (types.check.ts)
 ├── scripts/
 │   ├── stamp-build.sh            runs in the Amplify build; writes build-info.js and the preview URLs
 │   ├── check-evidence.ts         reads every skill's evidence at its pinned commit (CI)
+│   ├── resume.ts                 prints the résumé page from the claims (npm run resume)
+│   ├── resume-pdf.ts             prints that page to its PDF with headless Chrome (npm run resume:pdf)
 │   ├── serve.ts                  a zero-dependency local preview server
 │   └── og/og.html                source of the 1200×630 link-preview image
 ├── infra/recheck/                the re-check API: SAM template + Lambda (src/app.py)
@@ -99,6 +104,7 @@ The site is TypeScript 7 under every strict flag, compiled by `tsc` into plain E
 - **The rules are types.** A `verified` claim must cite at least one link and can't print an unproven line. A skill is `proven` only by a file or a link. Evidence can only point into a project in `projects.ts`, and a commit is a branded `Sha` that only a 40-character hash can become. `test/types.check.ts` holds dishonest receipts that must fail to compile; if a rule ever loosens, the type check fails.
 - **The tests hold the page to its data** (`npm test`): every claim on the page exists in the data and the other way round, the counts printed without JavaScript match the data, every GitHub link is pinned to a commit, the content security policy's hash matches the page's one inline script, every evidence line in this repo says what it should, and the job reader handles the traps (Java vs. JavaScript, "go" the verb, React Native).
 - **The evidence is re-read** (`npm run evidence`): every file the skill map points at is fetched at its pinned commit, and its line must still show the named text.
+- **The résumé can't drift.** It's printed from the claims. A test fails if the committed page differs from what the script prints, if a project leads with a line its receipt doesn't have, or if the PDF is older than the page it was printed from (it stores the hash of what it printed).
 - **Nothing ships unchecked.** The Amplify build runs the type check and the tests before it compiles anything, so a broken rule stops the deploy. GitHub Actions runs the same on every push, plus the evidence check.
 
 Everything the site ships totals 376 KB, mostly images (my portrait and the link-preview card). A visitor's first load is about 91 KB over the wire on a desktop and 110 KB on a phone. The JavaScript is 33 KB compressed, and the browser fetches every module at once through `modulepreload` hints. The scroll animations are one 3 KB stylesheet, with no script.
@@ -116,6 +122,8 @@ npm run serve
 `npm run serve` compiles the TypeScript and serves `site/` on http://127.0.0.1:8000. Any static server works once you've run `npm run build`, as long as it serves `.js` as JavaScript; browsers won't run ES modules otherwise. Opened straight from disk, the page still reads fine but the receipts stay plain links, because browsers don't run modules from `file://`.
 
 `npm run check` runs the type check, the tests and the build; `npm run evidence` re-reads the evidence over the network.
+
+`npm run resume` reprints the résumé page from the claims, and `npm run resume:pdf` prints its PDF with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual place). Run both after changing a claim; the tests say when either is stale.
 
 To preview what the deployed site's own receipt will look like, fake the Amplify variables:
 
@@ -160,6 +168,10 @@ Link evidence with **commit permalinks** (on GitHub, open the file and press `y`
 | ![The itemized bill](docs/screenshots/12-feature-bill.png) | ![The page's own receipt, written by the Amplify build: build #10, commit 13c01dc](docs/screenshots/15-live-site-receipt.png) |
 | ![Mid-scroll: scissors finish cutting the Superpowers section's top edge while its number is stamped and its title prints](docs/screenshots/24-scroll-motion.png) | ![The visit receipt in the margin after reading every section: Read in full](docs/screenshots/25-visit-tape.png) |
 | ![A job receipt: proven skills linked to the exact file and line, and DynamoDB printed as No receipt](docs/screenshots/22-job-receipt.png) | ![A job receipt's totals on a phone, stamped 11 of 17 proven](docs/screenshots/23-job-receipt-mobile.png) |
+
+## License
+
+The code is under the [MIT License](LICENSE). My portrait and the writing about me (my bio, the résumé and the write-ups) aren't covered by it.
 
 ## Credits
 

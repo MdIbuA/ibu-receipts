@@ -28,5 +28,20 @@ export function printedAt(date = new Date()): string {
   }
 }
 
+/** Where a decorative barcode's bars go in a 160-wide box: the same for the same seed. */
+export function bars(seed: string): { readonly x: number; readonly w: number }[] {
+  const out: { x: number; w: number }[] = [];
+  let h = 2166136261;
+  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  for (let x = 4; x < 156;) {
+    h = (Math.imul(h, 1103515245) + 12345) >>> 0;
+    const w = 1 + (h >>> 30);
+    if (x + w > 156) break;
+    out.push({ x, w });
+    x += w + 1 + ((h >>> 27) & 1);
+  }
+  return out;
+}
+
 /** "1 requirement", "3 requirements". */
 export const plural = (n: number, noun: string): string => `${n} ${noun}${n === 1 ? "" : "s"}`;

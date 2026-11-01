@@ -4,7 +4,7 @@ import { CATALOG, isSiteClaim, shownStatus, tally, TOTAL, type Numbered } from "
 import { REPO, type ClaimId } from "./claims.ts";
 import { coinRace } from "./coin.ts";
 import { el, vh, type Kid } from "./dom.ts";
-import { kb, pad, printedAt, utc } from "./format.ts";
+import { bars, kb, pad, printedAt, utc } from "./format.ts";
 import { recheckBlock } from "./recheck.ts";
 import type { Evidence, Line } from "./types.ts";
 
@@ -62,18 +62,12 @@ export function barcode(seed: string): SVGSVGElement {
   svg.setAttribute("class", "rc-barcode");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
-  let h = 2166136261;
-  for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
-  for (let x = 4; x < 156;) {
-    h = (Math.imul(h, 1103515245) + 12345) >>> 0;
-    const w = 1 + (h >>> 30);
-    if (x + w > 156) break;
+  for (const { x, w } of bars(seed)) {
     const bar = document.createElementNS(NS, "rect");
     bar.setAttribute("x", String(x));
     bar.setAttribute("width", String(w));
     bar.setAttribute("height", "30");
     svg.append(bar);
-    x += w + 1 + ((h >>> 27) & 1);
   }
   return svg;
 }

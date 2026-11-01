@@ -1,0 +1,252 @@
+/* The résumé, printed as one long receipt (scripts/resume.ts writes the page).
+   Thermal paper stays light in both colour schemes, like the receipts on the portfolio.
+   The torn edges are painted, never masked: a mask or a filter would turn the PDF's
+   text into a picture that no one could select and no applicant tracker could read. */
+
+:root {
+  --desk: #f4eee2;
+  --desk-ink: #1f1c17;
+  --accent: #b3361f;
+  --focus: #1a5fd0;
+  --paper: #fffdf6;
+  --ink: #24211b;
+  --ink-2: #5b5549;
+  --rule: #b4ab99;
+  --verified: #1d6b40;
+  --partial: #8f5200;
+  --self: #3c4c78;
+  --fix: #b42318;
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --desk: #16140f;
+    --desk-ink: #f2ecdf;
+    --accent: #ff8a6b;
+    --focus: #8ab4ff;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  padding: 1rem clamp(.6rem, 3vw, 2rem) 4rem;
+  background: var(--desk);
+  color: var(--desk-ink);
+  font: 1rem/1.5 var(--mono);
+  overflow-wrap: break-word;
+}
+
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+
+/* ---------- the bar above the paper ---------- */
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 1.5rem;
+  max-width: 42rem;
+  margin: 0 auto 1.1rem;
+  font-size: .9rem;
+}
+.bar a { display: inline-flex; align-items: center; min-height: 44px; }
+.bar a:hover { color: var(--accent); }
+.bar__pdf {
+  padding: .5rem 1.05rem;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.bar .bar__pdf:hover { background: var(--desk-ink); color: var(--desk); border-color: var(--desk-ink); }
+
+/* ---------- the paper ---------- */
+
+.paper {
+  position: relative;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.4rem clamp(1rem, 4.5vw, 2.4rem) 2.6rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: .84rem;
+  line-height: 1.55;
+  box-shadow: 0 22px 44px -28px rgb(0 0 0 / .5);
+}
+/* Torn along the top and bottom: half-circle bites in the desk's colour. */
+.paper::before,
+.paper::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: radial-gradient(circle at 50% 0, var(--desk) 5px, transparent 5.5px) 0 0 / 13px 6px repeat-x;
+}
+.paper::before { top: 0; }
+.paper::after {
+  bottom: 0;
+  background-image: radial-gradient(circle at 50% 100%, var(--desk) 5px, transparent 5.5px);
+}
+
+.paper p { margin: 0; }
+.paper p + p { margin-top: .5rem; }
+
+.head { text-align: center; }
+.brand { font-weight: 800; letter-spacing: .26em; text-transform: uppercase; }
+.paper .tag { margin: .05rem 0 1.15rem; color: var(--ink-2); }
+h1 { margin: 0; font: 800 clamp(1.3rem, 4.8vw, 1.7rem)/1.15 var(--mono); letter-spacing: -.01em; }
+.paper .role { margin: .35rem 0 .7rem; }
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.contact a { display: inline-block; padding: .2rem 0; }
+.paper .printed { margin: .8rem 0 0; color: var(--ink-2); }
+.legend {
+  display: grid;
+  gap: .3rem;
+  justify-items: start;
+  width: fit-content;
+  margin: .85rem auto 0;
+  padding: .6rem .8rem;
+  border: 1.5px dashed var(--rule);
+  border-radius: 6px;
+  list-style: none;
+  text-align: left;
+  font-size: .92em;
+}
+/* the badge keeps its column, so a long description wraps beside it, not under it */
+.legend li { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: .55rem; align-items: baseline; }
+
+section { margin-top: 1.4rem; padding-top: 1.15rem; border-top: 1.5px dashed var(--rule); }
+h2 {
+  margin: 0 0 .85rem;
+  font: 800 .9em/1.2 var(--mono);
+  letter-spacing: .22em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.plain { display: grid; gap: .45rem; margin: .7rem 0 0; padding: 0; list-style: none; }
+.skills { margin: 0; }
+.skills b { display: block; }
+.skills span { color: var(--ink-2); }
+
+/* ---------- a receipt, itemized ---------- */
+
+.items { display: grid; gap: 1.15rem; margin: 0; padding: 0; list-style: none; }
+.item h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .25rem .8rem;
+  margin: 0;
+  font: 800 1.04em/1.35 var(--mono);
+}
+.item h3 a {
+  min-height: 24px;
+  text-decoration: underline dotted var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: .24em;
+}
+.item h3 a:hover { color: var(--fix); }
+.status {
+  flex: none;
+  display: inline-block;
+  padding: .02rem .4rem;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.status[data-status="verified"] { color: var(--verified); }
+.status[data-status="partial"] { color: var(--partial); }
+.status[data-status="self"] { color: var(--self); }
+.paper .sub { margin: .1rem 0 .5rem; color: var(--ink-2); }
+
+.lines { margin: 0; padding: 0; list-style: none; }
+.lines li { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .4rem; }
+.lines li + li { margin-top: .1rem; }
+.k { flex: 0 1 auto; }
+.dots {
+  flex: 1 1 1.5rem;
+  min-width: 1rem;
+  border-bottom: 1.5px dotted var(--rule);
+  transform: translateY(-.28em);
+}
+.v { margin-left: auto; font-weight: 800; text-align: right; }
+.v--none { color: var(--partial); }
+.totals { font-weight: 800; }
+
+.paper .note { margin-top: .5rem; color: var(--ink-2); font-size: .94em; }
+.note b { color: var(--ink); }
+.note--fix b { color: var(--fix); }
+.paper .proof { margin-top: .4rem; font-size: .94em; }
+/* small text, but every link keeps a 24px target (WCAG 2.2) */
+.proof a { display: inline-block; min-height: 24px; padding-block: .2rem; }
+
+/* ---------- the foot ---------- */
+
+.foot { display: grid; justify-items: center; gap: .7rem; margin-top: 1.6rem; text-align: center; }
+.paper .stamp {
+  margin: .4rem 0 .2rem;
+  padding: .4rem .85rem;
+  border: 3px double currentColor;
+  border-radius: 8px;
+  color: var(--verified);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  transform: rotate(-6deg);
+}
+.barcode { width: 100%; max-width: 16rem; height: 2.4rem; fill: var(--ink); }
+.thanks { font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.paper .live { color: var(--ink-2); font-size: .94em; }
+
+/* ---------- printed from the browser: plain pages, no desk ---------- */
+
+@media print {
+  body { padding: 0; background: none; }
+  .bar { display: none; }
+  .paper { max-width: none; padding: 0; box-shadow: none; }
+  .paper::before, .paper::after { display: none; }
+  .item, .lines li, .legend, .foot { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+}
+
+/* ---------- the PDF (scripts/resume-pdf.ts): one long receipt on a strip of desk ---------- */
+
+.edge { display: none; }
+
+html.pdf body { padding: 9mm 12mm; background: var(--desk); }
+/* No shadow: blurred down a page this long, it would print as one huge picture. */
+html.pdf .paper { width: 146mm; max-width: none; padding: 10mm 8mm 11mm; box-shadow: none; }
+/* The same torn edge as on screen, drawn as vector bites (see edge() in scripts/resume.ts). */
+html.pdf .edge {
+  display: block;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.32mm;
+  fill: var(--desk);
+}
+html.pdf .edge--top { top: 0; }
+html.pdf .edge--bottom { bottom: 0; }
