@@ -1,0 +1,308 @@
+/* Motion: the page prints itself as you scroll.
+
+   Scroll-driven CSS animations: the scroll position is the clock, and no script
+   decides when anything shows.
+     - Nothing is ever hidden from anyone. Browsers without scroll-driven animations,
+       visitors who prefer reduced motion, and printers get the finished page.
+     - Only paint moves (transforms, opacity, clips, filters, colours, backgrounds),
+       so the layout never shifts under someone reading.
+     - Each range ends a fixed distance after its element enters, so the last lines
+       on the page still finish on the tallest screens. */
+
+:root {
+  --m-perf: color-mix(in srgb, var(--ink-2) 55%, transparent);
+  --m-snip-open: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='3.8' cy='5.2' r='2.3'/%3E%3Ccircle cx='3.8' cy='12.8' r='2.3'/%3E%3Cpath d='M5.9 6.7L16.6 13.6M5.9 11.3L16.6 4.4'/%3E%3C/svg%3E");
+  --m-snip-shut: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='3.8' cy='5.2' r='2.3'/%3E%3Ccircle cx='3.8' cy='12.8' r='2.3'/%3E%3Cpath d='M5.9 6.7L16.6 9.5M5.9 11.3L16.6 8.5'/%3E%3C/svg%3E");
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+
+    /* ---------- how far you've read: an ink line along the header ---------- */
+
+    .top::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 -1px;
+      height: 2px;
+      background: var(--accent);
+      transform-origin: 0 50%;
+      animation: m-grow linear both;
+      animation-timeline: scroll(root block);
+    }
+
+    /* ---------- the hero stub swings on its slot as you leave it ---------- */
+
+    @media (min-width: 60em) {
+      .stub {
+        transform-origin: 50% 0;
+        animation: m-swing linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0px 80vh;
+      }
+    }
+
+    /* ---------- each section is torn off the roll: scissors cut its top edge ---------- */
+
+    .section {
+      position: relative;
+      view-timeline: --m-section block;
+    }
+    .section::before,
+    .section::after {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      pointer-events: none;
+      animation: linear both;
+      animation-timeline: --m-section;
+      animation-range: cover 0% cover 16rem;
+    }
+    /* the perforation, over the hairline border */
+    .section::before {
+      top: -1px;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--m-perf) 0 7px, transparent 7px 12px);
+      animation-name: m-perforate;
+    }
+    /* the scissors, snipping as they go; hidden unless the cut is running */
+    .section::after {
+      top: -9px;
+      height: 18px;
+      background: var(--accent);
+      -webkit-mask: var(--m-snip-open) 0 50% / 18px 18px no-repeat;
+      mask: var(--m-snip-open) 0 50% / 18px 18px no-repeat;
+      opacity: 0;
+      animation-name: m-cut;
+    }
+
+    /* ---------- section heads: the number is stamped, the title prints ---------- */
+
+    .section__num {
+      justify-self: start;
+      animation: m-stamp linear both;
+      animation-timeline: view();
+      animation-range: cover 1rem cover 9rem;
+    }
+    .section__head h2 {
+      animation: m-print steps(8, end) both;
+      animation-timeline: view();
+      animation-range: cover 2rem cover 12rem;
+    }
+    .section__intro,
+    .sub-head,
+    .mini-head,
+    .also > p {
+      animation: m-rise linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 10rem;
+    }
+
+    /* ---------- cards feed up, a beat apart across each row ---------- */
+
+    .power,
+    .card {
+      animation: m-feed linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 15rem;
+    }
+    @media (min-width: 46em) {
+      .powers .power:nth-child(2n) { animation-range: cover 3rem cover 18rem; }
+    }
+    @media (46em <= width < 72em) {
+      .cards .card:nth-child(2n) { animation-range: cover 3rem cover 18rem; }
+    }
+    @media (min-width: 72em) {
+      .cards .card:nth-child(3n + 2) { animation-range: cover 3rem cover 18rem; }
+      .cards .card:nth-child(3n) { animation-range: cover 6rem cover 21rem; }
+    }
+
+    /* the proof line gets a highlighter pass, then its tag is stamped */
+    .proof {
+      background: linear-gradient(var(--paper-2), var(--paper-2)) 0 0 / 0% 100% no-repeat;
+      animation: m-swipe linear both;
+      animation-timeline: view();
+      animation-range: cover 3rem cover 12rem;
+    }
+    .proof__tag {
+      display: inline-block;
+      animation: m-stamp linear both;
+      animation-timeline: view();
+      animation-range: cover 6rem cover 13rem;
+    }
+
+    /* ---------- rows come in like lines on a ledger ---------- */
+
+    .principles li,
+    .more li,
+    .ledger li {
+      animation: m-slide linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 9rem;
+    }
+
+    /* ---------- the portrait drops onto the desk and develops ---------- */
+
+    .portrait {
+      animation: m-drop linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 14rem;
+    }
+    .portrait img {
+      animation: m-develop linear both;
+      animation-timeline: view();
+      animation-range: cover 3rem cover 22rem;
+    }
+
+    /* ---------- every claim's underline inks in as it arrives ---------- */
+
+    .claim {
+      animation: m-ink linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+
+    /* ---------- contact: the address types itself, the links follow ---------- */
+
+    .contact__email {
+      display: inline-block;
+      animation: m-type steps(27, end) both;
+      animation-timeline: view();
+      animation-range: cover 2rem cover 12rem;
+    }
+    .links li {
+      animation: m-rise linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 7rem;
+    }
+    .links li:nth-child(2) { animation-range: cover 1rem cover 8rem; }
+    .links li:nth-child(3) { animation-range: cover 2rem cover 9rem; }
+    .links li:nth-child(4) { animation-range: cover 3rem cover 10rem; }
+
+    /* Keyboard focus always lands on finished content. */
+    :is(.power, .card, .principles li, .more li, .ledger li, .links li):focus-within,
+    :is(.claim, .contact__email):focus-visible {
+      animation: none;
+    }
+  }
+}
+
+@keyframes m-grow { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes m-swing { to { translate: 0 -2rem; rotate: 2.5deg; } }
+@keyframes m-perforate {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+@keyframes m-cut {
+  0%, 17%, 34%, 51%, 68%, 85% { -webkit-mask-image: var(--m-snip-open); mask-image: var(--m-snip-open); }
+  8%, 25%, 42%, 59%, 76%, 93% { -webkit-mask-image: var(--m-snip-shut); mask-image: var(--m-snip-shut); }
+  0% { opacity: 1; -webkit-mask-position: 0% 50%; mask-position: 0% 50%; }
+  94% { opacity: 1; }
+  100% { opacity: 0; -webkit-mask-position: 100% 50%; mask-position: 100% 50%; }
+}
+@keyframes m-stamp {
+  from { opacity: 0; scale: 2.2; rotate: -12deg; }
+  60% { opacity: 1; scale: .9; rotate: -2deg; }
+  to { opacity: 1; scale: 1; rotate: 0deg; }
+}
+/* The negative insets at the end leave room for descenders. */
+@keyframes m-print {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(-.3em -.5em -.3em -.5em); }
+}
+@keyframes m-rise {
+  from { opacity: 0; translate: 0 1rem; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes m-feed {
+  from { opacity: 0; translate: 0 2.5rem; scale: .96; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+/* From the left only: anything entering past the right edge would scroll phones sideways. */
+@keyframes m-slide {
+  from { opacity: 0; translate: -1.5rem 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes m-drop {
+  from { opacity: 0; translate: 0 -2rem; rotate: -6deg; }
+  to { opacity: 1; translate: 0 0; rotate: 0deg; }
+}
+@keyframes m-develop {
+  from { filter: grayscale(1) sepia(.5) contrast(.7) brightness(1.3) blur(3px); }
+  to { filter: grayscale(0) sepia(0) contrast(1) brightness(1) blur(0); }
+}
+@keyframes m-swipe {
+  from { background-size: 0% 100%; }
+  to { background-size: 100% 100%; }
+}
+@keyframes m-ink { from { text-decoration-color: transparent; } }
+@keyframes m-type {
+  from { clip-path: inset(-.4em 100% -.4em -.4em); }
+  to { clip-path: inset(-.4em -.4em -.4em -.4em); }
+}
+
+/* ---------- your visit, printed in the margin (site.ts; wide screens only) ----------
+   Decorative and hidden from assistive tech: the nav already says where you are.
+   It prints out once the first section has been read. */
+
+.tape { display: none; }
+
+@media screen and (min-width: 90em) {
+  .tape.is-started {
+    position: fixed;
+    top: 5.25rem;
+    left: max(.75rem, calc(50vw - var(--wrap) / 2 - 9rem));
+    z-index: 30;
+    display: block;
+    width: 8rem;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 12px rgb(0 0 0 / .14));
+  }
+}
+
+.tape__slot {
+  position: relative;
+  z-index: 1;
+  height: 9px;
+  margin: 0 -5px -4px;
+  border-radius: 5px;
+  background: var(--rc-printer);
+  box-shadow: inset 0 -3px 0 #0b0a08;
+}
+.tape__paper {
+  padding: .85rem .6rem .95rem;
+  background: var(--rc-paper);
+  color: var(--rc-ink);
+  font: .64rem/1.55 var(--rc-mono);
+  /* torn along the bottom, like the receipts */
+  -webkit-mask: radial-gradient(circle at 50% 100%, transparent 4px, #000 4.5px) bottom / 10px 100% repeat-x;
+  mask: radial-gradient(circle at 50% 100%, transparent 4px, #000 4.5px) bottom / 10px 100% repeat-x;
+}
+.tape__head {
+  margin: 0 0 .45rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.tape__lines {
+  margin: 0;
+  padding: .35rem 0;
+  list-style: none;
+  border-block: 1px dashed var(--rc-rule);
+}
+.tape__lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: .3rem;
+  text-transform: uppercase;
+}
+.tape__lines b { color: var(--rc-verified); }
+.tape__total { margin: .5rem 0 0; font-weight: 700; text-align: center; text-transform: uppercase; }
+.tape__total.is-done { color: var(--rc-verified); }
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .tape.is-started .tape__paper { animation: m-print .6s steps(10, end) both; }
+  .tape__lines .is-printed { animation: m-print .5s steps(4, end) both; }
+  .tape__total.is-done { animation: m-stamp .55s cubic-bezier(.3, 1.6, .5, 1) both; }
+}
