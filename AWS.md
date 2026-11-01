@@ -1,5 +1,7 @@
 # AWS services used
 
+![How the receipts run on AWS: Amplify Hosting builds, tests, stamps and serves the page; a Re-check click goes through API Gateway to a Lambda that reads pinned evidence from GitHub, asks the Amplify API which build is live, and logs to CloudWatch](docs/architecture.png)
+
 | Service | Role in this project |
 |---|---|
 | **AWS Amplify Hosting** | Builds the site from GitHub on every push, writes the deploy into the page, sends strict security headers, and serves it over HTTPS from Amplify's CDN |
@@ -75,6 +77,6 @@ The portfolio itself is static: it can't break during judging, and the re-check 
 | Service | Why not |
 |---|---|
 | Amazon DynamoDB (counters, a guestbook) | Would add state and write traffic without proving anything. CloudWatch Logs already keeps the audit trail. |
-| Amazon Bedrock (an "ask about me" bot) | Every portfolio has one, it costs money per visit, and a model inventing answers about me would break this site's one rule. My Bedrock work is in the projects instead, each with a receipt. |
+| Amazon Bedrock (to write Chit's answers) | A model writing answers about me could invent them, which would break this site's one rule, and it would cost money per question. Chit, the page's "ask about me" printer, quotes what's on file instead, in the browser. My Bedrock work is in the projects, each with a receipt, and a grounded Bedrock reader for job descriptions waits on the `bedrock-reader` branch. |
 | Lambda function URLs | Simpler, but they have no throttling. API Gateway's HTTP API does. |
 | Amazon S3 + CloudFront directly | Amplify Hosting already gives a CDN, HTTPS, headers and push-to-deploy. I used S3 + CloudFront by hand for DocuMind AI. |

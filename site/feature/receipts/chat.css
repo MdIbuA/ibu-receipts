@@ -1,0 +1,481 @@
+/* Chit: the receipt printer you can ask questions, docked bottom-left.
+   Same thermal paper, same ink as the receipts, so the roll stays light on a dark desk
+   too. Its questions are yellow notes stuck on the roll; its answers are printed. */
+
+:root {
+  --chit-cheek: #ff9a86;
+  --chit-led: #3ccf78;
+  --chit-led-busy: #ffb547;
+  --chit-note: #fff1a8;
+  --chit-quote: #f6f0e1;
+  --chit-lcd: #d3dfae;
+  --chit-lcd-ink: #17200b;
+}
+
+/* ---------- the dock ---------- */
+
+.chit-dock {
+  position: fixed;
+  left: max(1rem, env(safe-area-inset-left));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: none;
+}
+.chit-dock > * { pointer-events: auto; }
+
+/* ---------- Chit itself ---------- */
+
+.chit { display: block; overflow: visible; }
+.chit__sheet { fill: var(--rc-paper); stroke: #d8cfbd; stroke-width: .8; }
+.chit__ink { fill: none; stroke: var(--rc-rule); stroke-width: 1.4; stroke-linecap: round; }
+.chit__body { fill: var(--rc-printer); }
+.chit__slot,
+.chit__foot { fill: #0b0a08; }
+.chit__led { fill: var(--chit-led); }
+.chit__white { fill: var(--rc-paper); }
+.chit__pupil { fill: var(--rc-ink); }
+.chit__glint { fill: #fff; }
+.chit__cheek { fill: var(--chit-cheek); opacity: .85; }
+.chit__arc,
+.chit__squint,
+.chit__mouth,
+.chit__wobble {
+  fill: none;
+  stroke: var(--rc-paper);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.chit__o { fill: var(--rc-paper); }
+.chit__drop { fill: #8cc4ff; }
+.chit__eye { transform-box: fill-box; transform-origin: center; }
+
+/* Moods: calm by default, happy, a wink, sorry when there's no receipt, busy while printing. */
+.chit__arc,
+.chit__squint,
+.chit__wobble,
+.chit__o,
+.chit__drop { display: none; }
+.chit[data-mood="happy"] .chit__eye { display: none; }
+.chit[data-mood="happy"] .chit__arc { display: inline; }
+.chit[data-mood="wink"] .chit__eye--l { display: none; }
+.chit[data-mood="wink"] .chit__arc--l { display: inline; }
+.chit[data-mood="sorry"] :is(.chit__eye, .chit__mouth) { display: none; }
+.chit[data-mood="sorry"] :is(.chit__squint, .chit__wobble, .chit__drop) { display: inline; }
+.chit[data-mood="busy"] .chit__mouth { display: none; }
+.chit[data-mood="busy"] .chit__o { display: inline; }
+/* It looks up at the paper while it prints, and down at the keys while you type. */
+.chit[data-mood="busy"] .chit__pupil { transform: translate(0, -1.7px); }
+.chit[data-look="down"]:not([data-mood="busy"]) .chit__pupil { transform: translate(.8px, 1.4px); }
+
+/* ---------- closed: Chit in the corner ---------- */
+
+.chit-launch {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: .3rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: none;
+  color: var(--rc-ink);
+  cursor: pointer;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
+}
+.chit-launch .chit {
+  width: 4.5rem;
+  height: 4.5rem;
+  filter: drop-shadow(0 6px 9px rgb(0 0 0 / .3));
+}
+.chit-launch__bubble {
+  margin: 0 0 3rem;
+  padding: .45rem .7rem;
+  border: 1.5px solid var(--rc-ink);
+  border-radius: 12px 12px 12px 3px;
+  background: var(--rc-paper);
+  color: var(--rc-ink);
+  font: 700 .74rem/1.2 var(--rc-mono);
+  letter-spacing: .03em;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgb(0 0 0 / .16);
+}
+.chit-launch:hover .chit-launch__bubble { background: #fff6dc; }
+.chit-launch:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+
+/* Tucked away on phones while the hero hint is on screen, like the printer's tab,
+   except while it says hello. */
+.chit-dock.is-tucked .chit-launch {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+}
+.chit-dock.is-tucked.is-greeting .chit-launch {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+/* ---------- hello: what Chit says each time the page opens ---------- */
+
+.chit-hello {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + .7rem);
+  width: max-content;
+  max-width: min(17rem, calc(100vw - 2rem));
+  padding: .7rem .9rem .75rem;
+  border: 1.5px solid var(--rc-ink);
+  border-radius: 16px 16px 16px 4px;
+  background: var(--rc-paper);
+  color: var(--rc-ink);
+  box-shadow: 0 10px 24px rgb(0 0 0 / .2);
+  /* decoration: clicks go to the page under it, or to Chit below */
+  pointer-events: none;
+  transform-origin: 1.6rem 100%;
+}
+/* the tail, pointing down at Chit's head */
+.chit-hello::after {
+  content: "";
+  position: absolute;
+  left: 1.55rem;
+  bottom: -.5rem;
+  width: .9rem;
+  height: .9rem;
+  border-right: 1.5px solid var(--rc-ink);
+  border-bottom: 1.5px solid var(--rc-ink);
+  background: var(--rc-paper);
+  transform: rotate(45deg);
+}
+.chit-hello__hi { margin: 0; font: 800 .95rem/1.3 var(--rc-mono); }
+.chit-hello__text { margin: .3rem 0 0; color: var(--rc-ink-2); font: .76rem/1.45 var(--rc-mono); }
+
+/* ---------- open: a roll of paper over the printer ---------- */
+
+.chit-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(24rem, calc(100vw - 2rem));
+  height: min(40rem, calc(100vh - 6.5rem));
+  height: min(40rem, calc(100dvh - 6.5rem));
+  filter: drop-shadow(0 6px 16px rgb(0 0 0 / .28));
+}
+.chit-topbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: .45rem;
+  padding: 0 .15rem .45rem;
+}
+.chit-tear { display: inline-grid; place-items: center; }
+.chit-tear__icon {
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: var(--m-snip-open) center / contain no-repeat;
+  mask: var(--m-snip-open) center / contain no-repeat;
+}
+
+.chit-roll {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 .7rem;
+  padding: 1.45rem 1rem 1.1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  background: var(--rc-paper);
+  color: var(--rc-ink);
+  font: .8rem/1.5 var(--rc-mono);
+  /* torn along the top, like the receipts */
+  -webkit-mask: radial-gradient(circle at 50% 0, transparent 5px, #000 5.5px) top / 13px 100% repeat-x;
+  mask: radial-gradient(circle at 50% 0, transparent 5px, #000 5.5px) top / 13px 100% repeat-x;
+}
+.chit-roll:focus { outline: none; }
+.chit-roll:focus-visible { box-shadow: inset 0 0 0 2px #1a5fd0; }
+.chit-roll :focus-visible { outline-color: #1a5fd0; }
+.chit-roll a { color: var(--rc-ink); text-decoration-color: var(--rc-ink-2); }
+.chit-roll a:hover { color: var(--rc-fix); }
+
+.chit-roll__head {
+  margin-bottom: 1rem;
+  padding-bottom: .85rem;
+  border-bottom: 1.5px dashed var(--rc-rule);
+  text-align: center;
+}
+.chit-title { margin: .15rem 0 0; font: 800 1.02rem/1.3 var(--rc-mono); letter-spacing: .04em; }
+.chit-tally {
+  margin: .35rem 0 0;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.chit-tally b:last-child { color: var(--rc-verified); }
+.chit-privacy { margin: .3rem 0 0; color: var(--rc-ink-2); font-size: .68rem; }
+
+/* A question: a yellow note stuck on the roll. */
+.chit-note {
+  width: fit-content;
+  max-width: 88%;
+  margin: 1.1rem 0 .9rem auto;
+  padding: .45rem .7rem .55rem;
+  background: var(--chit-note);
+  color: var(--rc-ink);
+  box-shadow: 0 2px 6px rgb(0 0 0 / .14);
+  transform: rotate(1.2deg);
+  overflow-wrap: anywhere;
+}
+.chit-note__label {
+  margin: 0;
+  color: #6a5a1c;
+  font: 800 .6rem/1.3 var(--rc-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.chit-note__text { margin: .1rem 0 0; font: 600 .86rem/1.4 var(--sans); white-space: pre-wrap; }
+
+/* An answer: printed, and stamped. */
+.chit-reply {
+  display: grid;
+  gap: .5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1.5px dashed var(--rc-rule);
+}
+.chit-reply__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  margin: 0;
+  color: var(--rc-ink-2);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.chit-stamp {
+  padding: .22rem .45rem;
+  border: 2.5px double currentColor;
+  border-radius: 6px;
+  color: var(--rc-verified);
+  font: 800 .66rem/1 var(--rc-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  transform: rotate(-6deg);
+}
+.chit-stamp[data-status="partial"] { color: var(--rc-partial); }
+.chit-stamp[data-status="self"] { color: var(--rc-self); }
+.chit-stamp[data-status="local"] { color: var(--rc-local); }
+.chit-stamp[data-status="quoted"] { color: var(--rc-ink); }
+.chit-stamp[data-status="none"] { color: var(--rc-fix); }
+
+.chit-say { margin: 0; font-weight: 700; }
+.chit-head { margin: .15rem 0 0; }
+.chit-head strong { display: block; font-weight: 800; }
+.chit-head span { display: block; color: var(--rc-ink-2); font-size: .72rem; }
+
+/* Quotes: the page's own words, in the page's own type. */
+.chit-quote {
+  margin: 0;
+  padding: .45rem .65rem .5rem;
+  border-left: 3px solid var(--rc-ink);
+  border-radius: 0 4px 4px 0;
+  background: var(--chit-quote);
+}
+.chit-quote p { margin: 0; }
+.chit-quote__text { font: .86rem/1.5 var(--sans); }
+.chit-quote--receipt { border-left-color: var(--rc-fix); }
+.chit-quote--receipt[data-part="measured"] { border-left-color: var(--rc-ink-2); }
+.chit-quote__label {
+  color: var(--rc-fix);
+  font: 800 .64rem/1.3 var(--rc-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.chit-quote--receipt[data-part="measured"] .chit-quote__label { color: var(--rc-ink-2); }
+.chit-quote .chit-from { margin-top: .3rem; color: var(--rc-ink-2); font-size: .66rem; letter-spacing: .03em; }
+.chit-from a { display: inline-block; min-height: 24px; padding-block: .2rem; color: inherit; }
+
+.chit-reply .rc-lines { margin: 0; }
+.chit-reply .rc-job { margin: 0; gap: .45rem; }
+.chit-skills.is-compact { gap: .1rem; }
+.chit-reply > .rc-job__receipts { margin: 0; font-size: .74rem; }
+.chit-links { font-size: .76rem; }
+.chit-links a { display: inline-block; min-height: 24px; padding-block: .2rem; }
+.chit-do { margin: .1rem 0 0; }
+
+/* Tear-off coupons: what to ask next. */
+.chit-next { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .35rem; }
+.chit-chip {
+  min-height: 34px;
+  padding: .35rem .7rem;
+  border: 1.5px dashed var(--rc-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rc-ink);
+  font: 700 .72rem/1.2 var(--rc-mono);
+  text-align: left;
+  cursor: pointer;
+}
+.chit-chip:hover { border-style: solid; background: #f1ead9; }
+
+.chit-busy {
+  margin: 0 0 .5rem;
+  color: var(--rc-ink-2);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.chit-busy__dots::after { content: "…"; }
+
+/* The printer: Chit's face, an LCD to type on, and a big key to print. */
+.chit-printer {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: .55rem;
+  padding: .9rem .7rem .7rem .55rem;
+  border-radius: 10px 10px 18px 18px;
+  background: var(--rc-printer);
+  color: var(--rc-printer-ink);
+  box-shadow: 0 8px 22px rgb(0 0 0 / .28), inset 0 2px 0 rgb(255 255 255 / .06);
+}
+/* the slot the paper comes out of */
+.chit-printer::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 1.3rem;
+  right: 1.3rem;
+  height: 4px;
+  border-radius: 2px;
+  background: #0b0a08;
+}
+.chit-printer__face .chit { width: 3.5rem; height: 3.5rem; margin: -.35rem 0 -.2rem; }
+.chit-field {
+  width: 100%;
+  min-height: 44px;
+  max-height: 8rem;
+  padding: .62rem .7rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--chit-lcd);
+  color: var(--chit-lcd-ink);
+  font: 600 .86rem/1.4 var(--rc-mono);
+  resize: none;
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / .35);
+}
+.chit-field::placeholder { color: #4b5732; opacity: 1; }
+.chit-field:focus-visible,
+.chit-send:focus-visible { outline: 3px solid #8ab4ff; outline-offset: 2px; }
+.chit-send {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 44px;
+  padding: .5rem .8rem;
+  border: 0;
+  border-radius: 10px;
+  background: var(--rc-printer-ink);
+  color: var(--rc-ink);
+  font: 800 .76rem/1 var(--rc-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  box-shadow: 0 3px 0 #0b0a08;
+  cursor: pointer;
+}
+.chit-send:hover { background: #fff; }
+.chit-send:active { transform: translateY(2px); box-shadow: 0 1px 0 #0b0a08; }
+.chit-send__icon {
+  width: .95rem;
+  height: .95rem;
+  background: currentColor;
+  -webkit-mask: var(--rc-icon-receipt) center / contain no-repeat;
+  mask: var(--rc-icon-receipt) center / contain no-repeat;
+}
+
+/* ---------- motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .chit__pupil { transition: transform .18s ease; }
+  .chit.is-blinking .chit__eye { animation: chit-blink 3.4s ease-in-out .6s 2; }
+  .chit[data-mood="busy"] .chit__paper { animation: chit-feed .32s steps(2, end) infinite alternate; }
+  .chit[data-mood="busy"] .chit__led { animation: chit-led .5s steps(2, jump-none) infinite; }
+  .chit-launch .chit { transition: transform .2s ease; }
+  .chit-launch:hover .chit,
+  .chit-launch:focus-visible .chit { transform: translateY(-3px) rotate(-4deg); }
+  .chit-dock.is-greeting .chit-launch .chit { animation: chit-hop .75s cubic-bezier(.3, 1.4, .5, 1) .1s 2; }
+  .chit-hello:not([hidden]) { animation: chit-hello .5s cubic-bezier(.3, 1.5, .5, 1) both; }
+  .chit-hello__text { animation: chit-print .6s steps(6, end) .35s backwards; }
+  .chit-hello.is-leaving { animation: chit-bye .3s ease-in both; }
+  .chit-panel.is-feeding .chit-roll { animation: chit-roll .7s steps(12, end) backwards; }
+  .chit-reply.is-new { animation: chit-print .55s steps(8, end) backwards; }
+  .chit-reply.is-new .chit-stamp { animation: rc-stamp .4s cubic-bezier(.3, 1.6, .5, 1) .5s backwards; }
+  .chit-busy__dots::after { animation: chit-dots 1s steps(1, end) infinite; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chit-launch { transition: none; }
+}
+@keyframes chit-blink {
+  0%, 88%, 100% { transform: none; }
+  94% { transform: scaleY(.1); }
+}
+@keyframes chit-feed { to { transform: translateY(-3px); } }
+@keyframes chit-led { 50% { fill: var(--chit-led-busy); } }
+@keyframes chit-hop {
+  0%, 100% { transform: none; }
+  45% { transform: translateY(-10px) rotate(-5deg); }
+  75% { transform: rotate(3deg); }
+}
+@keyframes chit-hello { from { opacity: 0; transform: translateY(10px) scale(.6); } }
+@keyframes chit-bye { to { opacity: 0; transform: translateY(6px) scale(.85); } }
+@keyframes chit-roll { from { clip-path: inset(100% 0 0 0); } }
+@keyframes chit-print { from { clip-path: inset(0 0 100% 0); } }
+@keyframes chit-dots {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+
+/* ---------- dark desk ---------- */
+
+@media (prefers-color-scheme: dark) {
+  .chit__body { stroke: #574f43; stroke-width: 1.2; }
+  .chit-printer { box-shadow: 0 0 0 1.5px #3d372e, 0 8px 22px rgb(0 0 0 / .5); }
+}
+
+/* ---------- small screens: a bottom sheet, like the printer's ---------- */
+
+@media (max-width: 40em) {
+  .chit-dock { left: .6rem; bottom: .6rem; }
+  .chit-dock.is-open { right: .6rem; z-index: 55; align-items: stretch; }
+  .chit-dock.is-open .chit-panel { width: auto; }
+  .chit-panel {
+    height: min(36rem, calc(100vh - 5rem));
+    height: min(36rem, calc(100dvh - 5rem));
+  }
+  .chit-launch .chit { width: 3.5rem; height: 3.5rem; }
+  /* the bubble stays the button's name, just out of sight */
+  .chit-launch__bubble {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media print {
+  .chit-dock { display: none; }
+}

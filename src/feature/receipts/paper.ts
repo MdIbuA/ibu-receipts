@@ -19,8 +19,8 @@ const STAMP: Readonly<Record<StampKind, string>> = {
   audited: "Fully audited"
 };
 
-/** Where a receipt's back button leads. */
-export type Back = "bill" | "job" | null;
+/** Where a receipt's back button leads. "chat" is Chit, when it made way on a small screen. */
+export type Back = "bill" | "job" | "chat" | null;
 
 export const rule = (): HTMLHRElement => el("hr", { class: "rc-rule" });
 
@@ -29,7 +29,8 @@ export function header(kind: string, back: Back): HTMLElement {
     el("p", { class: "rc-brand", text: "Ibu's receipts" }),
     el("p", { class: "rc-meta", text: `${kind} · ${printedAt()}` }),
     back === "bill" && el("button", { type: "button", class: "rc-back", "data-rc-bill": true }, "← All receipts"),
-    back === "job" && el("button", { type: "button", class: "rc-back", "data-rc-job-back": true }, "← Back to your job receipt"));
+    back === "job" && el("button", { type: "button", class: "rc-back", "data-rc-job-back": true }, "← Back to your job receipt"),
+    back === "chat" && el("button", { type: "button", class: "rc-back", "data-rc-chat-back": true }, "← Back to Chit"));
 }
 
 export function lineItems(lines: readonly Line[]): HTMLUListElement {

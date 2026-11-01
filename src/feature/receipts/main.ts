@@ -6,10 +6,12 @@
   Progressive enhancement. Without JavaScript each claim is a plain link to its
   evidence. With it, claims become buttons that print into a non-modal panel
   docked bottom-right, so the page and its navigation stay usable underneath.
+  Chit, the printer you can ask questions, docks bottom-left.
 */
 import { loadAudit, saveAudit } from "./audit.ts";
-import { build } from "./build.ts";
+import { build, recheckUrl } from "./build.ts";
 import { CATALOG, claimById, isClaimId, tally, TOTAL } from "./catalog.ts";
+import { createChat } from "./chat.ts";
 import type { ClaimId } from "./claims.ts";
 import { closest, el, vh } from "./dom.ts";
 import { renderJobForm, renderJobReceipt } from "./job.ts";
@@ -21,6 +23,8 @@ import { printStubOnce, stampDeploy } from "./stub.ts";
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const narrow = window.matchMedia("(max-width: 40em)");
+/** Too narrow for the printer and Chit side by side: they take turns. */
+const solo = window.matchMedia("(max-width: 52em)");
 
 /** What the printer shows right now. */
 type Current = ClaimId | "bill" | "job" | null;
@@ -38,8 +42,29 @@ const printer = createPrinter({
   onClose: () => {
     current = null;
     syncExpanded();
+    // If Chit stepped aside for this paper, it comes back now.
+    chat.restore();
   }
 });
+
+const chat = createChat({
+  reduceMotion,
+  narrow,
+  solo,
+  deployed: build.deployed,
+  recheck: recheckUrl !== "",
+  onOpen: () => {
+    if (solo.matches) printer.close(false);
+  },
+  quiet: () => solo.matches && printer.isOpen(),
+  onJobText: (text, trigger) => printJob(text, trigger)
+});
+
+/** Print paper. On a small screen Chit steps aside until the printer closes. */
+function print(paper: HTMLElement, trigger: HTMLElement | null, moveFocus: boolean): void {
+  if (solo.matches) chat.minimize();
+  printer.show(paper, trigger, moveFocus);
+}
 
 // ---------- claims become buttons ----------
 
@@ -61,7 +86,7 @@ for (const link of document.querySelectorAll<HTMLAnchorElement>("a.claim[data-cl
 
 function openReceipt(id: ClaimId, trigger: HTMLElement | null, moveFocus = true, back: Back = "bill"): void {
   current = id;
-  printer.show(renderReceipt(claimById(id), back), trigger, moveFocus);
+  print(renderReceipt(claimById(id), back), trigger, moveFocus);
   if (!checked.has(id)) {
     checked.add(id);
     saveAudit(checked);
@@ -72,13 +97,13 @@ function openReceipt(id: ClaimId, trigger: HTMLElement | null, moveFocus = true,
 
 function openBill(trigger: HTMLElement | null, moveFocus = true): void {
   current = "bill";
-  printer.show(renderBill(checked, document.documentElement.classList.contains("rc-highlight")), trigger, moveFocus);
+  print(renderBill(checked, document.documentElement.classList.contains("rc-highlight")), trigger, moveFocus);
   syncExpanded();
 }
 
 function openJobForm(trigger: HTMLElement | null, moveFocus = true): void {
   current = "job";
-  printer.show(renderJobForm(draft, { print: (description) => printJob(description, null) }), trigger, moveFocus);
+  print(renderJobForm(draft, { print: (description) => printJob(description, null) }), trigger, moveFocus);
   syncExpanded();
 }
 
@@ -92,7 +117,7 @@ function showLastJob(trigger: HTMLElement | null, moveFocus = true): void {
   if (!lastJob) return openJobForm(trigger, moveFocus);
   current = "job";
   const pageUrl = `${build.siteUrl || location.origin + location.pathname.replace(/index\.html$/, "")}`.replace(/\/?$/, "/#job");
-  printer.show(renderJobReceipt(lastJob, pageUrl), trigger, moveFocus);
+  print(renderJobReceipt(lastJob, pageUrl), trigger, moveFocus);
   syncExpanded();
 }
 
@@ -104,8 +129,8 @@ function printSample(id: RoleId, trigger: HTMLElement | null, moveFocus = true):
 const isRoleId = (id: unknown): id is RoleId => ROLES.some((role) => role.id === id);
 
 // The first-screen shortcut: print the CryptoPulse receipt and race a coin against the model.
-function betAgainstModel(trigger: HTMLElement): void {
-  openReceipt("cryptopulse", trigger);
+function betAgainstModel(trigger: HTMLElement, back: Back = "bill"): void {
+  openReceipt("cryptopulse", trigger, true, back);
   const race = printer.slot.querySelector(".rc-coin");
   if (!race) return;
   const start = (): void => {
@@ -149,6 +174,8 @@ function setHighlight(on: boolean): void {
 document.addEventListener("click", (event) => {
   const { target } = event;
   const inPanel = target instanceof Node && printer.panel.contains(target);
+  // On a small screen Chit steps aside for the printer, so its receipts offer the way back.
+  const fromChat = solo.matches && chat.contains(target);
 
   const claimButton = closest(target, "button.claim[data-claim]");
   const claimId = claimButton?.dataset["claim"];
@@ -158,8 +185,14 @@ document.addEventListener("click", (event) => {
   const itemId = item?.dataset["rcOpen"];
   if (item && isClaimId(itemId)) {
     // From a job receipt, a claim's receipt offers the way back to it.
-    return openReceipt(itemId, inPanel ? printer.tab : item, true, inPanel && current === "job" ? "job" : "bill");
+    const back: Back = inPanel && current === "job" ? "job" : fromChat ? "chat" : "bill";
+    return openReceipt(itemId, inPanel ? printer.tab : item, true, back);
   }
+
+  const ask = closest(target, "[data-rc-ask]");
+  if (ask) return chat.open(ask);
+
+  if (closest(target, "[data-rc-chat-back]")) return printer.close();
 
   const bill = closest(target, "[data-rc-bill]");
   if (bill) return openBill(inPanel ? printer.tab : bill);
@@ -174,7 +207,7 @@ document.addEventListener("click", (event) => {
   if (sample && isRoleId(sampleId)) return printSample(sampleId, inPanel ? printer.tab : sample);
 
   const bet = closest(target, "[data-rc-bet]");
-  if (bet) return betAgainstModel(bet);
+  if (bet) return betAgainstModel(bet, fromChat ? "chat" : "bill");
 
   const highlight = closest(target, "[data-rc-highlight]");
   if (highlight) return setHighlight(highlight.getAttribute("aria-pressed") !== "true");
@@ -203,8 +236,13 @@ document.addEventListener("click", (event) => {
 
 printer.tab.addEventListener("click", () => (current === "bill" ? printer.close() : openBill(printer.tab)));
 
+// Escape closes what you're in: Chit when focus is inside it or the printer is shut.
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && printer.isOpen()) {
+  if (event.key !== "Escape") return;
+  if (chat.isOpen() && (chat.contains(event.target) || !printer.isOpen())) {
+    event.preventDefault();
+    chat.close();
+  } else if (printer.isOpen()) {
     event.preventDefault();
     printer.close();
   }
@@ -218,7 +256,8 @@ const stub = document.querySelector<HTMLElement>(".stub");
 if (stub) printStubOnce(stub, reduceMotion);
 
 // ---------- deep links ----------
-// #r-<id> prints that receipt, #receipts the bill, #job the job form, #job-<sample> a sample's receipt.
+// #r-<id> prints that receipt, #receipts the bill, #job the job form, #job-<sample> a sample's
+// receipt, and #ask opens Chit.
 
 function fromHash(onLoad: boolean): void {
   const hash = location.hash;
@@ -232,6 +271,8 @@ function fromHash(onLoad: boolean): void {
     openJobForm(null, !onLoad);
   } else if (isRoleId(sample)) {
     printSample(sample, null, !onLoad);
+  } else if (hash === "#ask") {
+    chat.open(null, !onLoad);
   }
 }
 window.addEventListener("hashchange", () => fromHash(false));

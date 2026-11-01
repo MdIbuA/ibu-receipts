@@ -45,3 +45,8 @@ export function bars(seed: string): { readonly x: number; readonly w: number }[]
 
 /** "1 requirement", "3 requirements". */
 export const plural = (n: number, noun: string): string => `${n} ${noun}${n === 1 ? "" : "s"}`;
+
+/** A text's sentences. One ends at a full stop followed by a capital, so "0.2 s" stays whole. */
+export const sentences = (text: string): string[] => text.split(/(?<=[.!?])\s+(?=[A-Z“"])/);
+
+export const firstSentence = (text: string): string => sentences(text)[0] ?? text;

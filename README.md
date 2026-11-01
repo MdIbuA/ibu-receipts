@@ -25,6 +25,7 @@ Click a number like `R² 0.94` or `30 typed tools` and a till-style receipt feed
 
 What else it does:
 
+- **Ask the printer: meet Chit.** A little receipt printer with a face waits in the bottom-left corner. Ask it about me ("Does Ibu know Kubernetes?", "What's Ibu's best project?", "What is Ibu bad at?") and it prints the answer on a roll of paper: lines quoted word for word from the page and the receipts, each naming where it's from, with a button that prints the full receipt. Your questions stick to the roll as yellow notes. Chit has no model, so it can't invent anything: it matches your question to the page's own lines, the 14 receipts and the 114-skill map, and when nothing's on file it prints **No receipt** with a worried face. A prompt-injection attempt gets pointed to Tripwire. It runs entirely in the browser; nothing you type is sent or saved. [`#ask`](https://main.d1nj3qfdmf673t.amplifyapp.com/#ask) opens it.
 - **A receipt for your job.** Paste a job description, or pick one of three samples, and the printer itemizes it against what I can prove. Every requirement it recognises prints as **Proven** (linked to the exact file and line, at a pinned commit), **Partial** (with the reason) or **No receipt** ("I won't claim this"). It reads must-haves and nice-to-haves from the description's own headings. It runs entirely in the browser; nothing you paste is sent or saved. A closer reading by Amazon Nova Micro on Bedrock is built and tested on the [`bedrock-reader`](https://github.com/MdIbuA/ibu-receipts/tree/bedrock-reader) branch, waiting on Bedrock access for my account.
 - **Coin vs. model.** A **Flip a coin against my model** button on the first screen prints the CryptoPulse receipt and flips a coin 100 times against my LSTM's 47.93% direction accuracy. The coin often wins, and the receipt says so.
 - **The itemized bill.** A summary receipt with claims verified, partial and self-reported, write-ups corrected, invented facts (0), and how many receipts *you* have audited.
@@ -39,11 +40,11 @@ My agents follow one rule: the model never invents a fact. In my Supermarket age
 
 ### How visitors find it
 
-Within the first screen: a **"How to read this page"** box that names the first claim to try and offers **Print a receipt for your job**, a **receipt stub** in the hero ("Print the full bill"), and a **printer tab** fixed in the bottom-right corner showing `0/14` audited. A **Highlight all 14 claims** button marks every claim on the page, and the Contact section offers the job receipt again.
+Within the first screen: a **"How to read this page"** box that names the first claim to try and offers **Print a receipt for your job**, a **receipt stub** in the hero ("Print the full bill"), and a **printer tab** fixed in the bottom-right corner showing `0/14` audited. A **Highlight all 14 claims** button marks every claim on the page, and the Contact section offers the job receipt again. Chit waits in the opposite corner with an "Ask me about Ibu" bubble. Each time the page opens, it hops and says hello in a speech bubble ("Good evening! I'm Chit.", by the visitor's clock) for six seconds, then lets the bubble go; on a phone it steps out from behind the hint to do it. The hint box and the Contact section each offer Chit too.
 
 ### What it never does
 
-It never blocks the page. The receipt panel is non-modal and docked to the side, the header navigation stays usable, and on phones the sheet closes when you tap a nav link. Without JavaScript every claim is a plain link to its evidence.
+It never blocks the page. The receipt panel is non-modal and docked to the side, the header navigation stays usable, and on phones the sheet closes when you tap a nav link. Chit is non-modal too: on a wide screen it sits beside the printer, and on a phone the two take turns, with a receipt opened from Chit offering the way back. Without JavaScript every claim is a plain link to its evidence.
 
 ## Accessibility
 
@@ -52,8 +53,9 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 - `prefers-reduced-motion` turns off the printing, stamping and nudge animations and every scroll animation (in CSS and JS). Keyboard focus never lands on a half-drawn card: anything holding focus skips straight to its finished state.
 - Text contrast meets WCAG AA in both light and dark themes. Receipt paper stays light in both, so receipt text keeps its contrast.
 - The job receipt is a labelled form (Ctrl+Enter prints). Each result line says its status in words (Proven, Partial, No receipt), never by colour or ✓/✗ alone, and every link and button keeps a 24px target (WCAG 2.2).
+- Chit is a labelled, non-modal dialog, and its conversation is a `role="log"`, so a screen reader hears each answer as it prints. Enter prints a question, Shift+Enter starts a new line, and Escape closes Chit and returns focus. A tapped suggestion keeps a phone's keyboard down; one pressed from the keyboard returns focus to the question field. Chit's face is decorative, and every stamp says its verdict in words. Its hello is decoration too: hidden from screen readers (the button already says the same), transparent to clicks, and gone in six seconds or the moment Chit opens.
 - The portrait has alt text; decorative icons and barcodes are `aria-hidden`.
-- Tested at 360px wide, with no horizontal scrolling at any scroll position, and with axe: no violations of WCAG 2.2 AA or best practice, with a receipt, the job form or a job receipt open, and at the top and bottom of the page.
+- Tested at 360px wide, with no horizontal scrolling at any scroll position, and with axe: no violations of WCAG 2.2 AA or best practice, with a receipt, the job form, a job receipt or Chit open, and at the top and bottom of the page.
 - The résumé is headings, lists and real links, on a page and in a tagged PDF. axe reports no violations on it at desktop and phone sizes, or in dark mode.
 
 ## Project structure
@@ -70,13 +72,16 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 │       ├── roles.ts              three sample job descriptions (written for the demo)
 │       ├── match.ts              reads a job description; pure, so Node tests it directly
 │       ├── job.ts                the job receipt's form and printout
+│       ├── ask.ts                Chit's answers: a question matched to what's on file; pure
+│       ├── quotes.ts             the page's own lines Chit may quote, each checked against it
+│       ├── chat.ts               Chit's window: the roll, the printer and the face
 │       ├── paper.ts, printer.ts  receipts, the bill, and the docked printer
 │       └── main.ts …             wiring, re-check, coin race, the hero stub
 ├── site/                         ← everything Amplify publishes (baseDirectory)
 │   ├── index.html                About · Superpowers · Projects & achievements · Contact
 │   ├── assets/                   site.css, motion.css (scroll animations), images (the .js is compiled, never committed)
 │   ├── resume/                   the résumé as one long receipt, and its PDF (both printed by scripts/)
-│   └── feature/receipts/         receipts.css; build-info.js (written by the Amplify build)
+│   └── feature/receipts/         receipts.css, chat.css; build-info.js (written by the Amplify build)
 ├── test/                         unit tests (node:test) and type-level tests (types.check.ts)
 ├── scripts/
 │   ├── stamp-build.sh            runs in the Amplify build; writes build-info.js and the preview URLs
@@ -90,6 +95,7 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 ├── amplify.yml                   Amplify build spec: type-check, test, compile, stamp
 ├── customHttp.yml                security headers, incl. a strict content security policy
 ├── tsconfig.json                 strict TypeScript 7, emitting plain ES modules
+├── docs/architecture.png         the AWS diagram, rendered from docs/architecture.html
 ├── docs/screenshots/             submission screenshots (see SCREENSHOTS.md)
 ├── DEPLOY.md                     exact console clicks for Amplify Hosting
 ├── AWS.md                        AWS services used and what to look for in the console
@@ -102,7 +108,8 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 The site is TypeScript 7 under every strict flag, compiled by `tsc` into plain ES modules: no framework, no bundler, no runtime dependencies, no trackers. The only packages are the compiler and Node's type definitions, both used at build time only.
 
 - **The rules are types.** A `verified` claim must cite at least one link and can't print an unproven line. A skill is `proven` only by a file or a link. Evidence can only point into a project in `projects.ts`, and a commit is a branded `Sha` that only a 40-character hash can become. `test/types.check.ts` holds dishonest receipts that must fail to compile; if a rule ever loosens, the type check fails.
-- **The tests hold the page to its data** (`npm test`): every claim on the page exists in the data and the other way round, the counts printed without JavaScript match the data, every GitHub link is pinned to a commit, the content security policy's hash matches the page's one inline script, every evidence line in this repo says what it should, and the job reader handles the traps (Java vs. JavaScript, "go" the verb, React Native).
+- **The tests hold the page to its data** (`npm test`): every claim on the page exists in the data and the other way round, the counts printed without JavaScript match the data, every link into a project's code is pinned to a commit (the page's own receipt links the live deploy instead), the content security policy's hash matches the page's one inline script, every evidence line in this repo says what it should, and the job reader handles the traps (Java vs. JavaScript, "go" the verb, React Native).
+- **Chit is held to the same rule.** Every line it quotes must still be on the page word for word, every receipt it cites must say exactly that, and its own words may never carry a number. A test walks every question Chit suggests, three answers deep, and fails if any gets "No receipt". Another pins 71 questions a visitor might type to the answers they should get.
 - **The evidence is re-read** (`npm run evidence`): every file the skill map points at is fetched at its pinned commit, and its line must still show the named text.
 - **The résumé can't drift.** It's printed from the claims. A test fails if the committed page differs from what the script prints, if a project leads with a line its receipt doesn't have, or if the PDF is older than the page it was printed from (it stores the hash of what it printed).
 - **Nothing ships unchecked.** The Amplify build runs the type check and the tests before it compiles anything, so a broken rule stops the deploy. GitHub Actions runs the same on every push, plus the evidence check.
@@ -134,6 +141,8 @@ AWS_APP_ID=dtest AWS_BRANCH=main AWS_JOB_ID=1 AWS_COMMIT_ID=abc1234 bash scripts
 Run `git checkout site/feature/receipts/build-info.js` afterwards, so the local fallback is what you commit.
 
 ## How it's deployed
+
+![How the receipts run on AWS: Amplify Hosting builds, tests, stamps and serves the page; a Re-check click goes through API Gateway to a Lambda that reads pinned evidence from GitHub, asks the Amplify API which build is live, and logs to CloudWatch](docs/architecture.png)
 
 AWS Amplify Hosting is connected to this repo's `main` branch. Every push triggers a build that:
 

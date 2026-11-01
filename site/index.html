@@ -21,6 +21,7 @@
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/site.css">
   <link rel="stylesheet" href="feature/receipts/receipts.css">
+  <link rel="stylesheet" href="feature/receipts/chat.css">
   <link rel="stylesheet" href="assets/motion.css">
   <script>document.documentElement.classList.add("js");</script>
   <!-- Written by the Amplify build; read by the modules below. -->
@@ -29,9 +30,11 @@
        instead of one import level at a time; test/page.test.ts keeps this list complete. -->
   <script type="module" src="feature/receipts/main.js"></script>
   <script type="module" src="assets/site.js"></script>
+  <link rel="modulepreload" href="feature/receipts/ask.js">
   <link rel="modulepreload" href="feature/receipts/audit.js">
   <link rel="modulepreload" href="feature/receipts/build.js">
   <link rel="modulepreload" href="feature/receipts/catalog.js">
+  <link rel="modulepreload" href="feature/receipts/chat.js">
   <link rel="modulepreload" href="feature/receipts/claims.js">
   <link rel="modulepreload" href="feature/receipts/coin.js">
   <link rel="modulepreload" href="feature/receipts/dom.js">
@@ -41,6 +44,7 @@
   <link rel="modulepreload" href="feature/receipts/paper.js">
   <link rel="modulepreload" href="feature/receipts/printer.js">
   <link rel="modulepreload" href="feature/receipts/projects.js">
+  <link rel="modulepreload" href="feature/receipts/quotes.js">
   <link rel="modulepreload" href="feature/receipts/recheck.js">
   <link rel="modulepreload" href="feature/receipts/roles.js">
   <link rel="modulepreload" href="feature/receipts/skills.js">
@@ -79,9 +83,10 @@
 
           <div class="hint" id="how-to-read">
             <p class="hint__label">How to read this page</p>
-            <p class="hint__body">Each of the <span data-rc-total>14</span> <span class="hint__sample">underlined claims</span> on this page prints a receipt: the evidence, how it was measured, and the catch. Start with my best-looking number, <a class="claim claim--nudge" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a>.<span class="js-only"> Hiring? Paste your job description and the printer itemizes what I can prove for it, and what I can't.</span></p>
+            <p class="hint__body">Each of the <span data-rc-total>14</span> <span class="hint__sample">underlined claims</span> on this page prints a receipt: the evidence, how it was measured, and the catch. Start with my best-looking number, <a class="claim claim--nudge" data-claim="cryptopulse" href="https://github.com/MdIbuA/CryptoPulse/blob/0bde245a9a8f1f7aec31d8ae4467b865871a0a2f/milestone%202/bitcoin-infy.ipynb">R² 0.94</a>.<span class="js-only"> Hiring? Paste your job description and the printer itemizes what I can prove for it, and what I can't. Or ask the printer anything about me: it answers only with receipts.</span></p>
             <p class="hint__actions js-only">
               <button type="button" class="btn btn--small btn--accent" data-rc-job>Print a receipt for your job</button>
+              <button type="button" class="btn btn--small" data-rc-ask>Ask the printer about me</button>
               <button type="button" class="btn btn--small" data-rc-bet>Flip a coin against my model</button>
               <button type="button" class="btn btn--small" data-rc-highlight aria-pressed="false">Highlight all <span data-rc-total>14</span> claims</button>
             </p>
@@ -347,6 +352,7 @@
           <p class="section__intro">Hiring for software or AI engineering, or have a hard problem worth prototyping? Email is fastest.</p>
         </header>
         <p class="contact__job js-only"><button type="button" class="btn btn--accent" data-rc-job>Print a receipt for your job description</button> <span>See what I can prove for your role before you write.</span></p>
+        <p class="contact__job js-only"><button type="button" class="btn" data-rc-ask>Ask Chit, my receipt printer</button> <span>A quick question first? It quotes this page, word for word.</span></p>
         <p><a class="contact__email" href="mailto:ibrahimanees.work@gmail.com">ibrahimanees.work@gmail.com</a></p>
         <ul class="links">
           <li><a href="resume/">Résumé, with receipts</a></li>

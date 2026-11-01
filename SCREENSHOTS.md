@@ -65,6 +65,15 @@ The animations run on the scroll position, so each shot is a frame taken at an e
 | 27 | `27-resume.png` | Live site → `/resume/` at 1440×900 | The receipt-style résumé: name, contact, the Verified / Partial / Self-reported legend, the profile, and **Download the PDF**. **Captured.** |
 | 28 | `28-resume-pdf.png` | `/resume/` laid out as `npm run resume:pdf` prints it (print media), at Selected work | Projects with their receipt numbers and stamps, headline lines (CryptoPulse's 0.9402 beside its 47.93%), catches, corrections and evidence links. **Captured.** |
 
+## Chit, the printer you can ask
+
+Capture these from the live site after the deploy that ships Chit, so the hero stub behind it shows a real build.
+
+| # | File | Where | Must be visible |
+|---|---|---|---|
+| 29 | `29-chit.png` | Desktop 1440×900 → click Chit in the bottom-left corner → ask "What's Ibu's best project?" | The question as a yellow note, the chit stamped **Verified** quoting "Start with my best-looking number" and the catch, the suggestion coupons, and Chit's face on the printer. **Not captured yet.** |
+| 30 | `30-chit-mobile.png` | Device mode 360 → hint box → **Ask the printer about me** → ask "Does Ibu know Kubernetes?" | The bottom sheet with **No receipt** stamped and Chit's worried face, with no sideways scrolling. **Not captured yet.** |
+
 ## The live portfolio (proves completeness and usability)
 
 | # | File | Where | Must be visible |

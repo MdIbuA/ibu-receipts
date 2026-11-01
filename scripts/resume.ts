@@ -12,7 +12,7 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { claimById, isSiteClaim, tally, TOTAL, type Numbered } from "../src/feature/receipts/catalog.ts";
 import type { ClaimId } from "../src/feature/receipts/claims.ts";
-import { bars } from "../src/feature/receipts/format.ts";
+import { bars, firstSentence } from "../src/feature/receipts/format.ts";
 import type { ClaimStatus, Line } from "../src/feature/receipts/types.ts";
 
 /** The live site. The PDF can't follow relative links, so every link is absolute. */
@@ -61,7 +61,7 @@ function lines(list: readonly Line[], cls = "lines"): string {
 }
 
 /** A receipt's catch opens with its point; the rest is one click away on the receipt. */
-export const firstSentence = (text: string): string => text.split(/(?<=[.!?])\s+(?=[A-Z“"])/)[0] ?? text;
+export { firstSentence };
 
 /**
   A résumé is skimmed, so each project leads with its headline lines, in this order;

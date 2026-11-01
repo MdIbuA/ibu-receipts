@@ -11,11 +11,10 @@ import { plural } from "./format.ts";
 import { evidenceLink, MAX_CHARS, receiptText, type JobLine, type JobReceipt, type Priority } from "./match.ts";
 import { barcode, header, lineItems, rule, stamp } from "./paper.ts";
 import { PROJECTS } from "./projects.ts";
+import { EMAIL } from "./quotes.ts";
 import { ROLES } from "./roles.ts";
-import type { ProofKind } from "./skills.ts";
+import type { ProofKind, Skill } from "./skills.ts";
 import { unreachable } from "./types.ts";
-
-const EMAIL = "ibrahimanees.work@gmail.com";
 
 const STATUS: Readonly<Record<ProofKind, string>> = { proven: "Proven", partial: "Partial", none: "No receipt" };
 const MARK: Readonly<Record<ProofKind, string>> = { proven: "✓", partial: "~", none: "✗" };
@@ -86,8 +85,8 @@ export function renderJobForm(draft: string, handlers: JobHandlers): HTMLElement
 
 // ---------- the printed receipt ----------
 
-function proofOf(line: JobLine): Kid {
-  const proof = line.skill.proof;
+function proofOf(skill: Skill, mine: boolean): Kid {
+  const proof = skill.proof;
   switch (proof.kind) {
     case "proven": {
       const claims = new Set<ClaimId>();
@@ -113,29 +112,39 @@ function proofOf(line: JobLine): Kid {
         proof.claim && receiptsFor([proof.claim])
       ];
     case "none":
-      return el("p", { class: "rc-job__note", text: `${proof.note} I won't claim this.` });
+      return el("p", { class: "rc-job__note", text: mine ? `${proof.note} I won't claim this.` : proof.note });
     default:
       return unreachable(proof);
   }
 }
 
 /** Buttons that print the page's own receipts behind a line. */
-function receiptsFor(ids: readonly ClaimId[]): HTMLElement {
+export function receiptsFor(ids: readonly ClaimId[]): HTMLElement {
   return el("p", { class: "rc-job__receipts" },
     el("span", { text: ids.length === 1 ? "Receipt:" : "Receipts:" }),
     ids.map((id) => el("button", { type: "button", class: "claim", "data-rc-open": id }, claimById(id).label, vh(", show receipt"))));
 }
 
-function jobLine(line: JobLine): HTMLLIElement {
-  const kind = line.skill.proof.kind;
+export interface SkillLineOptions {
+  /** Print the evidence under the line. */
+  readonly proof?: boolean;
+  /** Speak as me ("I won't claim this"), as the job receipt does. Chit speaks for itself. */
+  readonly mine?: boolean;
+}
+
+/** One skill as a receipt line: ✓ proven, ~ partial or ✗ no receipt, and what backs it. */
+export function skillLine(skill: Skill, { proof = true, mine = true }: SkillLineOptions = {}): HTMLLIElement {
+  const kind = skill.proof.kind;
   return el("li", { class: "rc-job__item", "data-proof": kind },
     el("p", { class: "rc-line rc-job__line" },
       el("span", { class: "rc-job__mark", "aria-hidden": "true", text: MARK[kind] }),
-      el("span", { class: "rc-line__k", text: line.skill.label }),
+      el("span", { class: "rc-line__k", text: skill.label }),
       el("span", { class: "rc-line__dots", "aria-hidden": "true" }),
       el("span", { class: "rc-line__v", text: STATUS[kind] })),
-    proofOf(line));
+    proof && proofOf(skill, mine));
 }
+
+const jobLine = (line: JobLine): HTMLLIElement => skillLine(line.skill);
 
 export function renderJobReceipt(receipt: JobReceipt, pageUrl: string): HTMLElement {
   const { lines, tally } = receipt;

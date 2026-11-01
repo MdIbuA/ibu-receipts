@@ -1,0 +1,156 @@
+<!doctype html>
+<!--
+  Source of docs/architecture.png, the diagram in the write-up and README.
+  Render it at 2x with headless Chrome:
+    chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=1600,1000 --screenshot=docs/architecture.png docs/architecture.html
+  Every number in it is one the code or the console shows: change them together.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How the receipts run on AWS</title>
+<style>
+  html, body { margin: 0; background: #f4eee2; }
+  svg { display: block; }
+  .title { font: 700 42px "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; fill: #1f1c17; }
+  .sub { font: 16px "Cascadia Mono", Consolas, ui-monospace, monospace; fill: #4f493e; }
+  .lane { font: 700 13px "Cascadia Mono", Consolas, ui-monospace, monospace; letter-spacing: .14em; fill: #4f493e; }
+  .box { fill: #fffdf6; stroke: #1f1c17; stroke-width: 2; }
+  .aws { fill: #1d6b40; }
+  .h { font: 700 21px system-ui, "Segoe UI", Arial, sans-serif; fill: #1f1c17; }
+  .t { font: 15px "Cascadia Mono", Consolas, ui-monospace, monospace; fill: #4f493e; }
+  .push { stroke: #1f1c17; stroke-width: 2.5; fill: none; marker-end: url(#ink); }
+  .live { stroke: #b3361f; stroke-width: 3; fill: none; marker-end: url(#red); }
+  .label { font: 700 14px "Cascadia Mono", Consolas, ui-monospace, monospace; fill: #1f1c17; }
+  .label-live { font: 700 14px "Cascadia Mono", Consolas, ui-monospace, monospace; fill: #b3361f; }
+  .stack { fill: none; stroke: #4f493e; stroke-width: 1.5; stroke-dasharray: 7 6; }
+  .note { fill: #ebe3d3; }
+</style>
+</head>
+<body>
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture: GitHub pushes to AWS Amplify Hosting, which builds, tests and stamps the page, then serves it over HTTPS. A Re-check click goes through Amazon API Gateway to AWS Lambda, which fetches pinned evidence from GitHub, asks the AWS Amplify API which build is live, and logs to Amazon CloudWatch.">
+  <defs>
+    <marker id="ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1f1c17"/></marker>
+    <marker id="red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#b3361f"/></marker>
+  </defs>
+
+  <text class="title" x="40" y="68">How the receipts run on AWS</text>
+  <text class="sub" x="40" y="102">github.com/MdIbuA/ibu-receipts · us-east-1</text>
+
+  <!-- legend -->
+  <line class="push" x1="1060" y1="52" x2="1110" y2="52"/>
+  <text class="t" x="1124" y="57">every push to main</text>
+  <line class="live" x1="1060" y1="80" x2="1110" y2="80"/>
+  <text class="t" x="1124" y="85">every “Re-check with AWS Lambda”</text>
+  <rect class="aws" x="1060" y="99" width="6" height="22" rx="2"/>
+  <text class="t" x="1124" y="115">green edge: an AWS service</text>
+
+  <!-- ===== every push ===== -->
+  <text class="lane" x="40" y="146">EVERY PUSH</text>
+
+  <rect class="box" x="40" y="160" width="250" height="140" rx="12"/>
+  <text class="h" x="60" y="198">GitHub</text>
+  <text class="t" x="60" y="228">MdIbuA/ibu-receipts</text>
+  <text class="t" x="60" y="250">branch main</text>
+
+  <rect class="box" x="350" y="160" width="440" height="140" rx="12"/>
+  <rect class="aws" x="350" y="172" width="6" height="116" rx="2"/>
+  <text class="h" x="374" y="198">AWS Amplify Hosting · build</text>
+  <text class="t" x="374" y="228">npm ci → type-check → 179 tests →</text>
+  <text class="t" x="374" y="250">compile → stamp the build # and</text>
+  <text class="t" x="374" y="272">commit into the page's own receipt</text>
+
+  <rect class="box" x="850" y="160" width="290" height="140" rx="12"/>
+  <rect class="aws" x="850" y="172" width="6" height="116" rx="2"/>
+  <text class="h" x="874" y="198">Amplify CDN</text>
+  <text class="t" x="874" y="228">HTTPS, a strict content</text>
+  <text class="t" x="874" y="250">security policy and headers</text>
+  <text class="t" x="874" y="272">(customHttp.yml)</text>
+
+  <rect class="box" x="1200" y="160" width="360" height="140" rx="12"/>
+  <text class="h" x="1220" y="198">Your browser</text>
+  <text class="t" x="1220" y="228">the portfolio, its 14 receipts,</text>
+  <text class="t" x="1220" y="250">the job receipt, the résumé,</text>
+  <text class="t" x="1220" y="272">and Chit, the printer you ask</text>
+
+  <path class="push" d="M290 230H346"/>
+  <text class="label" x="318" y="218" text-anchor="middle">push</text>
+  <path class="push" d="M790 230H846"/>
+  <text class="label" x="820" y="218" text-anchor="middle">deploy</text>
+  <path class="push" d="M1140 230H1196"/>
+  <text class="label" x="1170" y="218" text-anchor="middle">HTTPS</text>
+
+  <rect class="box" x="40" y="380" width="250" height="150" rx="12"/>
+  <text class="h" x="60" y="418">GitHub Actions</text>
+  <text class="t" x="60" y="448">on every push:</text>
+  <text class="t" x="60" y="470">type-check, test,</text>
+  <text class="t" x="60" y="492">build, and re-read</text>
+  <text class="t" x="60" y="514">133 evidence links</text>
+  <path class="push" d="M165 300V376"/>
+
+  <!-- ===== every re-check ===== -->
+  <rect class="stack" x="1180" y="372" width="400" height="604" rx="16"/>
+  <text class="lane" x="1200" y="944">THE RE-CHECK STACK, AS CODE:</text>
+  <text class="lane" x="1200" y="964">AWS SAM → CLOUDFORMATION</text>
+
+  <path class="live" d="M1380 300V396"/>
+  <text class="label-live" x="1366" y="350" text-anchor="end">Re-check with AWS Lambda</text>
+
+  <rect class="box" x="1200" y="400" width="360" height="130" rx="12"/>
+  <rect class="aws" x="1200" y="412" width="6" height="106" rx="2"/>
+  <text class="h" x="1224" y="438">Amazon API Gateway</text>
+  <text class="t" x="1224" y="466">HTTP API · GET /recheck</text>
+  <text class="t" x="1224" y="488">5 requests/s, burst 10</text>
+  <text class="t" x="1224" y="510">CORS: this site only</text>
+
+  <path class="live" d="M1380 530V586"/>
+
+  <rect class="box" x="1200" y="590" width="360" height="150" rx="12"/>
+  <rect class="aws" x="1200" y="602" width="6" height="126" rx="2"/>
+  <text class="h" x="1224" y="628">AWS Lambda</text>
+  <text class="t" x="1224" y="656">Python 3.12 on arm64</text>
+  <text class="t" x="1224" y="678">31 checks across 13 claims</text>
+  <text class="t" x="1224" y="700">fetches only pinned URLs</text>
+  <text class="t" x="1224" y="722">results cached 5 minutes</text>
+
+  <path class="live" d="M1380 740V786"/>
+  <text class="label-live" x="1394" y="770">logs</text>
+
+  <rect class="box" x="1200" y="790" width="360" height="130" rx="12"/>
+  <rect class="aws" x="1200" y="802" width="6" height="106" rx="2"/>
+  <text class="h" x="1224" y="828">Amazon CloudWatch Logs</text>
+  <text class="t" x="1224" y="856">one JSON line per re-check:</text>
+  <text class="t" x="1224" y="878">claim, ok, milliseconds</text>
+  <text class="t" x="1224" y="900">kept 30 days</text>
+
+  <rect class="box" x="760" y="590" width="360" height="120" rx="12"/>
+  <text class="h" x="780" y="628">GitHub (raw files)</text>
+  <text class="t" x="780" y="656">each receipt's evidence,</text>
+  <text class="t" x="780" y="678">read again at the commit</text>
+  <text class="t" x="780" y="700">the receipt is pinned to</text>
+  <path class="live" d="M1200 640H1124"/>
+
+  <rect class="box" x="760" y="750" width="360" height="130" rx="12"/>
+  <rect class="aws" x="760" y="762" width="6" height="106" rx="2"/>
+  <text class="h" x="784" y="788">AWS Amplify API</text>
+  <text class="t" x="784" y="816">which build is live? The</text>
+  <text class="t" x="784" y="838">Lambda's one IAM permission:</text>
+  <text class="t" x="784" y="860">amplify:ListJobs</text>
+  <path class="live" d="M1200 715H1160V800H1124"/>
+
+  <!-- guardrails and the rule -->
+  <rect class="box" x="40" y="600" width="320" height="120" rx="12"/>
+  <rect class="aws" x="40" y="612" width="6" height="96" rx="2"/>
+  <text class="h" x="64" y="638">AWS Budgets</text>
+  <text class="t" x="64" y="666">a zero-spend budget emails</text>
+  <text class="t" x="64" y="688">me if spend passes $0.01</text>
+
+  <rect class="note" x="40" y="770" width="660" height="150" rx="12"/>
+  <text class="h" x="60" y="808">Static first</text>
+  <text class="t" x="60" y="838">The page never waits on the API. If the checker is</text>
+  <text class="t" x="60" y="860">down, every receipt still stands on its stored</text>
+  <text class="t" x="60" y="882">evidence, and the check says "couldn't check",</text>
+  <text class="t" x="60" y="904">never "failed".</text>
+</svg>
+</body>
+</html>
