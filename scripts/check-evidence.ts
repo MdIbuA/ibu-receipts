@@ -28,14 +28,29 @@ function rawUrl(url: string): string | null {
 
 async function get(url: string): Promise<Response> {
   for (let attempt = 1; ; attempt += 1) {
+    let wait = 1500 * attempt;
     try {
       const response = await fetch(url, { redirect: "follow", headers: { "user-agent": "ibu-receipts evidence check" } });
-      if (response.status < 500 || attempt === 3) return response;
+      // A rate limit or a server error says nothing about the evidence, so ask again.
+      if ((response.status !== 429 && response.status < 500) || attempt === 3) return response;
+      const after = Number(response.headers.get("retry-after"));
+      if (after > 0) wait = Math.min(after, 10) * 1000;
     } catch (error) {
       if (attempt === 3) throw error;
     }
-    await new Promise((resolve) => setTimeout(resolve, 800 * attempt));
+    await new Promise((resolve) => setTimeout(resolve, wait));
   }
+}
+
+// Several skills can cite the same link (one demo video backs two), so each is asked once.
+const answers = new Map<string, Promise<Response>>();
+function answer(url: string): Promise<Response> {
+  let pending = answers.get(url);
+  if (!pending) {
+    pending = get(url);
+    answers.set(url, pending);
+  }
+  return pending;
 }
 
 const files = new Map<string, Promise<readonly string[] | null>>();
@@ -63,7 +78,7 @@ async function checkFile(evidence: FileEvidence, skill: string): Promise<Outcome
 async function checkLink(url: string, owner: string): Promise<Outcome> {
   const raw = rawUrl(url);
   try {
-    const response = await get(raw ?? url);
+    const response = await answer(raw ?? url);
     return { what: `${owner}: ${url}`, ok: response.ok, detail: `HTTP ${response.status}` };
   } catch (error) {
     return { what: `${owner}: ${url}`, ok: false, detail: String(error) };
