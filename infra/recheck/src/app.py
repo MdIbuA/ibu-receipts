@@ -5,8 +5,8 @@ at the exact commit the receipt cites, and checks it again right now. For the pa
 receipt it asks the AWS Amplify API which build is live.
 
 Only the URLs listed in CHECKS are ever fetched, so the endpoint can't be aimed anywhere
-else. Results are cached for five minutes per claim, and every check run is logged to
-CloudWatch, which makes the logs an audit trail.
+else. A result is cached for five minutes per claim, unless a check couldn't run, and
+every check run is logged to CloudWatch, which makes the logs an audit trail.
 """
 import json
 import os
@@ -230,7 +230,9 @@ def handler(event, context):
         "cached": False,
         **result,
     }
-    if not live_check:
+    # "Couldn't check right now" is about this moment, not about the evidence, so it
+    # isn't kept: the next click asks GitHub again instead of repeating the hiccup.
+    if not live_check and payload["ok"] is not None:
         _cache[claim] = (time.time(), payload)
     print(json.dumps({"claim": claim, "ok": payload["ok"], "ms": payload["ms"]}))
     return respond(200, payload)

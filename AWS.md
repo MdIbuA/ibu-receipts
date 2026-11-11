@@ -44,7 +44,7 @@ Every receipt ends with a button that runs its checks again, right now, on AWS:
 
 **Safety and cost**
 - The Lambda only fetches URLs hard-coded in its own check list (pinned commits on GitHub, plus one AWS Builder Center page), so the API can't be aimed anywhere else.
-- Results are cached for 5 minutes per claim. The API throttles at 5 requests a second.
+- Results are cached for 5 minutes per claim, except a check that couldn't run (GitHub didn't answer), which is asked again on the next click. The API throttles at 5 requests a second.
 - Network trouble shows as "couldn't check", never as "failed".
 - Lambda and HTTP API usage at portfolio scale costs fractions of a cent.
 
