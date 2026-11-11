@@ -13,6 +13,7 @@
     "typecheck": "tsc -p tsconfig.check.json",
     "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test \"test/**/*.test.ts\"",
     "check": "npm run typecheck && npm test && npm run build",
+    "test:recheck": "python3 -m unittest discover -s infra/recheck/tests",
     "evidence": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/check-evidence.ts",
     "serve": "npm run build && node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/serve.ts",
     "resume": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/resume.ts",

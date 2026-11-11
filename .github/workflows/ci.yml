@@ -31,5 +31,9 @@ jobs:
         run: npm test
       - name: Compile src/ into site/
         run: npm run build
+      # The runner's Python is 3.12, the Lambda's runtime. The tests use the standard
+      # library only and replace the network and AWS, so nothing is installed or called.
+      - name: Test the re-check Lambda
+        run: npm run test:recheck
       - name: Read every skill's evidence at its pinned commit
         run: npm run evidence
