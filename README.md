@@ -90,8 +90,8 @@ It never blocks the page. The receipt panel is non-modal and docked to the side,
 │   ├── resume-pdf.ts             prints that page to its PDF with headless Chrome (npm run resume:pdf)
 │   ├── serve.ts                  a zero-dependency local preview server
 │   └── og/og.html                source of the 1200×630 link-preview image
-├── infra/recheck/                the re-check API: SAM template + Lambda (src/app.py)
-├── .github/workflows/ci.yml      type-check, test, build and evidence check on every push
+├── infra/recheck/                the re-check API: SAM template + Lambda (src/app.py) and its tests (tests/)
+├── .github/workflows/ci.yml      type-check, test, build, Lambda tests and evidence check on every push
 ├── amplify.yml                   Amplify build spec: type-check, test, compile, stamp
 ├── customHttp.yml                security headers, incl. a strict content security policy
 ├── tsconfig.json                 strict TypeScript 7, emitting plain ES modules
@@ -112,7 +112,7 @@ The site is TypeScript 7 under every strict flag, compiled by `tsc` into plain E
 - **Chit is held to the same rule.** Every line it quotes must still be on the page word for word, every receipt it cites must say exactly that, and its own words may never carry a number. A test walks every question Chit suggests, three answers deep, and fails if any gets "No receipt". Another pins 71 questions a visitor might type to the answers they should get.
 - **The evidence is re-read** (`npm run evidence`): every file the skill map points at is fetched at its pinned commit, and its line must still show the named text.
 - **The résumé can't drift.** It's printed from the claims. A test fails if the committed page differs from what the script prints, if a project leads with a line its receipt doesn't have, or if the PDF is older than the page it was printed from (it stores the hash of what it printed).
-- **Nothing ships unchecked.** The Amplify build runs the type check and the tests before it compiles anything, so a broken rule stops the deploy. GitHub Actions runs the same on every push, plus the evidence check.
+- **Nothing ships unchecked.** The Amplify build runs the type check and the tests before it compiles anything, so a broken rule stops the deploy. GitHub Actions runs the same on every push, plus the re-check Lambda's own tests (`npm run test:recheck`, Python's standard library only, with the network and AWS replaced) and the evidence check.
 
 Everything the site ships totals 709 KB, mostly images and the résumé's 212 KB PDF, none of which a first visit downloads except the portrait. A visitor's first load is about 124 KB over the wire on a desktop and 142 KB on a phone. The JavaScript is 58 KB compressed (25 KB of it is Chit), and the browser fetches every module at once through `modulepreload` hints. The scroll animations are one 3 KB stylesheet, with no script.
 
@@ -128,7 +128,7 @@ npm run serve
 
 `npm run serve` compiles the TypeScript and serves `site/` on http://127.0.0.1:8000. Any static server works once you've run `npm run build`, as long as it serves `.js` as JavaScript; browsers won't run ES modules otherwise. Opened straight from disk, the page still reads fine but the receipts stay plain links, because browsers don't run modules from `file://`.
 
-`npm run check` runs the type check, the tests and the build; `npm run evidence` re-reads the evidence over the network.
+`npm run check` runs the type check, the tests and the build; `npm run test:recheck` tests the Lambda (it needs Python 3.12 or newer, nothing else); `npm run evidence` re-reads the evidence over the network.
 
 `npm run resume` reprints the résumé page from the claims, and `npm run resume:pdf` prints its PDF with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual place). Run both after changing a claim; the tests say when either is stale.
 
