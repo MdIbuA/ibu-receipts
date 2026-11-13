@@ -176,6 +176,24 @@ class Handler(unittest.TestCase):
                 _, third = call("gitbard")
             self.assertIs(third["cached"], False)
 
+    def test_a_check_that_couldn_t_run_is_never_cached(self):
+        with mock.patch.object(app, "fetch", side_effect=TimeoutError()):
+            _, first = call("gitbard")
+        self.assertIs(first["ok"], None)
+        self.assertNotIn("gitbard", app._cache)
+        # GitHub answers again: the very next click gets a real result, not the hiccup.
+        with mock.patch.object(app, "fetch", return_value="Schedule: cron(0 16 ? * FRI *)\nDefault: \"amazon.nova-micro-v1:0\""):
+            _, second = call("gitbard")
+        self.assertIs(second["cached"], False)
+        self.assertIs(second["ok"], True)
+
+    def test_a_failed_check_is_cached_like_a_passed_one(self):
+        with mock.patch.object(app, "fetch", return_value="nothing here"):
+            _, first = call("gitbard")
+            _, second = call("gitbard")
+        self.assertIs(first["ok"], False)
+        self.assertIs(second["cached"], True)
+
     def test_what_s_live_is_never_cached(self):
         answer = {"ok": True, "checks": []}
         with mock.patch.object(app, "check_site", return_value=answer) as check_site:
